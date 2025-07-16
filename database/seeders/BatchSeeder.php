@@ -15,11 +15,18 @@ class BatchSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('batches')->insert([
-            ['user_id' => 2, 'title' => 'Batch 1', 'faculty_id' => 1,'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
-            ['user_id' => 2, 'title' => 'Batch 2', 'faculty_id' => 2,'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
-            ['user_id' => 2, 'title' => 'Batch 3', 'faculty_id' => 3,'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
-            ['user_id' => 2, 'title' => 'Batch 4', 'faculty_id' => 1,'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
-        ]);
+        // Retrieve faculty IDs from the database
+        $facultyIds = DB::table('faculties')->pluck('id');
+
+        // Prepare data by looping over the faculty IDs and inserting batches
+        foreach ($facultyIds as $facultyId) {
+            DB::table('batches')->insert([
+                'user_id' => 2,
+                'title' => '2080',
+                'faculty_id' => $facultyId,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]);
+        }
     }
 }

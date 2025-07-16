@@ -18,17 +18,17 @@ class FacultySeeder extends Seeder
         DB::table('faculties')->insert([
             [
                 'user_id' => 2,
-                'title' => 'Science',
+                'title' => 'CSIT',
                 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()
             ],
             [
                 'user_id' => 2,
-                'title' => 'Arts',
+                'title' => 'BSW',
                 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()
             ],
             [
                 'user_id' => 2,
-                'title' => 'Commerce',
+                'title' => 'BIM',
                 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()
             ],
         ]);

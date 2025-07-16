@@ -15,11 +15,24 @@ class ClassSeeder extends Seeder
      */
     public function run()
     {
+        // Retrieve batch IDs from the database
+        $batchIds = DB::table('batches')->pluck('id');
+
+        // Prepare data for the 'classes' table by looping over the batch IDs
+        foreach ($batchIds as $batchId) {
+            DB::table('classes')->insert([
+                'user_id' => 2,
+                'title' => $batchId === 1 ? '1st Semester' : '2nd Semester', // Adjust titles based on batch_id
+                'batch_id' => $batchId,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]);
+        }
+
+        // Add two more records with null batch_id
         DB::table('classes')->insert([
-            ['user_id' => 2, 'title' => 'Class A', 'batch_id' => 1,'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
-            ['user_id' => 2, 'title' => 'Class B', 'batch_id' => 2,'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
-            ['user_id' => 2, 'title' => 'Class C', 'batch_id' => null,'created_at' => Carbon::now(), 'updated_at' => Carbon::now()], // Batch is nullable
-            ['user_id' => 2, 'title' => 'Class D', 'batch_id' => null,'created_at' => Carbon::now(), 'updated_at' => Carbon::now()], // Batch is nullable
+            ['user_id' => 2, 'title' => '1', 'batch_id' => null, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['user_id' => 2, 'title' => '2', 'batch_id' => null, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
         ]);
     }
 }
