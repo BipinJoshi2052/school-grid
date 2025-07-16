@@ -136,6 +136,11 @@ Class & Section
                         <i class="fas fa-plus me-2"></i>
                         Add Class
                     </button>
+                    <!-- Search bar aligned to the right -->
+                    <div class="d-flex align-items-center">
+                        <input type="text" id="facultySearch" class="form-control" placeholder="Search Faculty" onkeyup="searchFaculty()" style="width: 200px;">
+                        <i class="fas fa-search ms-2"></i>
+                    </div>
                 </div>
 
                 <!-- Faculty Container -->
@@ -169,11 +174,24 @@ Class & Section
                 container.append(classHtml);
             });
         }
+        function searchFaculty() {
+            const searchQuery = document.getElementById("facultySearch").value.toLowerCase();
+            const facultyCards = document.querySelectorAll(".faculty-card");
+
+            facultyCards.forEach(card => {
+                const title = card.getAttribute("data-title").toLowerCase();
+                if (title.includes(searchQuery)) {
+                    card.style.display = "";  // Show the card if it matches the search query
+                } else {
+                    card.style.display = "none";  // Hide the card if it doesn't match
+                }
+            });
+        }
 
         function createClassHtml(classData) {
             console.log(classData)
             return `
-                <div class="col-md-6 card faculty-card" data-id="${classData.id}" data-element="class-${classData.id}">
+                <div class="col-md-6 card faculty-card" data-title="${classData.title}"  data-id="${classData.id}" data-element="class-${classData.id}">
                     <div class="card-header">
                         <div class="item-header">
                             <div class="d-flex align-items-center">
