@@ -646,8 +646,8 @@
                     icon: "info",
                     buttons: ["Cancel", "Send"],
                     dangerMode: false,
-                }).then((willSend) => {
-                    if (willSend) {
+                }).then((result) => {
+                    if (result.isConfirmed) {
                         // Simulate SMS sending
                         setTimeout(() => {
                             if (Math.random() > 0.2) {
@@ -670,8 +670,8 @@
                     icon: "info",
                     buttons: ["Cancel", "Send"],
                     dangerMode: false,
-                }).then((willSend) => {
-                    if (willSend) {
+                }).then((result) => {
+                    if (result.isConfirmed) {
                         // Simulate notification sending
                         setTimeout(() => {
                             if (Math.random() > 0.2) {
@@ -718,8 +718,8 @@
                 icon: "warning",
                 buttons: ["Cancel", "Send All"],
                 dangerMode: false,
-            }).then((willSend) => {
-                if (willSend) {
+            }).then((result) => {
+                if (result.isConfirmed) {
                     // Simulate bulk notification sending
                     setTimeout(() => {
                         const successCount = Math.floor(Math.random() * 3) + 28; // 28-30 success
