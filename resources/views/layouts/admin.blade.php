@@ -257,7 +257,7 @@
                 <nav class="sidebar-nav">
                     <ul id="sidebarnav">
                         <li class="sidebar-item {{ request()->routeIs('dashboard') ? 'selected' : '' }}"> 
-                            <a class="sidebar-link sidebar-link" href="{{route('dashboard')}}" aria-expanded="false">
+                            <a class="sidebar-link" href="{{route('dashboard')}}" aria-expanded="false">
                                 <i data-feather="home" class="feather-icon"></i>
                                 <span class="hide-menu">Dashboard</span>
                             </a>
@@ -287,7 +287,7 @@
                             </a>
                         </li>
                         <li class="sidebar-item"> 
-                            <a class="sidebar-link" href="{{route('academics.class')}}" aria-expanded="false">
+                            <a class="sidebar-link" href="#" aria-expanded="false">
                                 <i data-feather="tag" class="feather-icon"></i>
                                 <span
                                     class="hide-menu">Departments
@@ -295,7 +295,7 @@
                             </a>
                         </li>
                         <li class="sidebar-item"> 
-                            <a class="sidebar-link" href="{{route('academics.class')}}" aria-expanded="false">
+                            <a class="sidebar-link" href="#" aria-expanded="false">
                                 <i data-feather="tag" class="feather-icon"></i>
                                 <span
                                     class="hide-menu">Positions
@@ -310,7 +310,7 @@
                         </li>
 
                         <li class="sidebar-item"> 
-                            <a class="sidebar-link" href="{{route('academics.faculty')}}" aria-expanded="false">
+                            <a class="sidebar-link" href="#" aria-expanded="false">
                                 <i data-feather="users" class="feather-icon"></i>
                                 <span
                                     class="hide-menu">Staffs
@@ -319,7 +319,7 @@
                         </li>
 
                         <li class="sidebar-item"> 
-                            <a class="sidebar-link" href="{{route('academics.class')}}" aria-expanded="false">
+                            <a class="sidebar-link" href="#" aria-expanded="false">
                                 <i data-feather="users" class="feather-icon"></i>
                                 <span
                                     class="hide-menu">Students
@@ -328,7 +328,7 @@
                         </li>
 
                         <li class="sidebar-item"> 
-                            <a class="sidebar-link" href="{{route('academics.class')}}" aria-expanded="false">
+                            <a class="sidebar-link" href="#" aria-expanded="false">
                                 <i data-feather="download" class="feather-icon"></i>
                                 <span
                                     class="hide-menu">Import
@@ -343,7 +343,7 @@
                         </li>
 
                         <li class="sidebar-item"> 
-                            <a class="sidebar-link" href="{{route('academics.faculty')}}" aria-expanded="false">
+                            <a class="sidebar-link" href="#" aria-expanded="false">
                                 <i data-feather="file-plus" class="feather-icon"></i>
                                 <span
                                     class="hide-menu">Seat Plan
