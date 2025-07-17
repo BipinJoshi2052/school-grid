@@ -33,11 +33,10 @@ Home
                         <div class="d-flex align-items-center">
                             <div>
                                 <div class="d-inline-flex align-items-center">
-                                    <h2 class="text-dark mb-1 font-weight-medium">236</h2>
-                                    <span
-                                        class="badge bg-primary font-12 text-white font-weight-medium rounded-pill ms-2 d-lg-block d-md-none">+18.33%</span>
+                                    <h2 class="text-dark mb-1 font-weight-medium">5</h2>
+                                    {{-- <span class="badge bg-primary font-12 text-white font-weight-medium rounded-pill ms-2 d-lg-block d-md-none">+18.33%</span> --}}
                                 </div>
-                                <h6 class="text-muted font-weight-normal mb-0 w-100 text-truncate">New Clients
+                                <h6 class="text-muted font-weight-normal mb-0 w-100 text-truncate">Faculties
                                 </h6>
                             </div>
                             <div class="ms-auto mt-md-3 mt-lg-0">
@@ -52,10 +51,9 @@ Home
                     <div class="card-body">
                         <div class="d-flex align-items-center">
                             <div>
-                                <h2 class="text-dark mb-1 w-100 text-truncate font-weight-medium"><sup
-                                        class="set-doller">$</sup>18,306</h2>
-                                <h6 class="text-muted font-weight-normal mb-0 w-100 text-truncate">Earnings of
-                                    Month
+                                <h2 class="text-dark mb-1 font-weight-medium">10</h2>
+                                <h6 class="text-muted font-weight-normal mb-0 w-100 text-truncate">
+                                    Batches
                                 </h6>
                             </div>
                             <div class="ms-auto mt-md-3 mt-lg-0">
@@ -71,11 +69,10 @@ Home
                         <div class="d-flex align-items-center">
                             <div>
                                 <div class="d-inline-flex align-items-center">
-                                    <h2 class="text-dark mb-1 font-weight-medium">1538</h2>
-                                    <span
-                                        class="badge bg-danger font-12 text-white font-weight-medium rounded-pill ms-2 d-md-none d-lg-block">-18.33%</span>
+                                    <h2 class="text-dark mb-1 font-weight-medium">20</h2>
+                                    {{-- <span class="badge bg-danger font-12 text-white font-weight-medium rounded-pill ms-2 d-md-none d-lg-block">-18.33%</span> --}}
                                 </div>
-                                <h6 class="text-muted font-weight-normal mb-0 w-100 text-truncate">New Projects
+                                <h6 class="text-muted font-weight-normal mb-0 w-100 text-truncate">Classes 
                                 </h6>
                             </div>
                             <div class="ms-auto mt-md-3 mt-lg-0">
@@ -90,8 +87,8 @@ Home
                     <div class="card-body">
                         <div class="d-flex align-items-center">
                             <div>
-                                <h2 class="text-dark mb-1 font-weight-medium">864</h2>
-                                <h6 class="text-muted font-weight-normal mb-0 w-100 text-truncate">Projects</h6>
+                                <h2 class="text-dark mb-1 font-weight-medium">43</h2>
+                                <h6 class="text-muted font-weight-normal mb-0 w-100 text-truncate">Sections</h6>
                             </div>
                             <div class="ms-auto mt-md-3 mt-lg-0">
                                 <span class="opacity-7 text-muted"><i data-feather="globe"></i></span>
@@ -100,6 +97,61 @@ Home
                     </div>
                 </div>
             </div>
+            <div class="col-lg-12 col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Student Ratio</h4>
+                        <div class="net-income mt-4 position-relative" style="height:294px;"></div>
+                        <ul class="list-inline text-center mt-5 mb-2">
+                            <li class="list-inline-item text-muted fst-italic">Classes</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+@endsection
+@section('scripts')
+<script>
+
+    $(document).ready(function () {
+
+        var data = {
+            labels: ['Class 10', 'Class 9', 'Class 8', 'Class 7', 'Class 6', 'Class 5', 'Class 4', 'Class 3', 'Class 2', 'Class 1'],
+            series: [
+                [40, 38, 36, 40, 45, 50, 38, 36, 40, 45, 50]
+            ]
+        };
+
+        var options = {
+            axisX: {
+                showGrid: false
+            },
+            seriesBarDistance: 1,
+            chartPadding: {
+                top: 15,
+                right: 15,
+                bottom: 5,
+                left: 0
+            },
+            plugins: [
+                Chartist.plugins.tooltip()
+            ],
+            width: '100%'
+        };
+
+        var responsiveOptions = [
+            ['screen and (max-width: 640px)', {
+                seriesBarDistance: 5,
+                axisX: {
+                    labelInterpolationFnc: function (value) {
+                        return value[0];
+                    }
+                }
+            }]
+        ];
+        new Chartist.Bar('.net-income', data, options, responsiveOptions);
+
+        });
+</script>
 @endsection
