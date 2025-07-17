@@ -444,7 +444,7 @@
 
                             <div class="controls">
                                 <button class="control-btn sms-btn" onclick="sendBulkSMS()">
-                                    <i class="fas fa-sms"></i>
+                                    <i class="fas fa-envelope"></i>
                                     Send SMS to All
                                 </button>
                                 <button class="control-btn notification-btn" onclick="sendBulkNotification()">
@@ -526,7 +526,7 @@
                             <i class="fas fa-arrows-alt"></i>
                         </button>
                         <button class="action-btn sms-btn" title="Send SMS" onclick="sendIndividualSMS(${student.id})">
-                            <i class="fas fa-sms"></i>
+                            <i class="fas fa-envelope"></i>
                         </button>
                         <button class="action-btn notification-btn" title="Send Notification" onclick="sendIndividualNotification(${student.id})">
                             <i class="fas fa-bell"></i>
