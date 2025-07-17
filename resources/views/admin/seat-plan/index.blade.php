@@ -331,6 +331,9 @@
             background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
             border-color: #e9ecef;
         }
+        #right-column{
+            padding-right: 30px;
+        }
 
         @media (max-width: 768px) {
             .benches-container {
@@ -637,7 +640,7 @@
         function sendIndividualSMS(studentId) {
             const student = students.find(s => s.id === studentId);
             if (student) {
-                swal({
+                Swal.fire({
                     title: "Send SMS",
                     text: `Send SMS to ${student.name}?`,
                     icon: "info",
@@ -661,7 +664,7 @@
         function sendIndividualNotification(studentId) {
             const student = students.find(s => s.id === studentId);
             if (student) {
-                swal({
+                Swal.fire({
                     title: "Send Notification",
                     text: `Send notification to ${student.name}?`,
                     icon: "info",
@@ -683,19 +686,21 @@
         }
 
         function sendBulkSMS() {
-            swal({
+            Swal.fire({
                 title: "Send SMS to All Students",
                 text: "This will send SMS to all 30 students in the room. Continue?",
                 icon: "warning",
-                buttons: ["Cancel", "Send All"],
-                dangerMode: false,
-            }).then((willSend) => {
-                if (willSend) {
+                showCancelButton: true,
+                confirmButtonText: "Send All",
+                cancelButtonText: "Cancel",
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
                     // Simulate bulk SMS sending
                     setTimeout(() => {
                         const successCount = Math.floor(Math.random() * 5) + 26; // 26-30 success
                         const failCount = 30 - successCount;
-                        
+
                         if (failCount === 0) {
                             toastr.success(`SMS sent successfully to all ${successCount} students`);
                         } else {
@@ -707,7 +712,7 @@
         }
 
         function sendBulkNotification() {
-            swal({
+            Swal.fire({
                 title: "Send Notification to All Students",
                 text: "This will send notifications to all 30 students in the room. Continue?",
                 icon: "warning",
