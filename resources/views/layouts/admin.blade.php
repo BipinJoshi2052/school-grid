@@ -288,16 +288,28 @@
                         <li class="nav-small-cap">
                             <span class="hide-menu">Components</span>
                         </li>
+
                         <li class="sidebar-item"> 
                             <form action="{{ route('erase-data') }}" method="POST" style="display: inline;">
                                 @csrf
                                 <a class="sidebar-link" href="javascript:void(0)" onclick="this.closest('form').submit()" aria-expanded="false">
-                                    Erase Data
+                                    <i data-feather="trash" class="feather-icon"></i>
+                                    <span class="hide-menu">Erase Data</span>
+                                </a>
+                            </form>
+                        </li>
+
+                        <li class="sidebar-item"> 
+                            <form action="{{ route('populate-data') }}" method="POST" style="display: inline;">
+                                @csrf
+                                <a class="sidebar-link" href="javascript:void(0)" onclick="this.closest('form').submit()" aria-expanded="false">
+                                    <i data-feather="plus" class="feather-icon"></i>
+                                    <span class="hide-menu">Populate Data</span>                                    
                                 </a>
                             </form>
                         </li>
                         
-                        <li class="sidebar-item"> 
+                        {{-- <li class="sidebar-item"> 
                             <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
                                 <i data-feather="file-text" class="feather-icon"></i>
                                 <span class="hide-menu">Forms </span>
@@ -325,9 +337,7 @@
                                     </a>
                                 </li>
                             </ul>
-                        </li>
-                            </ul>
-                        </li>
+                        </li> --}}
                     </ul>
                 </nav>
                 <!-- End Sidebar navigation -->

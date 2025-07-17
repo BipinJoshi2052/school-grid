@@ -218,5 +218,88 @@ class AcademicController extends Controller
         return redirect()->back()->with('success', 'Your data has been erased successfully.');
     }
 
+    public function populateData()
+    {
+        // Get the currently authenticated user's ID
+        $userId = auth()->id();
+
+        // Add faculties using Eloquent ORM
+        $faculties = [
+            [
+                'user_id' => $userId,
+                'title' => 'CSIT',
+            ],
+            [
+                'user_id' => $userId,
+                'title' => 'BSW',
+            ],
+            [
+                'user_id' => $userId,
+                'title' => 'BIM',
+            ]
+        ];
+
+        Faculty::insert(array_map(function ($faculty) use ($userId) {
+            return array_merge($faculty, ['created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
+        }, $faculties));
+
+        // Add batches using Eloquent ORM
+        $facultyIds = Faculty::pluck('id');
+        foreach ($facultyIds as $facultyId) {
+            Batch::create([
+                'user_id' => $userId,
+                'title' => '2080',
+                'faculty_id' => $facultyId,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]);
+        }
+
+        // Add classes using Eloquent ORM
+        $batchIds = Batch::pluck('id');
+        foreach ($batchIds as $batchId) {
+            ClassModel::create([
+                'user_id' => $userId,
+                'title' => $batchId === 1 ? '1st Semester' : '2nd Semester', // Adjust titles based on batch_id
+                'batch_id' => $batchId,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]);
+        }
+
+        // Add two more records with null batch_id using Eloquent ORM
+        ClassModel::create([
+            'user_id' => $userId,
+            'title' => '1',
+            'batch_id' => null,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+
+        ClassModel::create([
+            'user_id' => $userId,
+            'title' => '2',
+            'batch_id' => null,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+
+        // Add sections using Eloquent ORM
+        $classes = ClassModel::pluck('id');
+        foreach ($classes as $classId) {
+            Section::create([
+                'user_id' => $userId,
+                'title' => $classId === 1 ? 'A' : 'B', // Adjust titles based on class_id
+                'class_id' => $classId,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]);
+        }
+
+        // Optionally, you can add a success message or redirect
+        return redirect()->back()->with('success', 'Your data has been populated successfully.');
+    }
+
+
 
 }

@@ -45,6 +45,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/change-title', [AcademicController::class, 'changeTitle'])->name('academics.changeTitle');
 
     Route::post('/erase-data', [AcademicController::class, 'eraseData'])->name('erase-data');
+    Route::post('/populate-data', [AcademicController::class, 'populateData'])->name('populate-data');
 
 });
 
