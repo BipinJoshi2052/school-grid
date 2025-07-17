@@ -19,7 +19,9 @@ class DatabaseSeeder extends Seeder
             FacultySeeder::class,
             BatchSeeder::class,
             ClassSeeder::class,
-            SectionSeeder::class
+            SectionSeeder::class,
+            DepartmentSeeder::class,
+            PositionSeeder::class,
         ]);
         // \App\Models\User::factory(10)->create();
     }

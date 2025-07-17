@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('title')
-Faculty & Batch
+    Faculty & Batch
 @endsection
 
 @section('styles')

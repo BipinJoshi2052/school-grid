@@ -287,18 +287,10 @@
                             </a>
                         </li>
                         <li class="sidebar-item"> 
-                            <a class="sidebar-link" href="#" aria-expanded="false">
+                            <a class="sidebar-link" href="{{route('departments.index')}}" aria-expanded="false">
                                 <i data-feather="tag" class="feather-icon"></i>
                                 <span
-                                    class="hide-menu">Departments
-                                </span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item"> 
-                            <a class="sidebar-link" href="#" aria-expanded="false">
-                                <i data-feather="tag" class="feather-icon"></i>
-                                <span
-                                    class="hide-menu">Positions
+                                    class="hide-menu">Department & Position
                                 </span>
                             </a>
                         </li>
@@ -425,7 +417,7 @@
             <!-- footer -->
             <!-- ============================================================== -->
             <footer class="footer text-center text-muted">
-                All Rights Reserved by School Grid.
+                All Rights Reserved by EduSched.
             </footer>
             <!-- ============================================================== -->
             <!-- End footer -->

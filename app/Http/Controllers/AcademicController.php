@@ -7,7 +7,9 @@ use Illuminate\Support\Facades\View;
 use App\Helpers\HelperFile;
 use App\Models\Batch;
 use App\Models\ClassModel;
+use App\Models\Department;
 use App\Models\Faculty;
+use App\Models\Position;
 use App\Models\Section;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -213,6 +215,8 @@ class AcademicController extends Controller
         Batch::where('user_id', $userId)->delete();
         ClassModel::where('user_id', $userId)->delete();
         Section::where('user_id', $userId)->delete();
+        Department::where('user_id', $userId)->delete();
+        Position::where('user_id', $userId)->delete();
 
         // Optionally, you can add a success message or redirect
         return redirect()->back()->with('success', 'Your data has been erased successfully.');
@@ -296,10 +300,37 @@ class AcademicController extends Controller
             ]);
         }
 
+        $departments = [
+            ['user_id' => $userId, 'title' => 'Science'],
+            ['user_id' => $userId, 'title' => 'Mathematics'],
+            ['user_id' => $userId, 'title' => 'Arts'],
+            ['user_id' => $userId, 'title' => 'Sports'],
+            ['user_id' => $userId, 'title' => 'Computer Science'],
+        ];
+
+        foreach ($departments as $dept) {
+            Department::create($dept);
+        }
+
+        $positions = [
+            ['user_id' => $userId, 'title' => 'Principal'],
+            ['user_id' => $userId, 'title' => 'Vice Principal'],
+            ['user_id' => $userId, 'title' => 'Teacher'],
+            ['user_id' => $userId, 'title' => 'Accountant'],
+            ['user_id' => $userId, 'title' => 'Clerk'],
+        ];
+
+        foreach ($positions as $pos) {
+            Position::create($pos);
+        }
+
         // Optionally, you can add a success message or redirect
         return redirect()->back()->with('success', 'Your data has been populated successfully.');
     }
 
-
+    // public function departments(){
+    //     $data = [];
+    //     return view('admin.academic.departments', compact('data'));
+    // }
 
 }
