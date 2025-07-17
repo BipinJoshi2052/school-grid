@@ -9,6 +9,8 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\SeatPlanController;
+use App\Http\Controllers\StaffController;
+use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SuggestionController;
 
 /*
@@ -52,6 +54,13 @@ Route::middleware('auth')->group(function () {
     Route::resource('departments', DepartmentController::class);
     Route::resource('positions', PositionController::class);
 
+
+    Route::resource('staffs', StaffController::class);
+    Route::resource('students', StudentController::class);
+    
+    Route::get('/import', [HomeController::class, 'import'])->name('import');
+    Route::get('/seat-plan', [HomeController::class, 'seatPlan'])->name('seat-plan');
+    // Route::get('/students', [StudentController::class, 'partial'])->name('positions.partial');
 
     Route::post('/erase-data', [AcademicController::class, 'eraseData'])->name('erase-data');
     Route::post('/populate-data', [AcademicController::class, 'populateData'])->name('populate-data');

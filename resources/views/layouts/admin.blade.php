@@ -302,7 +302,7 @@
                         </li>
 
                         <li class="sidebar-item"> 
-                            <a class="sidebar-link" href="#" aria-expanded="false">
+                            <a class="sidebar-link" href="{{route('staffs.index')}}" aria-expanded="false">
                                 <i data-feather="users" class="feather-icon"></i>
                                 <span
                                     class="hide-menu">Staffs
@@ -311,7 +311,7 @@
                         </li>
 
                         <li class="sidebar-item"> 
-                            <a class="sidebar-link" href="#" aria-expanded="false">
+                            <a class="sidebar-link" href="{{route('students.index')}}" aria-expanded="false">
                                 <i data-feather="users" class="feather-icon"></i>
                                 <span
                                     class="hide-menu">Students
@@ -320,7 +320,7 @@
                         </li>
 
                         <li class="sidebar-item"> 
-                            <a class="sidebar-link" href="#" aria-expanded="false">
+                            <a class="sidebar-link" href="{{route('import')}}" aria-expanded="false">
                                 <i data-feather="download" class="feather-icon"></i>
                                 <span
                                     class="hide-menu">Import
@@ -335,7 +335,7 @@
                         </li>
 
                         <li class="sidebar-item"> 
-                            <a class="sidebar-link" href="#" aria-expanded="false">
+                            <a class="sidebar-link" href="{{route('seat-plan')}}" aria-expanded="false">
                                 <i data-feather="file-plus" class="feather-icon"></i>
                                 <span
                                     class="hide-menu">Seat Plan

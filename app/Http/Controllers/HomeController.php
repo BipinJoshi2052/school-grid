@@ -24,6 +24,15 @@ class HomeController extends Controller
     {
         $data = [];
         return view('landing', compact('data'));
+    }   
+
+    public function import()
+    {
+        return view('admin.import');
+    }
+    public function seatPlan()
+    {
+        return view('admin.seat-plan.index');
     }
 
 }
