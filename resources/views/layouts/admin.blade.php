@@ -52,7 +52,7 @@
                     <div class="navbar-brand">
                         <!-- Logo icon -->
                         <a href="index.html">
-                            <img src="{{ asset('admin/assets/images/freedashDark.svg') }}" alt=""
+                            <img src="{{ asset('admin/assets/images/edusched.png') }}" alt=""
                                 class="img-fluid">
                         </a>
                     </div>
