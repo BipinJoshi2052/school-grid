@@ -300,10 +300,14 @@ Faculty & Batch
             console.log(`Title changed: ${type} (ID: ${id}) -> "${newTitle}"`);
             
             // Update the data structure
-            updateTitleInData(type, id, newTitle);
+            updateTitleInData($this, type, id, newTitle);
             
             // Here you would typically make an AJAX call to update the server
             updateTitleOnServer(type, id, newTitle);
+             
+            // var closestElement = '';
+            // (type == 'faculty') ? closestElement = '.faculty-card' : '';
+            // console.log($this)
         });
 
         // Enter key handling for title editing
@@ -314,19 +318,23 @@ Faculty & Batch
         });
     }
 
-    function updateTitleInData(type, id, newTitle) {
+    function updateTitleInData(element, type, id, newTitle) {
+        var closestElement = '';
         switch(type) {
             case 'faculty':
+                closestElement = '.faculty-card';
                 const faculty = facultyData.find(f => f.id == id);
                 if (faculty) faculty.title = newTitle;
                 break;
             case 'batch':
+                // closestElement = '.batch-item';
                 facultyData.forEach(faculty => {
                     const batch = faculty.batches.find(b => b.id == id);
                     if (batch) batch.title = newTitle;
                 });
                 break;
             case 'class':
+                // closestElement = '.class-item';
                 facultyData.forEach(faculty => {
                     faculty.batches.forEach(batch => {
                         const cls = batch.classes.find(c => c.id == id);
@@ -335,6 +343,7 @@ Faculty & Batch
                 });
                 break;
             case 'section':
+                // closestElement = '.section-item';
                 facultyData.forEach(faculty => {
                     faculty.batches.forEach(batch => {
                         batch.classes.forEach(cls => {
@@ -345,6 +354,7 @@ Faculty & Batch
                 });
                 break;
         }
+        element.closest(closestElement).attr('data-title',newTitle)
     }
 
     // Add functions

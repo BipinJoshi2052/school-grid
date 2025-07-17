@@ -1,0 +1,1 @@
+restrict faculty batch class section delete if student in the class exists

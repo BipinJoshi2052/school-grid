@@ -176,7 +176,7 @@ Class & Section
         }
         function searchFaculty() {
             const searchQuery = document.getElementById("facultySearch").value.toLowerCase();
-            const facultyCards = document.querySelectorAll(".faculty-card");
+            const facultyCards = document.querySelectorAll(".class-item");
 
             facultyCards.forEach(card => {
                 const title = card.getAttribute("data-title").toLowerCase();
@@ -191,7 +191,7 @@ Class & Section
         function createClassHtml(classData) {
             console.log(classData)
             return `
-                <div class="col-md-6 card faculty-card" data-title="${classData.title}"  data-id="${classData.id}" data-element="class-${classData.id}">
+                <div class="col-md-6 card class-item" data-title="${classData.title}"  data-id="${classData.id}" data-element="class-${classData.id}">
                     <div class="card-header">
                         <div class="item-header">
                             <div class="d-flex align-items-center">
@@ -246,7 +246,7 @@ Class & Section
                 console.log(`Title changed: ${type} (ID: ${id}) -> "${newTitle}"`);
                 
                 // Update the data structure
-                updateTitleInData(type, id, newTitle);
+                updateTitleInData($this, type, id, newTitle);
                 
                 // Here you would typically make an AJAX call to update the server
                 updateTitleOnServer(type, id, newTitle);
@@ -260,19 +260,23 @@ Class & Section
             });
         }
 
-        function updateTitleInData(type, id, newTitle) {
+        function updateTitleInData(element, type, id, newTitle) {
+            var closestElement = '';
             switch(type) {
                 case 'class':
+                    closestElement = '.class-item';
                     const classItem = classData.find(f => f.id == id);
                     if (classItem) classItem.title = newTitle;
                     break;
                 case 'section':
+                    closestElement = '.section-item';
                     classData.forEach(classItem => {
                         const section = classItem.sections.find(b => b.id == id);
                         if (section) section.title = newTitle;
                     });
                     break;
             }
+            element.closest(closestElement).attr('data-title',newTitle)
         }
 
         // Add functions
