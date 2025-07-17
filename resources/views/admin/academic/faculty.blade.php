@@ -105,6 +105,20 @@ Faculty & Batch
             color: #6c757d;
             margin-right: 0.5rem;
         }
+        .search-div{
+            background: #d1d3f0;
+            padding: 5px 10px 5px 5px;
+            border-radius: 5px;
+        }
+        .search-div i{
+            color: white;
+        }
+        .search-div input{
+            background: #ffffff;
+        }
+        .search-div input:focus{
+            background: #ffffff;
+        }
     </style>
 @endsection
 
@@ -139,8 +153,8 @@ Faculty & Batch
                     </button>
 
                     <!-- Search bar aligned to the right -->
-                    <div class="d-flex align-items-center">
-                        <input type="text" id="facultySearch" class="form-control" placeholder="Search Faculty" onkeyup="searchFaculty()" style="width: 200px;">
+                    <div class="d-flex align-items-center search-div">
+                        <input type="text" id="facultySearch" class="form-control" placeholder="Search Class" onkeyup="searchFaculty()" style="width: 200px;">
                         <i class="fas fa-search ms-2"></i>
                     </div>
                 </div>

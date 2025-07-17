@@ -105,6 +105,20 @@ Class & Section
             color: #6c757d;
             margin-right: 0.5rem;
         }
+        .search-div{
+            background: #d1d3f0;
+            padding: 5px 10px 5px 5px;
+            border-radius: 5px;
+        }
+        .search-div input{
+            background: #ffffff;
+        }
+        .search-div input:focus{
+            background: #ffffff;
+        }
+        .search-div i{
+            color: white;
+        }
     </style>
 @endsection
 
@@ -137,7 +151,7 @@ Class & Section
                         Add Class
                     </button>
                     <!-- Search bar aligned to the right -->
-                    <div class="d-flex align-items-center">
+                    <div class="d-flex align-items-center search-div">
                         <input type="text" id="facultySearch" class="form-control" placeholder="Search Class" onkeyup="searchFaculty()" style="width: 200px;">
                         <i class="fas fa-search ms-2"></i>
                     </div>
