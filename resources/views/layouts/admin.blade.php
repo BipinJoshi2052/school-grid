@@ -17,8 +17,10 @@
     <link href="{{ asset('admin/assets/libs/chartist/dist/chartist.min.css') }}" rel="stylesheet">
     <link href="{{ asset('admin/assets/extra-libs/jvector/jquery-jvectormap-2.0.2.css') }}" rel="stylesheet" />
     <!-- Custom CSS -->
-    <link href="{{ asset('admin/dist/css/style.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('admin/dist/css/style.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{asset('admin/assets/libs/toastr/toastr.min.css')}}">   
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     @yield('styles')
 </head>
 
@@ -440,6 +442,8 @@
     <!-- apps -->
     <script src="{{ asset('admin/dist/js/app-style-switcher.js') }}"></script>
     <script src="{{ asset('admin/dist/js/feather.min.js') }}"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+
     <script src="{{ asset('admin/assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js') }}"></script>
     <script src="{{ asset('admin/dist/js/sidebarmenu.js') }}"></script>
     <!--Custom JavaScript -->
