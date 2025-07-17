@@ -286,11 +286,75 @@
                                 </span>
                             </a>
                         </li>
+                        <li class="sidebar-item {{ request()->routeIs('academics.class') ? 'selected' : '' }}"> 
+                            <a class="sidebar-link" href="{{route('academics.class')}}" aria-expanded="false">
+                                <i data-feather="tag" class="feather-icon"></i>
+                                <span
+                                    class="hide-menu">Departments
+                                </span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item {{ request()->routeIs('academics.class') ? 'selected' : '' }}"> 
+                            <a class="sidebar-link" href="{{route('academics.class')}}" aria-expanded="false">
+                                <i data-feather="tag" class="feather-icon"></i>
+                                <span
+                                    class="hide-menu">Positions
+                                </span>
+                            </a>
+                        </li>
 
                         <li class="list-divider"></li>
 
                         <li class="nav-small-cap">
-                            <span class="hide-menu">Components</span>
+                            <span class="hide-menu">Users</span>
+                        </li>
+
+                        <li class="sidebar-item {{ request()->routeIs('academics.faculty') ? 'selected' : '' }}"> 
+                            <a class="sidebar-link" href="{{route('academics.faculty')}}" aria-expanded="false">
+                                <i data-feather="users" class="feather-icon"></i>
+                                <span
+                                    class="hide-menu">Staffs
+                                </span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item {{ request()->routeIs('academics.class') ? 'selected' : '' }}"> 
+                            <a class="sidebar-link" href="{{route('academics.class')}}" aria-expanded="false">
+                                <i data-feather="users" class="feather-icon"></i>
+                                <span
+                                    class="hide-menu">Students
+                                </span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item {{ request()->routeIs('academics.class') ? 'selected' : '' }}"> 
+                            <a class="sidebar-link" href="{{route('academics.class')}}" aria-expanded="false">
+                                <i data-feather="download" class="feather-icon"></i>
+                                <span
+                                    class="hide-menu">Import
+                                </span>
+                            </a>
+                        </li>
+
+                        <li class="list-divider"></li>
+
+                        <li class="nav-small-cap">
+                            <span class="hide-menu">Feature</span>
+                        </li>
+
+                        <li class="sidebar-item {{ request()->routeIs('academics.faculty') ? 'selected' : '' }}"> 
+                            <a class="sidebar-link" href="{{route('academics.faculty')}}" aria-expanded="false">
+                                <i data-feather="file-plus" class="feather-icon"></i>
+                                <span
+                                    class="hide-menu">Seat Plan
+                                </span>
+                            </a>
+                        </li>
+
+                        <li class="list-divider"></li>
+
+                        <li class="nav-small-cap">
+                            <span class="hide-menu">Data</span>
                         </li>
 
                         <li class="sidebar-item"> 
