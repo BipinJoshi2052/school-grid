@@ -286,7 +286,7 @@
                                 </span>
                             </a>
                         </li>
-                        <li class="sidebar-item {{ request()->routeIs('academics.class') ? 'selected' : '' }}"> 
+                        <li class="sidebar-item"> 
                             <a class="sidebar-link" href="{{route('academics.class')}}" aria-expanded="false">
                                 <i data-feather="tag" class="feather-icon"></i>
                                 <span
@@ -294,7 +294,7 @@
                                 </span>
                             </a>
                         </li>
-                        <li class="sidebar-item {{ request()->routeIs('academics.class') ? 'selected' : '' }}"> 
+                        <li class="sidebar-item"> 
                             <a class="sidebar-link" href="{{route('academics.class')}}" aria-expanded="false">
                                 <i data-feather="tag" class="feather-icon"></i>
                                 <span
@@ -309,7 +309,7 @@
                             <span class="hide-menu">Users</span>
                         </li>
 
-                        <li class="sidebar-item {{ request()->routeIs('academics.faculty') ? 'selected' : '' }}"> 
+                        <li class="sidebar-item"> 
                             <a class="sidebar-link" href="{{route('academics.faculty')}}" aria-expanded="false">
                                 <i data-feather="users" class="feather-icon"></i>
                                 <span
@@ -318,7 +318,7 @@
                             </a>
                         </li>
 
-                        <li class="sidebar-item {{ request()->routeIs('academics.class') ? 'selected' : '' }}"> 
+                        <li class="sidebar-item"> 
                             <a class="sidebar-link" href="{{route('academics.class')}}" aria-expanded="false">
                                 <i data-feather="users" class="feather-icon"></i>
                                 <span
@@ -327,7 +327,7 @@
                             </a>
                         </li>
 
-                        <li class="sidebar-item {{ request()->routeIs('academics.class') ? 'selected' : '' }}"> 
+                        <li class="sidebar-item"> 
                             <a class="sidebar-link" href="{{route('academics.class')}}" aria-expanded="false">
                                 <i data-feather="download" class="feather-icon"></i>
                                 <span
@@ -342,7 +342,7 @@
                             <span class="hide-menu">Feature</span>
                         </li>
 
-                        <li class="sidebar-item {{ request()->routeIs('academics.faculty') ? 'selected' : '' }}"> 
+                        <li class="sidebar-item"> 
                             <a class="sidebar-link" href="{{route('academics.faculty')}}" aria-expanded="false">
                                 <i data-feather="file-plus" class="feather-icon"></i>
                                 <span
