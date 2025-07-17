@@ -6,7 +6,8 @@
 
 @section('styles')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/ui-lightness/jquery-ui.min.css">
-    <style>.header {
+    <style>
+        .header {
             background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
             color: white;
             padding: 30px;
@@ -397,6 +398,8 @@
                                 </a>
                             </li>
                             <li class="breadcrumb-item text-muted active" aria-current="page">Seat Plan</li>
+                            <li class="breadcrumb-item text-muted" aria-current="page">Engineering Building</li>
+                            <li class="breadcrumb-item text-muted active" aria-current="page">Room 101 - Computer Science</li>
                         </ol>
                     </nav>
                 </div>
