@@ -41,7 +41,7 @@ Class & Section
             background-color: #ffffff;
             border: 1px solid #e3e6f0;
             border-radius: 0.25rem;
-            padding: 0.5rem;
+            /* padding: 0.5rem; */
             margin-bottom: 0.5rem;
         }
         .section-item {
