@@ -72,7 +72,7 @@ Home
       <div class="container section-title" data-aos="fade-up">
         <span>About Us<br></span>
         <h2>About</h2>
-        <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
+        <p>Simple and effective plan management for students and teachers</p>
       </div><!-- End Section Title -->
 
       <div class="container">
@@ -80,23 +80,28 @@ Home
         <div class="row gy-4">
           <div class="col-lg-6 position-relative align-self-start" data-aos="fade-up" data-aos-delay="100">
             <img src="{{ asset('images/about.png')}}" class="img-fluid" alt="">
-            <a href="https://www.youtube.com/watch?v=Y7f98aduVJ8" class="glightbox pulsating-play-btn"></a>
+            {{-- <a href="https://www.youtube.com/watch?v=Y7f98aduVJ8" class="glightbox pulsating-play-btn"></a> --}}
           </div>
           <div class="col-lg-6 content" data-aos="fade-up" data-aos-delay="200">
-            <h3>Voluptatem dignissimos provident quasi corporis voluptates sit assumenda.</h3>
+            {{-- <h3>Voluptatem dignissimos provident quasi corporis voluptates sit assumenda.</h3> --}}
             <p class="fst-italic">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-              magna aliqua.
+              <b>Edu</b>Sched is a comprehensive school management system focused on streamlining two critical functions within educational institutions:
             </p>
             <ul>
-              <li><i class="bi bi-check2-all"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat.</span></li>
-              <li><i class="bi bi-check2-all"></i> <span>Duis aute irure dolor in reprehenderit in voluptate velit.</span></li>
-              <li><i class="bi bi-check2-all"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate trideta storacalaperda mastiro dolore eu fugiat nulla pariatur.</span></li>
+              <li><i class="bi bi-check2-all"></i> <span><b>Student Seat Planning</b></span></li>
+              <li><i class="bi bi-check2-all"></i> <span><b>Teacher Daily Routine Management</b></span></li>
             </ul>
             <p>
-              Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-              velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident
+              Expected Benefits for Schools Using SchoolGrid:
             </p>
+            <ul>
+              <li><i class="bi bi-check2-all"></i> <span><b>Time Savings:</b> SchoolGrid automates the tedious process of seat planning and teacher schedule management, saving school administrators significant time and resources.</span></li>
+              <li><i class="bi bi-check2-all"></i> <span><b>Cost Reduction:</b> By replacing physical admit cards and routine schedules with SMS and notification systems, schools can save on printing and paper costs.</span></li>
+              <li><i class="bi bi-check2-all"></i> <span><b>Error Minimization:</b> Automated seat assignments and routine notifications reduce the likelihood of human error and confusion.</span></li>
+              <li><i class="bi bi-check2-all"></i> <span><b>Increased Flexibility:</b> The ability to disable student admit cards and dynamically manage invigilators allows schools to adapt more easily to changing circumstances.</span></li>
+              <li><i class="bi bi-check2-all"></i> <span><b>Enhanced Communication:</b> Teachers, students, and invigilators are kept informed through timely SMS and in-app notifications, ensuring smooth operations and improving communication.</span></li>
+              <li><i class="bi bi-check2-all"></i> <span><b>Ease of Use:</b> The CSV import and mapping feature makes it easier for schools to handle different types of data formats, making the system highly adaptable.</span></li>
+            </ul>
           </div>
         </div>
 
