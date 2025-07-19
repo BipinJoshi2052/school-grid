@@ -9,7 +9,7 @@ class Section extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'title', 'class_id'];
+    protected $fillable = ['user_id', 'title', 'class_id','added_by'];
 
     public function class()
     {
@@ -19,5 +19,10 @@ class Section extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+    
+    public function addedBy()
+    {
+        return $this->belongsTo(User::class, 'added_by', 'id')->select(['id', 'name', 'user_type_id']);
     }
 }

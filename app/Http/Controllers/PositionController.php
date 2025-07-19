@@ -51,7 +51,7 @@ class PositionController extends Controller
     
     public function partial()
     {
-        $positions = Position::with('user')->orderBy('id','desc')->get();
+        $positions = Position::where('user_id',auth()->id())->orderBy('id','desc')->get();
         return view('admin.academic.departments..position-partial', compact('positions'));
     }
 }

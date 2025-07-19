@@ -14,7 +14,7 @@
             <tr>
                 <th>#</th>
                 <th>Title</th>
-                <th>User</th>
+                {{-- <th>Created By</th> --}}
                 <th>Actions</th>
             </tr>
         </thead>
@@ -23,7 +23,7 @@
                 <tr>
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $dept->title }}</td>
-                    <td>{{ $dept->user->name ?? 'N/A' }}</td>
+                    {{-- <td>{{ $dept->addedBy->name ?? 'N/A' }}</td> --}}
                     <td>
                         <button class="btn btn-primary btn-sm editDepartmentBtn" data-id="{{ $dept->id }}">Edit</button>
                         <button class="btn btn-danger btn-sm deleteDepartmentBtn" data-id="{{ $dept->id }}">Delete</button>

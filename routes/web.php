@@ -54,7 +54,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('departments', DepartmentController::class);
     Route::resource('positions', PositionController::class);
 
-
+    Route::get('/staffs/list-partial', [StaffController::class, 'listPartial'])->name('staffs.list-partial');
+    Route::get('/staffs/create-partial', [StaffController::class, 'createPartial'])->name('staffs.create-partial');
     Route::resource('staffs', StaffController::class);
     Route::resource('students', StudentController::class);
     
@@ -64,7 +65,10 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/erase-data', [AcademicController::class, 'eraseData'])->name('erase-data');
     Route::post('/populate-data', [AcademicController::class, 'populateData'])->name('populate-data');
+    
 
+    Route::resource('staff', StaffController::class);
+    Route::resource('students', StudentController::class);
 });
 
 

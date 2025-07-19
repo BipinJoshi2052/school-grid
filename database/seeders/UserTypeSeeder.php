@@ -14,7 +14,7 @@ class UserTypeSeeder extends Seeder
      */
     public function run()
     {
-        collect(['superadmin','client','staff'])->each(fn($name) =>
+        collect(['superadmin','client','staff','student'])->each(fn($name) =>
          UserType::firstOrCreate(['name'=>$name])
         );
         // \App\Models\User::factory(10)->create();

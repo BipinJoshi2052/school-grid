@@ -11,8 +11,12 @@ use App\Models\Department;
 use App\Models\Faculty;
 use App\Models\Position;
 use App\Models\Section;
+use App\Models\Staff;
+use App\Models\Student;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Faker\Factory as Faker;
 
 class AcademicController extends Controller
 {
@@ -28,16 +32,18 @@ class AcademicController extends Controller
     
     public function facultyBatch()
     {
-        $data = Faculty::where('user_id', auth()->user()->id)
+        $data = Faculty::where('user_id', session('school_id'))
+                // ->with('addedBy')
                 ->with('batches.classes.sections')
                 ->orderBy('id','desc')
                 ->get()
                 ->toArray();
+                // dd($data);
         return view('admin.academic.faculty', compact('data'));
     }
     public function ClassSection()
     {
-        $data = ClassModel::where('user_id', auth()->user()->id)
+        $data = ClassModel::where('user_id', session('school_id'))
                 ->with('sections')
                 ->whereNull('batch_id')
                 ->get()->toArray();
@@ -209,14 +215,18 @@ class AcademicController extends Controller
     {
         // Get the currently authenticated user's ID
         $userId = auth()->id();
+        $schoolId = session('school_id');
 
         // Delete related data for the authenticated user
-        Faculty::where('user_id', $userId)->delete();
-        Batch::where('user_id', $userId)->delete();
-        ClassModel::where('user_id', $userId)->delete();
-        Section::where('user_id', $userId)->delete();
-        Department::where('user_id', $userId)->delete();
-        Position::where('user_id', $userId)->delete();
+        Staff::where('school_id', $schoolId)->delete();
+        Student::where('school_id', $schoolId)->delete();
+        User::where('parent_id', $schoolId)->delete();
+        Faculty::where('user_id', $schoolId)->delete();
+        Batch::where('user_id', $schoolId)->delete();
+        ClassModel::where('user_id', $schoolId)->delete();
+        Section::where('user_id', $schoolId)->delete();
+        Department::where('user_id', $schoolId)->delete();
+        Position::where('user_id', $schoolId)->delete();
 
         // Optionally, you can add a success message or redirect
         return redirect()->back()->with('success', 'Your data has been erased successfully.');
@@ -226,24 +236,28 @@ class AcademicController extends Controller
     {
         // Get the currently authenticated user's ID
         $userId = auth()->id();
+        $schoolId = session('school_id');
 
         // Add faculties using Eloquent ORM
         $faculties = [
             [
-                'user_id' => $userId,
+                'user_id' => $schoolId,
                 'title' => 'CSIT',
+                'added_by' => $userId,
             ],
             [
-                'user_id' => $userId,
+                'user_id' => $schoolId,
                 'title' => 'BSW',
+                'added_by' => $userId,
             ],
             [
-                'user_id' => $userId,
+                'user_id' => $schoolId,
                 'title' => 'BIM',
+                'added_by' => $userId,
             ]
         ];
 
-        Faculty::insert(array_map(function ($faculty) use ($userId) {
+        Faculty::insert(array_map(function ($faculty) use ($schoolId) {
             return array_merge($faculty, ['created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
         }, $faculties));
 
@@ -251,9 +265,10 @@ class AcademicController extends Controller
         $facultyIds = Faculty::pluck('id');
         foreach ($facultyIds as $facultyId) {
             Batch::create([
-                'user_id' => $userId,
+                'user_id' => $schoolId,
                 'title' => '2080',
                 'faculty_id' => $facultyId,
+                'added_by' => $userId,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);
@@ -263,9 +278,10 @@ class AcademicController extends Controller
         $batchIds = Batch::pluck('id');
         foreach ($batchIds as $batchId) {
             ClassModel::create([
-                'user_id' => $userId,
+                'user_id' => $schoolId,
                 'title' => $batchId === 1 ? '1st Semester' : '2nd Semester', // Adjust titles based on batch_id
                 'batch_id' => $batchId,
+                'added_by' => $userId,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);
@@ -273,17 +289,19 @@ class AcademicController extends Controller
 
         // Add two more records with null batch_id using Eloquent ORM
         ClassModel::create([
-            'user_id' => $userId,
+            'user_id' => $schoolId,
             'title' => '1',
             'batch_id' => null,
+            'added_by' => $userId,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
 
         ClassModel::create([
-            'user_id' => $userId,
+            'user_id' => $schoolId,
             'title' => '2',
             'batch_id' => null,
+            'added_by' => $userId,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
@@ -292,7 +310,7 @@ class AcademicController extends Controller
         $classes = ClassModel::pluck('id');
         foreach ($classes as $classId) {
             Section::create([
-                'user_id' => $userId,
+                'user_id' => $schoolId,
                 'title' => $classId === 1 ? 'A' : 'B', // Adjust titles based on class_id
                 'class_id' => $classId,
                 'created_at' => Carbon::now(),
@@ -301,11 +319,11 @@ class AcademicController extends Controller
         }
 
         $departments = [
-            ['user_id' => $userId, 'title' => 'Science'],
-            ['user_id' => $userId, 'title' => 'Mathematics'],
-            ['user_id' => $userId, 'title' => 'Arts'],
-            ['user_id' => $userId, 'title' => 'Sports'],
-            ['user_id' => $userId, 'title' => 'Computer Science'],
+            ['user_id' => $schoolId, 'title' => 'Science','added_by' => $userId],
+            ['user_id' => $schoolId, 'title' => 'Mathematics','added_by' => $userId],
+            ['user_id' => $schoolId, 'title' => 'Arts','added_by' => $userId],
+            ['user_id' => $schoolId, 'title' => 'Sports','added_by' => $userId],
+            ['user_id' => $schoolId, 'title' => 'Computer Science','added_by' => $userId],
         ];
 
         foreach ($departments as $dept) {
@@ -313,15 +331,93 @@ class AcademicController extends Controller
         }
 
         $positions = [
-            ['user_id' => $userId, 'title' => 'Principal'],
-            ['user_id' => $userId, 'title' => 'Vice Principal'],
-            ['user_id' => $userId, 'title' => 'Teacher'],
-            ['user_id' => $userId, 'title' => 'Accountant'],
-            ['user_id' => $userId, 'title' => 'Clerk'],
+            ['user_id' => $schoolId, 'title' => 'Principal','added_by' => $userId],
+            ['user_id' => $schoolId, 'title' => 'Vice Principal','added_by' => $userId],
+            ['user_id' => $schoolId, 'title' => 'Teacher','added_by' => $userId],
+            ['user_id' => $schoolId, 'title' => 'Accountant','added_by' => $userId],
+            ['user_id' => $schoolId, 'title' => 'Clerk','added_by' => $userId],
         ];
 
         foreach ($positions as $pos) {
             Position::create($pos);
+        }
+
+        // Fetch departments and positions for the logged-in school (user_id = auth()->id())
+        $departments = Department::where('user_id', $schoolId)->get();
+        $positions = Position::where('user_id', $schoolId)->get();
+        
+        // Instantiate Faker to generate Nepali names
+        $faker = Faker::create('ne_NP'); // Nepali locale for names
+        // dd($faker->phoneNumber);
+        // Populate staff table (10 staff entries)
+        foreach (range(1, 10) as $index) {
+            // Create staff user
+            $staffUser = User::create([
+                'name' => $faker->name,  // Generate Nepali name
+                'email' => $faker->unique()->safeEmail,  // Generate unique email
+                'password' => bcrypt('secret'),  // Set password as 'secret'
+                'avatar' => null,  // Avatar can be null
+                'user_type_id' => 3,  // Staff user type
+                'phone' => $faker->phoneNumber,  // Generate phone number
+                'parent_id' => $schoolId,  // Set parent_id as the authenticated school ID
+                'added_by' => $userId,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+            // Randomly assign department and position
+            $department = $departments->random();
+            $position = $positions->random();
+
+            // Create staff record
+            Staff::create([
+                'school_id' => $schoolId,  // Set school_id as the authenticated school ID
+                'user_id' => $staffUser->id,  // Link user_id with the staff user
+                'name' => $staffUser->name,  // Staff name
+                'department_id' => $department->id,  // Assign department_id
+                'position_id' => $position->id,  // Assign position_id
+                'gender' => $faker->randomElement([0, 1, 2]),  // Randomly assign gender
+                'joined_date' => now(),
+                'address' => $faker->address,  // Generate address
+                'added_by' => $userId,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+        }
+
+        // Fetch the first class and section for the students (you can modify this as per your logic)
+        $class = ClassModel::where('user_id', $userId)->first();
+        $section = Section::where('class_id', $class->id)->first();
+
+        // Populate student table (5 students as an example)
+        foreach (range(1, 5) as $index) {
+            // Create student user
+            $studentUser = User::create([
+                'name' => $faker->name,  // Generate Nepali name
+                'email' => $faker->unique()->safeEmail,  // Generate unique email
+                'password' => bcrypt('secret'),  // Set password as 'secret'
+                'avatar' => null,  // Avatar can be null
+                'user_type_id' => 4,  // Student user type
+                'phone' => $faker->phoneNumber,  // Generate phone number
+                'parent_id' => $schoolId,  // Set parent_id as the authenticated school ID
+                'added_by' => $userId,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+            // Create student record
+            Student::create([
+                'school_id' => $schoolId,  // Set school_id as the authenticated school ID
+                'user_id' => $studentUser->id,  // Link user_id with the student user
+                'name' => $studentUser->name,  // Student name
+                'gender' => $faker->randomElement([0, 1, 2]),  // Randomly assign gender
+                'address' => $faker->address,  // Generate address
+                'class_id' => $class->id,  // Assign class_id from the first class
+                'section_id' => $section->id,  // Assign section_id
+                'added_by' => $userId,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
         }
 
         // Optionally, you can add a success message or redirect

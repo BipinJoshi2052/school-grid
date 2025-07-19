@@ -52,8 +52,8 @@ class DepartmentController extends Controller
     
     public function partial()
     {
-        $departments = Department::with('user')->orderBy('id','desc')->get();
-        return view('admin.academic.departments..department-partial', compact('departments'));
+        $departments = Department::where('user_id',auth()->id())->orderBy('id','desc')->get();
+        return view('admin.academic.departments.department-partial', compact('departments'));
     }
 
     public function saveEntity(Request $request)

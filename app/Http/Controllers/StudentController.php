@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Student;
 
 class StudentController extends Controller
 {
@@ -13,7 +14,8 @@ class StudentController extends Controller
      */
     public function index()
     {
-        return view('admin.student.index');
+        $students = Student::where('user_id',auth()->id())->with('user')->orderBy('id','desc')->get();
+        return view('admin.student.index',compact('students'));
     }
 
     /**
@@ -34,7 +36,8 @@ class StudentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $student = Student::create($request->all());
+        return response()->json($student, 201);
     }
 
     /**
@@ -45,7 +48,8 @@ class StudentController extends Controller
      */
     public function show($id)
     {
-        //
+        $student = Student::findOrFail($id);
+        return response()->json($student);
     }
 
     /**
@@ -68,7 +72,9 @@ class StudentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $student = Student::findOrFail($id);
+        $student->update($request->all());
+        return response()->json($student);
     }
 
     /**
@@ -79,6 +85,8 @@ class StudentController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $student = Student::findOrFail($id);
+        $student->delete();
+        return response()->json(null, 204);
     }
 }

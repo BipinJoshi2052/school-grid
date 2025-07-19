@@ -129,6 +129,7 @@
                     }
                 });
             }
+            
             function loadPositions() {
                 $('.spinner-div-position').show();
                 $.ajax({
