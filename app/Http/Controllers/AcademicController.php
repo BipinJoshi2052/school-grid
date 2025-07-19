@@ -220,7 +220,7 @@ class AcademicController extends Controller
         // Delete related data for the authenticated user
         Staff::where('school_id', $schoolId)->delete();
         Student::where('school_id', $schoolId)->delete();
-        User::where('user_type_id', '!=','2')->delete();
+        User::where('parent_id', $schoolId)->delete();
         Faculty::where('user_id', $schoolId)->delete();
         Batch::where('user_id', $schoolId)->delete();
         ClassModel::where('user_id', $schoolId)->delete();
