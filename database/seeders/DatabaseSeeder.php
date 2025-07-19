@@ -16,12 +16,12 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserTypeSeeder::class,
             UserSeeder::class,
-            FacultySeeder::class,
-            BatchSeeder::class,
-            ClassSeeder::class,
-            SectionSeeder::class,
-            DepartmentSeeder::class,
-            PositionSeeder::class,
+            // FacultySeeder::class,
+            // BatchSeeder::class,
+            // ClassSeeder::class,
+            // SectionSeeder::class,
+            // DepartmentSeeder::class,
+            // PositionSeeder::class,
             // StaffSeeder::class,
             // StudentSeeder::class
         ]);
