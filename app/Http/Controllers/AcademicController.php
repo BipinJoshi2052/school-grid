@@ -217,7 +217,7 @@ class AcademicController extends Controller
         // Get the currently authenticated user's ID
         $userId = auth()->id();
         $schoolId = session('school_id');
-        dd($schoolId);
+        // dd($schoolId);
         // dd(User::where('parent_id', $schoolId)->get());
         if (!$userId) {
             return response()->json(['error' => 'User ID is not authenticated.']);
