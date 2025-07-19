@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use App\Helpers\HelperFile;
 use App\Models\Batch;
+use App\Models\Building;
 use App\Models\ClassModel;
 use App\Models\Department;
 use App\Models\Faculty;
@@ -216,11 +217,13 @@ class AcademicController extends Controller
         // Get the currently authenticated user's ID
         $userId = auth()->id();
         $schoolId = session('school_id');
+        // dd(User::where('parent_id', $schoolId)->get());
 
         // Delete related data for the authenticated user
         Staff::where('school_id', $schoolId)->delete();
         Student::where('school_id', $schoolId)->delete();
         User::where('parent_id', $schoolId)->delete();
+        Building::where('user_id', $schoolId)->delete();
         Faculty::where('user_id', $schoolId)->delete();
         Batch::where('user_id', $schoolId)->delete();
         ClassModel::where('user_id', $schoolId)->delete();
