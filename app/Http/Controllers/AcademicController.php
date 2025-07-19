@@ -258,7 +258,10 @@ class AcademicController extends Controller
         ];
 
         Faculty::insert(array_map(function ($faculty) use ($schoolId) {
-            return array_merge($faculty, ['created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
+            return array_merge($faculty, [
+            'user_id' => $schoolId,
+            'created_at' => Carbon::now(), 
+            'updated_at' => Carbon::now()]);
         }, $faculties));
 
         // Add batches using Eloquent ORM
