@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -15,9 +16,11 @@ class BuildingSeeder extends Seeder
      */
     public function run()
     {
+
+        $user = User::where('user_type_id', 2)->first();
         DB::table('buildings')->insert([
             [
-                'user_id' => 2,
+                'user_id' => $user->id,
                 'name' => 'Building 1',
                 'rooms' => json_encode([
                     ['title' => 'Room 1', 'benches' => 2, 'seats' => 3],
@@ -28,7 +31,7 @@ class BuildingSeeder extends Seeder
                 'updated_at' => Carbon::now()
             ],
             [
-                'user_id' => 2,
+                'user_id' => $user->id,
                 'name' => 'Building 2',
                 'rooms' => json_encode([
                     ['title' => 'Room 1', 'benches' => 2, 'seats' => 3],
