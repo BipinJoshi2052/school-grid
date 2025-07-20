@@ -17869,3 +17869,18 @@ strong {
 .modal-content{
   border-radius: 15px;
 }
+td, th {
+    padding: 8px;
+    word-wrap: break-word; /* This forces long text to wrap instead of causing overflow */
+    overflow-wrap: break-word; /* Ensures long words will break to the next line if needed */
+    text-overflow: ellipsis; /* Shows '...' when text overflows */
+    max-width: 180px; /* Optional: you can set a max-width for columns to prevent excessive width */
+    white-space: normal; /* Ensures text wraps */
+    text-align: left; /* Optional: text alignment */
+}
+
+@media (max-width: 768px) {
+    td button{  
+      margin-bottom: 5px;
+    }
+}

@@ -17,6 +17,7 @@
             text-align: center;
             margin-top: 40px;
         }
+        /* Styling for table cells */
     </style>
 @endsection
 

@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use App\Mail\SendOTP;
+use App\Models\InstitutionDetail;
+use App\Models\Registration;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
@@ -77,9 +80,76 @@ class RegisterController extends Controller
             'password' => Hash::make($data['password']),
         ]);
     }
-
     public function register(Request $request)
     {
+        // Validate incoming data
+        $this->validate($request, [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'phone' => 'required|string|max:100',
+            'institution' => 'required|string|max:250',
+            'password' => 'required|string|min:6|confirmed',
+            'usingMIS' => 'required',
+            'hearAbout' => 'required',
+        ]);
+
+        // Create the registration record
+        $registration = Registration::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->countryCode.$request->phone,
+            'institution_name' => $request->institution,
+            'hearAbout' => $request->hearAbout, // assuming hearAbout is passed
+            'usingMIS' => $request->usingMIS == 'yes' ? 1 : 0,
+        ]);
+
+        $clientIp = $request->getClientIp();
+        $userAgent = $request->header('User-Agent');
+        $data = [
+            'ip' => $clientIp,
+            'user_agent' => $userAgent
+        ];
+        // Create the user record
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'last_access_date' => Carbon::now(),
+            'last_access_from' => json_encode($data), // store IP of the user
+        ]);
+
+        // Create the institution details record
+        InstitutionDetail::create([
+            'user_id' => $user->id,
+            'client_id' => 'some-client-id', // Adjust as needed
+            'institution_name' => $request->institution,
+            'registration_id' => $registration->id, // Link registration to institution details
+            'expiration_date' => Carbon::now()->addDays(15), // 15 days expiration
+        ]);
+
+        // Generate OTP
+        $otp = rand(100000, 999999);
+        // Send OTP via email
+        Mail::to($user->email)->send(new SendOTP($otp));
+
+        // Store OTP and email for OTP verification
+        $user->otp = $otp;
+        $user->save();
+
+        // Store email in session for later use in the OTP verification page
+        Session::put('email', $user->email);
+
+        return redirect()->route('otp.verify');
+
+        // Return response
+        // return response()->json([
+        //     'success' => true,
+        //     'message' => 'Registration successful!',
+        // ]);
+    }
+    public function register2(Request $request)
+    {
+        dd('asdf');
         $this->validate($request, [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',

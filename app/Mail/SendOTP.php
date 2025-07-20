@@ -30,7 +30,7 @@ class SendOTP extends Mailable
     {
         // return $this->view('view.name');
          return $this->view('emails.otp')  // This is where the email view will go
-                    ->subject('Your OTP Verification Code')
+                    ->subject('EduSched - Registration')
                     ->with('otp', $this->otp);
     }
 }

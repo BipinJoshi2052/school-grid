@@ -245,38 +245,68 @@
                             $('#positions-tab').trigger('click'); // reload positions
                             toastr.success('Position updated');
                         }
+                    },
+                    error: function(xhr, status, error) {
+                        toastr.error(`Error : ${error}`);  // Show error message with Toastr
+                        console.error(`Error :`, error);
                     }
                 });
             });
 
             // Delete Department
             $(document).on('click', '.deleteDepartmentBtn', function () {
-                if (confirm('Are you sure?')) {
-                    let id = $(this).data('id');
-                    $.ajax({
-                        url: "{{ url('departments') }}/" + id,
-                        method: 'DELETE',
-                        data: { _token: "{{ csrf_token() }}" },
-                        success: function () {
-                            loadDepartments();
-                        }
-                    });
-                }
+                let id = $(this).data('id');
+                Swal.fire({
+                    title: "Delete Department ?",
+                    text: `This is irreversible.`,
+                    icon: "info",
+                    buttons: ["Cancel", "Delete"],
+                    dangerMode: false,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: "{{ url('departments') }}/" + id,
+                            method: 'DELETE',
+                            data: { _token: "{{ csrf_token() }}" },
+                            success: function () {
+                                loadDepartments();
+                                toastr.success('Department has been deleted.');
+                            },
+                            error: function(xhr, status, error) {
+                                toastr.error(`Error : ${error}`);  // Show error message with Toastr
+                                console.error(`Error :`, error);
+                            }
+                        });
+                    }
+                });
             });
 
             // Delete Department
             $(document).on('click', '.deletePositionBtn', function () {
-                if (confirm('Are you sure?')) {
-                    let id = $(this).data('id');
-                    $.ajax({
-                        url: "{{ url('positions') }}/" + id,
-                        method: 'DELETE',
-                        data: { _token: "{{ csrf_token() }}" },
-                        success: function () {
-                            loadPositions();
-                        }
-                    });
-                }
+                let id = $(this).data('id');
+                Swal.fire({
+                    title: "Delete Position ?",
+                    text: `This is irreversible.`,
+                    icon: "info",
+                    buttons: ["Cancel", "Delete"],
+                    dangerMode: false,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: "{{ url('positions') }}/" + id,
+                            method: 'DELETE',
+                            data: { _token: "{{ csrf_token() }}" },
+                            success: function () {
+                                loadPositions();
+                                toastr.success('Position has been deleted.');
+                            },
+                            error: function(xhr, status, error) {
+                                toastr.error(`Error : ${error}`);  // Show error message with Toastr
+                                console.error(`Error :`, error);
+                            }
+                        });
+                    }
+                });
             });
         });
     </script>

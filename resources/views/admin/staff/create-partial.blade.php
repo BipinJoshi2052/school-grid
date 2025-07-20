@@ -29,8 +29,9 @@
 
     .form-content {
         display: flex;
-        gap: 40px;
+        /* gap: 40px; */
         align-items: flex-start;
+        padding: 10px;
     }
 
     .avatar-section {
@@ -215,7 +216,9 @@
     @media (max-width: 768px) {
         .form-content {
             flex-direction: column;
-            gap: 30px;
+            /* gap: 30px; */
+            text-align: center;
+            align-items: center;
         }
         
         .avatar-section {
@@ -333,10 +336,10 @@
 
     <div class="form-actions">
         <button type="submit" class="btn btn-submit">
-            ✅ Create Staff Member
+            ✅ Create
         </button>
         <button type="reset" class="btn btn-reset">
-            🔄 Reset Form
+            🔄 Reset
         </button>
     </div>
 </form>
@@ -351,6 +354,9 @@
             const removeBtn = $('#removeBtn');
             const staffForm = $('#staffForm');
 
+            $('#joinedDate').on('click', function() {
+                this.showPicker();
+            });
             // Handle avatar upload
             uploadBtn.on('click', function() {
                 avatarInput.click();

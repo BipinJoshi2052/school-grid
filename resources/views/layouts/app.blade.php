@@ -64,7 +64,7 @@
 
       @guest
         <a class="btn-getstarted" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#exampleModal">
-          Login / Register
+          Login
         </a>
       @endguest
 
@@ -94,9 +94,9 @@
             <li class="nav-item w-50">
               <a class="nav-link active" id="login-tab" data-bs-toggle="tab" href="#login" role="tab" aria-controls="login" aria-selected="true">Login</a>
             </li>
-            <li class="nav-item w-50">
+            {{-- <li class="nav-item w-50">
               <a class="nav-link" id="register-tab" data-bs-toggle="tab" href="#register" role="tab" aria-controls="register" aria-selected="false">Register</a>
-            </li>
+            </li> --}}
           </ul>
         </div>
         <div class="modal-body">
@@ -104,7 +104,7 @@
           <div class="tab-content" id="modalTabContent">
             <!-- Login Tab -->
             <div class="tab-pane fade show active" id="login" role="tabpanel" aria-labelledby="login-tab">
-              <h5>Login to Your Account</h5>
+              {{-- <h5>Login to Your Account</h5> --}}
               <p>Welcome back! Please enter your credentials to access your account.</p>
               <form id="loginForm">
                 <div class="mb-3">
@@ -116,12 +116,13 @@
                   <input type="password" class="form-control" id="password" required>
                 </div>
                 <button type="submit" class="btn btn-primary w-100">Log in</button>
+                <p style="text-align: center;margin-top:5px;">New Here ? <a href="{{ route('register') }}">Register</a> </p>
               </form>
               <div id="loginError" class="mt-3 text-danger" style="display: none;"></div> <!-- Error div for login -->
             </div>
 
             <!-- Register Tab -->
-            <div class="tab-pane fade" id="register" role="tabpanel" aria-labelledby="register-tab">
+            {{-- <div class="tab-pane fade" id="register" role="tabpanel" aria-labelledby="register-tab">
               <h5>Create Your Account</h5>
               <p>Sign up now and start using our service.</p>
               <form id="registerForm">
@@ -144,7 +145,7 @@
                 <button type="submit" class="btn btn-primary w-100">Sign Up</button>
               </form>
               <div id="registerError" class="mt-3 text-danger" style="display: none;"></div> <!-- Error div for register -->
-            </div>
+            </div> --}}
           </div>
         </div>
       </div>
