@@ -169,7 +169,7 @@ transform: translateY(-2px);
 
         <!-- Content -->
         <div style="padding: 40px 30px;text-align: center;" class="content">
-<div style="font-size: 20px;color: #333;margin-bottom: 20px;font-weight: 600;" class="greeting">Hello John Doe!</div>
+<div style="font-size: 20px;color: #333;margin-bottom: 20px;font-weight: 600;" class="greeting">Welcome to EduSched!</div>
 
 <div style="font-size: 16px;color: #666;margin-bottom: 30px;line-height: 1.7;" class="message">
     Thank you for registering with <strong>EduShed</strong> - your smart exam seating solution. 
