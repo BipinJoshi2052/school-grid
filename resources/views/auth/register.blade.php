@@ -340,12 +340,16 @@
             margin-bottom: 5px;
             border-radius: 5px;
         }
+        .link-to-home{
+            text-decoration: none;
+            color: white;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="left-panel">
-            <h1><b>Edu</b>Sched</h1>
+            <h1><a class="link-to-home" href="{{ route('home') }}"><b>Edu</b>Sched</a></h1>
             <h2>Smart Exam Seating Solutions</h2>
             
             <div class="benefit">
