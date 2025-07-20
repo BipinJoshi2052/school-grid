@@ -480,7 +480,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="hearAbout" class="required">Where did you hear about us?</label>
+                    <label for="hearAbout" class="required">How did you come across our service?</label>
                     <select id="hearAbout" name="hearAbout" class="form-control">
                         <option value="">Select an option</option>
                         <option value="google">Google Search</option>
@@ -494,7 +494,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="required">Are you using any school MIS (School Management Software)?</label>
+                    <label class="required">Are you using any software for managing your school operations?</label>
                     <div class="radio-group">
                         <div class="radio-option">
                             <input type="radio" id="misYes" name="usingMIS" value="yes">
