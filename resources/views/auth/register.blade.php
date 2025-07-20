@@ -470,7 +470,7 @@
                 <div class="form-group">
                     <label for="confirmPassword" class="required">Confirm Password</label>
                     <div class="password-input-wrapper">
-                        <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
+                        <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password" placeholder="Confirm your password" required>
                         {{-- <input type="password" id="confirmPassword" name="password_confirmation" class="form-control password-input" placeholder="Confirm your password" required> --}}
                         {{-- <input type="password" id="password-confirm" name="password_confirmation" class="form-control password-input" placeholder="Confirm your password"> --}}
                         <button type="button" class="password-toggle" onclick="togglePassword('password-confirm')">
