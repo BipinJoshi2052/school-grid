@@ -24,16 +24,50 @@ class StaffController extends Controller
         return view('admin.staff.index');
     }
 
-    public function listPartial(){
+    public function listPartial(Request $request) {
+        // Get the search term from the request
+        $searchTerm = $request->get('search')['value'] ?? '';  // DataTables sends the search term in search[value]
 
-        $users = Staff::where('school_id',session('school_id'))
+        // Pagination parameters
+        $page = $request->get('page', 1);  // Default page is 1
+        $perPage = 10; // Number of items per page
+
+        // Build the query to filter data
+        $query = Staff::where('school_id', session('school_id'))
                         ->with('user')
                         ->with('department')
                         ->with('position')
-                        ->orderBy('id','desc')
-                        ->get();
-        return view('admin.staff.index-partial', compact('users'));
+                        ->orderBy('id', 'desc');
+
+        // Apply the search filter if a search term is provided
+        if ($searchTerm) {
+            $query->where(function ($q) use ($searchTerm) {
+                $q->whereHas('user', function ($query) use ($searchTerm) {
+                    $query->where('name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('email', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('phone', 'like', '%' . $searchTerm . '%');
+                })
+                ->orWhereHas('department', function ($query) use ($searchTerm) {
+                    $query->where('title', 'like', '%' . $searchTerm . '%');
+                })
+                ->orWhereHas('position', function ($query) use ($searchTerm) {
+                    $query->where('title', 'like', '%' . $searchTerm . '%');
+                });
+            });
+        }
+
+        // Paginate the results
+        $users = $query->paginate($perPage);
+
+        // Return the response in JSON format for DataTables
+        return response()->json([
+            'draw' => $request->get('draw'),
+            'recordsTotal' => $users->total(),
+            'recordsFiltered' => $users->total(), // Since we're not using a separate filtered count, this is the same as recordsTotal
+            'data' => $users->items()  // Return the paginated data
+        ]);
     }
+
     
     public function createPartial(){
         $departments = Department::select('id','title')->where('user_id',session('school_id'))->get();

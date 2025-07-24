@@ -51,12 +51,30 @@
             <div class="col-sm-12 col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        <div class="spinner-div spinner-div-staff">
+                        {{-- <div class="spinner-div spinner-div-staff">
                             <div class="spinner-border text-primary" role="status">
                                 <span class="sr-only">Loading...</span>
                             </div>
-                        </div>
+                        </div> --}}
                         <div id="staff-container">
+
+                        <div class="table-responsive">
+                            <table id="staffTable" class="table border table-striped table-bordered text-nowrap" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Phone</th>
+                                        <th>Department</th>
+                                        <th>Position</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
 
                         </div>
                     </div>
@@ -92,23 +110,84 @@
     <script src="{{ asset('admin//dist/js/pages/datatable/datatable-basic.init.js')}}"></script>
 
     <script>
+            var table;
         $(document).ready(function () {
             // Load Departments on Page Load
-            loadStaffs();
+            // loadStaffs(1);
 
-            function loadStaffs() {
-                $('.spinner-div-staff').show();
-                $.ajax({
-                    url: "{{ route('staffs.list-partial') }}", // Create a route for this
-                    type: 'GET',
-                    success: function (data) {
-                        setTimeout(() => {
-                            $('.spinner-div-staff').hide();
-                            $('#staff-container').html(data);                            
-                        }, 300);
+            // function loadStaffs(page = 1) {
+            //     $('.spinner-div-staff').show();
+            //     $.ajax({
+            //         url: "{{ route('staffs.list-partial') }}", // Create a route for this
+            //         type: 'POST',
+            //         data: { 
+            //             page: page 
+            //         },
+            //         processData: false, 
+            //         contentType: false,
+            //         headers: {  
+            //             'X-CSRF-TOKEN': "{{ csrf_token() }}"
+            //         },
+            //         success: function (data) {
+            //             setTimeout(() => {
+            //                 $('.spinner-div-staff').hide();
+            //                 $('#staff-container').html(data);                            
+            //             }, 300);
+            //         }
+            //     });
+            // }
+
+            table = $('#staffTable').DataTable({
+                "paging": true, // Enable pagination
+                "pageLength": 10, // Number of rows per page (adjust as needed)
+                "lengthChange": false, // Disable page length change (optional)
+                "info": true, // Show information like "Showing 1 to 10 of X entries"
+                "ordering": true, // Enable column sorting
+                "processing": true, // Show processing indicator when data is being loaded
+                "searching": true, // Enable the search box
+                "serverSide": true, // Enable server-side processing if you're handling pagination on the server
+                "ajax": {
+                    "url": "{{ route('staffs.list-partial') }}", // The route to get the staff data
+                    "type": "GET",
+                    "data": function(d) {
+                        // Pass the 'draw' parameter (required by DataTables)
+                        d.page = Math.ceil(d.start / d.length) + 1; // Calculate page number based on DataTable's start/length
+                    },
+                    "dataSrc": function (json) {
+                        // You can process data here if needed, but DataTables expects the following structure:
+                        return json.data;
                     }
-                });
-            }
+                },
+                "columns": [
+                    {
+                        data: null,
+                        render: function(data, type, row, meta) {
+                            // Calculate the global row number
+                            return meta.row + 1 + meta.settings._iDisplayStart;
+                        },
+                        orderable: false
+                    },
+                    { "data": "user.name" },
+                    { "data": "user.email" },
+                    { "data": "user.phone" },
+                    { "data": "department.title" },
+                    { "data": "position.title" },
+                    {
+                        "data": null,
+                        "render": function(data, type, row) {
+                            return `<button class="btn btn-primary btn-sm editStaffBtn" data-id="${row.id}">Edit</button>
+                                    <button class="btn btn-danger btn-sm deleteStaffBtn" data-id="${row.user_id}">Delete</button>`;
+                        }
+                    }
+                ]
+            });
+
+            // When pagination link is clicked
+            // $(document).on('click', '.pagination-link', function(e) {
+            //     e.preventDefault();
+            //     var page = $(this).data('page');
+            //     loadStaffs(page);
+            // });
 
             $(document).on('click', '#createStaffBtn', function () {
                 $('#entityModalTitle').html('Create Staff');
@@ -147,6 +226,7 @@
             // Edit Position
             $(document).on('click', '.deleteStaffBtn', function () {
                 const userId = $(this).data('id'); // Get the user ID from data-id attribute
+                var page = table.page();  // Get the current page index (zero-based)
                 
                 // Show confirmation dialog
                 Swal.fire({
@@ -170,7 +250,12 @@
                             success: function(response) {
                                 // On success, show success message
                                 toastr.success('Staff has been deleted.');
-                                loadStaffs();
+                                // loadStaffs(page);
+                                // Preserve the search term when reloading the table data
+                                var searchValue = table.search();  // Get current search term
+                                table.ajax.reload(function() {
+                                    table.search(searchValue).draw();  // Apply the previous search term
+                                }, false);  // `false` to prevent page reset
                             },
                             error: function(xhr, status, error) {
                                 // If error, show an error message

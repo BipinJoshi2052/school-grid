@@ -328,7 +328,8 @@
             <div class="form-row">
                 <div class="form-group full-width">
                     <label class="form-label" for="address">Address</label>
-                    <textarea id="address" name="address" class="form-textarea" placeholder="Enter full address..."></textarea>
+                    <input type="text" id="address" name="address" class="form-input" placeholder="Enter full address...">
+                    {{-- <textarea id="address" name="address" class="form-textarea" placeholder="Enter full address..."></textarea> --}}
                 </div>
             </div>
         </div>
@@ -463,7 +464,7 @@
                             // submitBtn.text(originalText).prop('disabled', false);
                             toastr.success('Staff created successfully!');
                             $('#entityModal').modal('hide');
-                            loadStaffs(); // Refresh the staff list
+                            table.ajax.reload(null, false);
                         },
                         error: function(xhr) {
                             // $('.spinner-div-staff').hide();
@@ -477,19 +478,19 @@
                 }
             });
 
-            function loadStaffs() {
-                $('.spinner-div-staff').show();
-                $.ajax({
-                    url: "{{ route('staffs.list-partial') }}", // Create a route for this
-                    type: 'GET',
-                    success: function (data) {
-                        setTimeout(() => {
-                            $('.spinner-div-staff').hide();
-                            $('#staff-container').html(data);                            
-                        }, 300);
-                    }
-                });
-            }
+            // function loadStaffs() {
+            //     $('.spinner-div-staff').show();
+            //     $.ajax({
+            //         url: "{{ route('staffs.list-partial') }}", // Create a route for this
+            //         type: 'GET',
+            //         success: function (data) {
+            //             setTimeout(() => {
+            //                 $('.spinner-div-staff').hide();
+            //                 $('#staff-container').html(data);                            
+            //             }, 300);
+            //         }
+            //     });
+            // }
             // Handle form reset
             staffForm.on('reset', function() {
                 setTimeout(() => {

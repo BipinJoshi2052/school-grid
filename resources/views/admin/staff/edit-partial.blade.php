@@ -326,9 +326,10 @@
             <div class="form-row">
                 <div class="form-group full-width">
                     <label class="form-label" for="address">Address</label>
-                    <textarea id="address" name="address" class="form-textarea" placeholder="Enter full address...">
+                    <input type="text" id="address" name="address" class="form-input" placeholder="Enter full address..." value="{{ nl2br(e($staff->address)) }}">
+                    {{-- <textarea id="address" name="address" class="form-textarea" placeholder="Enter full address...">
                           {{ nl2br(e($staff->address)) }}
-                    </textarea>
+                    </textarea> --}}
                 </div>
             </div>
         </div>
@@ -429,6 +430,7 @@
             // Handle form submission
             staffForm.on('submit', function(e) {
                 e.preventDefault();
+                page = table.page();  // Get the current page index (zero-based)
                 
                 if (validateForm()) {
                     // Get form data
@@ -472,7 +474,12 @@
                             // submitBtn.text(originalText).prop('disabled', false);
                             toastr.success('Staff updated successfully!');
                             $('#entityModal').modal('hide');
-                            loadStaffs(); // Refresh the staff list
+                            // loadStaffs(page); // Refresh the staff list
+                            // Preserve the search term when reloading the table data
+                            var searchValue = table.search();  // Get current search term
+                            table.ajax.reload(function() {
+                                table.search(searchValue).draw();  // Apply the previous search term
+                            }, false);  // `false` to prevent page reset
                         },
                         error: function(xhr) {
                             // $('.spinner-div-staff').hide();
@@ -482,20 +489,20 @@
                 }
             });
 
-            function loadStaffs() {
-                $('.spinner-div-staff').show();
-                $.ajax({
-                    url: "{{ route('staffs.list-partial') }}", // Create a route for this
-                    type: 'GET',
-                    success: function (data) {
-                        setTimeout(() => {
-                            $('.spinner-div-staff').hide();
-                            $('#staff-container').html(data);                            
-                        }, 300);
-                    }
-                });
-            }
-            
+            // function loadStaffs() {
+            //     $('.spinner-div-staff').show();
+            //     $.ajax({
+            //         url: "{{ route('staffs.list-partial') }}", // Create a route for this
+            //         type: 'GET',
+            //         success: function (data) {
+            //             setTimeout(() => {
+            //                 $('.spinner-div-staff').hide();
+            //                 $('#staff-container').html(data);                            
+            //             }, 300);
+            //         }
+            //     });
+            // }
+
             // Handle form reset
             staffForm.on('reset', function() {
                 setTimeout(() => {
