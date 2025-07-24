@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\HelperFile;
 use App\Models\Department;
 use App\Models\Position;
 use App\Models\Staff;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class StaffController extends Controller
 {
@@ -22,15 +25,14 @@ class StaffController extends Controller
     }
 
     public function listPartial(){
+
         $users = Staff::where('school_id',session('school_id'))
                         ->with('user')
                         ->with('department')
                         ->with('position')
                         ->orderBy('id','desc')
                         ->get();
-                        // dd($users->toArray());
         return view('admin.staff.index-partial', compact('users'));
-
     }
     
     public function createPartial(){
@@ -45,7 +47,9 @@ class StaffController extends Controller
      */
     public function create()
     {
-        //
+        $departments = Department::select('id','title')->where('user_id',session('school_id'))->get();
+        $positions = Position::select('id','title')->where('user_id',session('school_id'))->get();
+        return view('admin.staff.create-partial', compact('departments','positions'));
     }
 
     /**
@@ -73,7 +77,7 @@ class StaffController extends Controller
             'department_id' => 'required|exists:departments,id',
             'position_id' => 'required|exists:positions,id',
         ]);
-// dd('here');
+        // dd('here');
         try{
             // Create the user first
             $user = User::create([
@@ -81,7 +85,7 @@ class StaffController extends Controller
                 'email' => $request->email,
                 'password' => bcrypt('secret'),  // Set password as 'secret'
                 'phone' => $request->phone,
-                'avatar' => $this->uploadAvatar($request), // Handle avatar upload
+                'avatar' => HelperFile::uploadFile($request,'avatars/staff'), // Handle avatar upload
                 'parent_id' => session('school_id'),
                 'user_type_id' => 3, // Staff
                 'added_by' => auth()->id(),
@@ -94,6 +98,7 @@ class StaffController extends Controller
                 'user_id' => $user->id,
                 'department_id' => $request->department_id,
                 'position_id' => $request->position_id,
+                'address' => $request->address,
                 'gender' => $request->gender,
                 'joined_date' => $request->joined_date,
                 'added_by' => auth()->id(),
@@ -105,30 +110,32 @@ class StaffController extends Controller
         return response()->json(['success' => true, 'staff' => $staff]);
     }
 
-    protected function uploadAvatar($request)
-    {
-        if ($request->hasFile('avatar')) {
-            // Get the school ID from the session
-            $schoolId = session('school_id');
+    // protected function uploadAvatar($request,$path)
+    // {
+    //     if ($request->hasFile('avatar')) {
+    //         // Get the school ID from the session
+    //         $schoolId = session('school_id');
             
-            // Define the folder path inside 'public' storage
-            $folderPath = "avatars/{$schoolId}/staff";
+    //         // Define the folder path inside 'public' storage
+    //         $folderPath = "{$schoolId}/avatars/staff";
 
-            // Create the folder if it does not exist
-            $storagePath = storage_path("app/public/{$folderPath}");
-            if (!file_exists($storagePath)) {
-                mkdir($storagePath, 0777, true);  // Creates the folder and subfolders if they don't exist
-            }
+    //         // Create the folder if it does not exist
+    //         $storagePath = storage_path("app/public/{$folderPath}");
+            
+    //         if (!file_exists($storagePath)) {
+    //             mkdir($storagePath, 0777, true);  // Creates the folder and subfolders if they don't exist
+    //         }
 
-            // Store the file in the defined path
-            $avatarPath = $request->file('avatar')->store($folderPath, 'public');
+    //         // Store the file in the defined path
+    //         $avatarPath = $request->file('avatar')->store($folderPath, 'public');
+    //         Log::info('Avatar stored at: ' . $avatarPath);
+    //         // dd($avatarPath);
 
-            return $avatarPath;
-        }
+    //         return $avatarPath;
+    //     }
 
-        return null;
-    }
-
+    //     return null;
+    // }
 
     /**
      * Display the specified resource.
@@ -150,7 +157,14 @@ class StaffController extends Controller
      */
     public function edit($id)
     {
-        //
+        $staff = Staff::where('school_id',session('school_id'))
+                        ->where('id',$id)
+                        // ->with('user')
+                        ->first();
+        // dd($staff);
+        $departments = Department::select('id','title')->where('user_id',session('school_id'))->get();
+        $positions = Position::select('id','title')->where('user_id',session('school_id'))->get();
+        return view('admin.staff.edit-partial', compact('staff','departments','positions'));
     }
 
     /**
@@ -162,10 +176,60 @@ class StaffController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $staff = Staff::findOrFail($id);
-        $staff->update($request->all());
-        return response()->json($staff);
+        // Start a transaction for the update process
+        // echo 'asdfasdfasdfasfd';
+        // dd($request->all());
+        DB::beginTransaction();
+
+        try {
+            // Find the staff record
+            $staff = Staff::findOrFail($id);
+
+            // Find the associated user based on the user_id in the staff table
+            $user = User::findOrFail($staff->user_id);
+            $old_avatar = $user->avatar;
+
+            // Update the user's table with the new data
+        // dd($this->uploadAvatar($request));
+            $user->update([
+                'name' => $request->input('name'),
+                'email' => $request->input('email'),
+                // 'avatar' => $this->uploadAvatar($request),
+                'avatar' => $request->hasFile('avatar') ? HelperFile::uploadFile($request,'avatars/staff') : $user->avatar,  // Update avatar if a new one is uploaded
+                'phone' => $request->input('phone'),
+            ]);
+
+            // Update the staff's table with the new data
+            $staff->update([
+                'name' => $request->input('name'),
+                'department_id' => $request->input('department_id'),
+                'position_id' => $request->input('position_id'),
+                'gender' => $request->input('gender'),
+                'joined_date' => $request->input('joined_date'),
+                'address' => $request->input('address'),
+            ]);
+
+            // Check if the staff already has an avatar, and delete it if it exists
+            if ($old_avatar && file_exists(storage_path('app/public/' . $old_avatar))) {
+                // Delete the old avatar image from the storage
+                unlink(storage_path('app/public/' . $old_avatar));
+            }
+
+            // Commit the transaction after both user and staff updates
+            DB::commit();
+
+            // Return the updated staff record as a JSON response
+            return response()->json($staff);
+        } catch (\Exception $e) {
+            // Rollback in case of an error
+            DB::rollBack();
+
+            // Return error response
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
     }
+
+
 
     /**
      * Remove the specified resource from storage.
@@ -175,8 +239,43 @@ class StaffController extends Controller
      */
     public function destroy($id)
     {
-        $staff = Staff::findOrFail($id);
-        $staff->delete();
-        return response()->json(null, 204);
+        DB::beginTransaction();  // Start a transaction
+
+        try {
+            // Find the staff record
+            $staff = Staff::where('user_id',$id)->first();
+            
+            // Get the user associated with this staff
+            $user = User::where('id',$id)->first();
+
+            // Delete the user record first
+            $userDeleted = $user ? $user->delete() : true;
+
+            // Delete the staff record
+            $staffDeleted = $staff->delete();
+
+            // Check if both deletions were successful
+            if ($userDeleted && $staffDeleted) {
+                // Now delete the avatar image after the deletions are successful
+                if ($user && $user->avatar) {
+                    $avatarPath = storage_path('app/public/' . $user->avatar);  // Get the avatar path
+                    if (file_exists($avatarPath)) {
+                        unlink($avatarPath);  // Delete the avatar image file
+                    }
+                }
+
+                DB::commit();  // Commit the transaction if everything was successful
+                return response()->json(null, 204);  // Return success response
+            } else {
+                DB::rollBack();  // Rollback if any deletion failed
+                return response()->json(['message' => 'Error deleting staff or user'], 500);
+            }
+        } catch (\Exception $e) {
+            // Rollback in case of any exception
+            DB::rollBack();
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
     }
+
+
 }

@@ -73,6 +73,11 @@
                     <h5 class="modal-title" id="entityModalTitle">Create Staff</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
+                {{-- <div class="spinner-div spinner-div-edit-staff">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div> --}}
                 <div class="modal-body create-form">
 
                 </div>
@@ -106,14 +111,15 @@
             }
 
             $(document).on('click', '#createStaffBtn', function () {
+                $('#entityModalTitle').html('Create Staff');
                 $.ajax({
-                    url: "{{ route('staffs.create-partial') }}", // Create a route for this
+                    url: "{{ route('staffs.create') }}", // Create a route for this
                     type: 'GET',
                     success: function (data) {
-                        setTimeout(() => {
-                            $('.spinner-div-staff').hide();
-                            $('.create-form').html(data);                            
-                        }, 300);
+                        // setTimeout(() => {
+                        // $('.spinner-div-edit-staff').hide();
+                        $('.create-form').html(data);                            
+                        // }, 300);
                     }
                 });
                 $('#entityModal').modal('show');
@@ -122,23 +128,59 @@
             // Edit Department
             $(document).on('click', '.editStaffBtn', function () {
                 let id = $(this).data('id');
-                console.log('object')
+                $('#entityModalTitle').html('Edit Staff');
+
+                $.ajax({
+                    url: "{{ route('staffs.edit', ':id') }}".replace(':id', id), // Create a route for this
+                    type: 'GET',
+                    success: function (data) {
+                        // setTimeout(() => {
+                        // $('.spinner-div-edit-staff').hide();
+                        $('.create-form').html(data);                         
+                        // }, 300);
+                    }
+                });
+                $('#entityModal').modal('show');
+                // console.log('object')
             });
 
             // Edit Position
             $(document).on('click', '.deleteStaffBtn', function () {
+                const userId = $(this).data('id'); // Get the user ID from data-id attribute
+                
+                // Show confirmation dialog
                 Swal.fire({
-                    title: "Delete Staff ?",
-                    text: `This is irreversible.`,
+                    title: "Delete Staff?",
+                    text: "This is irreversible.",
                     icon: "info",
-                    buttons: ["Cancel", "Delete"],
-                    dangerMode: false,
+                    showCancelButton: true,  // Show Cancel button
+                    confirmButtonText: "Delete",
+                    cancelButtonText: "Cancel",
+                    dangerMode: true,
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        toastr.success('Staff has been deleted.')
+                        // Make AJAX request to delete staff and user
+                        $.ajax({
+                            url: '/staffs/' + userId,  // URL to your destroy route
+                            method: 'DELETE',
+                            data: { 
+                                id: userId,
+                                '_token': '{{ csrf_token() }}'
+                            },  // Send the user ID
+                            success: function(response) {
+                                // On success, show success message
+                                toastr.success('Staff has been deleted.');
+                                loadStaffs();
+                            },
+                            error: function(xhr, status, error) {
+                                // If error, show an error message
+                                toastr.error('An error occurred. Please try again.');
+                            }
+                        });
                     }
                 });
             });
+
         });
     </script>
 @endsection

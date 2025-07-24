@@ -20,4 +20,9 @@ class Position extends Model
     {
         return $this->belongsTo(User::class, 'added_by', 'id')->select(['id', 'name', 'user_type_id']);
     }
+    
+    public function staff()
+    {
+        return $this->hasMany(Staff::class, 'position_id');
+    }
 }

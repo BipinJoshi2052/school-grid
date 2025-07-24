@@ -24,7 +24,7 @@
                         <td>{{ $user->position->title }}</td>
                         <td>
                             <button class="btn btn-primary btn-sm editStaffBtn" data-id="{{ $user->id }}">Edit</button>
-                            <button class="btn btn-danger btn-sm deleteStaffBtn" data-id="{{ $user->id }}">Delete</button>
+                            <button class="btn btn-danger btn-sm deleteStaffBtn" data-id="{{ $user->user_id }}">Delete</button>
                         </td>
                     </tr>
                 @endforeach                

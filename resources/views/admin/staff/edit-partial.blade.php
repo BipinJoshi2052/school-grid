@@ -1,32 +1,4 @@
 <style>
-    /* .form-container {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        border-radius: 20px;
-        padding: 40px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        width: 100%;
-        max-width: 900px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-    } */
-
-    /* .form-header {
-        text-align: center;
-        margin-bottom: 40px;
-    }
-
-    .form-header h1 {
-        color: #2c3e50;
-        font-size: 2.5rem;
-        font-weight: 600;
-        margin-bottom: 10px;
-    }
-
-    .form-header p {
-        color: #7f8c8d;
-        font-size: 1.1rem;
-    } */
-
     .form-content {
         display: flex;
         /* gap: 40px; */
@@ -245,13 +217,38 @@
         to { opacity: 1; transform: translateY(0); }
     }
 </style>
-<form id="staffForm">
+<form id="staffEditForm">
     <div class="form-content">
         <div class="avatar-section">
             <div class="avatar-container" id="avatarContainer">
-                <div class="avatar-placeholder" id="avatarPlaceholder">👤</div>
-                <img id="avatarPreview" class="avatar-preview" style="display: none;" alt="Avatar Preview">
+                <?php
+                    // Get the avatar path from the database
+                    $avatarPath = $staff->user->avatar;
+                    // echo 'avatarPath = '.$avatarPath;
+                    
+                    // Check if the avatar exists in the storage folder
+                    $avatarFilePath = storage_path('app/public/' . $avatarPath); // Path inside storage directory
+                    $avatarUrl = null;
+                    // echo 'avatarPath = '.$avatarPath;
+                    // echo 'avatarFilePath = '.file_exists($avatarFilePath);
+                    // If the file exists, generate the URL for the avatar
+                    if ($avatarPath && file_exists($avatarFilePath)) {
+                        $avatarUrl = asset('storage/' . $avatarPath); // Generate URL to display image
+                    // echo $avatarUrl;
+                    }
+                ?>
+                
+                <!-- Avatar placeholder, shown if avatar is not available -->
+                <div class="avatar-placeholder" id="avatarPlaceholder" style="<?= $avatarUrl ? 'display: none;' : ''; ?>">👤</div>
+                
+                <!-- Avatar preview image -->
+                <img id="avatarPreview" src="<?= $avatarUrl ?>" class="avatar-preview" style="<?= $avatarUrl ? 'display: block;' : 'display: none;' ?>" alt="Avatar Preview">
             </div>
+
+            {{-- <div class="avatar-container" id="avatarContainer">
+                <div class="avatar-placeholder" id="avatarPlaceholder">👤</div>
+                <img id="avatarPreview" src="{{ asset('storage/' . $staff->user->avatar) }}" class="avatar-preview" style="display: none;" alt="Avatar Preview">
+            </div> --}}
             <div class="avatar-actions">
                 <button type="button" class="btn btn-primary" id="uploadBtn">
                     📷 Upload Photo
@@ -263,7 +260,8 @@
                     🗑️ Remove
                 </button>
             </div>
-            <input type="file" id="avatarInput" accept="image/*">
+            {{-- <input type="hidden" id="old_avatar" value="{{ $staff->user->avatar }}"> --}}
+            <input type="file" id="avatarInput" accept="image/*" >
         </div>
 
         <div class="form-section">
@@ -272,27 +270,27 @@
                     <label class="form-label" for="name">
                         Full Name <span class="required">*</span>
                     </label>
-                    <input type="text" id="name" name="name" class="form-input" required>
+                    <input type="text" id="name" name="name" class="form-input" value="{{ $staff->name }}" required>
                     <div class="error-message" id="nameError">Please enter a valid name</div>
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="email">Email Address</label>
-                    <input type="email" id="email" name="email" class="form-input">
+                    <input type="email" id="email" name="email" class="form-input" value="{{ $staff->user->email }}">
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label" for="phone">Phone Number</label>
-                    <input type="tel" id="phone" name="phone" class="form-input">
+                    <input type="tel" id="phone" name="phone" class="form-input" value="{{ $staff->user->phone }}">
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="gender">Gender</label>
                     <select id="gender" name="gender" class="form-select">
-                        <option value="">Select Gender</option>
-                        <option value="0">Male</option>
-                        <option value="1">Female</option>
-                        <option value="2">Other</option>
+                        <option {{ ($staff->gender == '' || $staff->gender == null) ? 'selected' : '' }} value="">Select Gender</option>
+                        <option {{ ($staff->gender == 0) ? 'selected' : '' }} value="0">Male</option>
+                        <option {{ ($staff->gender == 1) ? 'selected' : '' }} value="1">Female</option>
+                        <option {{ ($staff->gender == 2) ? 'selected' : '' }} value="2">Other</option>
                     </select>
                 </div>
             </div>
@@ -303,7 +301,7 @@
                     <select id="departmentId" name="department_id" class="form-select">
                         <option value="">Select Department</option>
                         @foreach ($departments as $department)
-                            <option value="{{ $department->id }}">{{ $department->title }}</option>
+                            <option {{ ($staff->department_id == $department->id) ? 'selected' : '' }} value="{{ $department->id }}">{{ $department->title }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -312,7 +310,7 @@
                     <select id="positionId" name="position_id" class="form-select">
                         <option value="">Select Position</option>
                         @foreach ($positions as $position)
-                            <option value="{{ $position->id }}">{{ $position->title }}</option>
+                            <option {{ ($staff->position_id == $position->id) ? 'selected' : '' }}  value="{{ $position->id }}">{{ $position->title }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -321,14 +319,16 @@
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label" for="joinedDate">Joined Date</label>
-                    <input type="date" id="joinedDate" name="joined_date" class="form-input">
+                    <input type="date" id="joinedDate" name="joined_date" class="form-input" value="{{ $staff->joined_date }}">
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group full-width">
                     <label class="form-label" for="address">Address</label>
-                    <textarea id="address" name="address" class="form-textarea" placeholder="Enter full address..."></textarea>
+                    <textarea id="address" name="address" class="form-textarea" placeholder="Enter full address...">
+                          {{ nl2br(e($staff->address)) }}
+                    </textarea>
                 </div>
             </div>
         </div>
@@ -336,7 +336,7 @@
 
     <div class="form-actions">
         <button type="submit" class="btn btn-submit">
-            ✅ Create
+            ✅ Update
         </button>
         <button type="reset" class="btn btn-reset">
             🔄 Reset
@@ -352,7 +352,7 @@
             const uploadBtn = $('#uploadBtn');
             const editBtn = $('#editBtn');
             const removeBtn = $('#removeBtn');
-            const staffForm = $('#staffForm');
+            const staffForm = $('#staffEditForm');
 
             $('#joinedDate').on('click', function() {
                 this.showPicker();
@@ -425,6 +425,8 @@
             }
 
             // Handle form submission
+           
+            // Handle form submission
             staffForm.on('submit', function(e) {
                 e.preventDefault();
                 
@@ -439,29 +441,36 @@
                     formData.append('joined_date', $('#joinedDate').val());
                     formData.append('department_id', $('#departmentId').val());
                     formData.append('position_id', $('#positionId').val());
-                    
+                    // formData.append('old_avatar', $('#old_avatar').val());
+                    // console.log(avatarInput[0].files[0])
+
                     if (avatarInput[0].files[0]) {
                         formData.append('avatar', avatarInput[0].files[0]);
                     }
-                    
-                    formData.append('_token', "{{ csrf_token() }}");
+                    formData.append('_token', "{{ csrf_token() }}");  // Append CSRF token to form data
 
                     // Simulate form submission
                     const submitBtn = $('.btn-submit');
                     const originalText = submitBtn.text();
                     
-                    submitBtn.text('Creating...').prop('disabled', true);
-
+                    var staffId = '{{$staff->id}}';
+                    submitBtn.text('Updating...').prop('disabled', true); 
+                    // for (var pair of formData.entries()) {
+                    //     console.log(pair[0]+ ': ' + pair[1]);
+                    // }
                     $.ajax({
-                        url: "{{ route('staffs.store') }}",
+                        url: "{{ route('staff.update', '') }}/" + staffId,
                         type: 'POST',
+                        headers: {  
+                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                        },
                         data: formData,
-                        processData: false,
+                        processData: false, 
                         contentType: false,
                         success: function(response) {
                             // $('.spinner-div-edit-staff').show();
                             // submitBtn.text(originalText).prop('disabled', false);
-                            toastr.success('Staff created successfully!');
+                            toastr.success('Staff updated successfully!');
                             $('#entityModal').modal('hide');
                             loadStaffs(); // Refresh the staff list
                         },
@@ -470,10 +479,6 @@
                             toastr.error('There was an error while creating the staff.');
                         }
                     });
-                    
-                    // setTimeout(() => {
-                    //     alert('Staff member created successfully!');
-                    // }, 2000);
                 }
             });
 
@@ -490,6 +495,7 @@
                     }
                 });
             }
+            
             // Handle form reset
             staffForm.on('reset', function() {
                 setTimeout(() => {

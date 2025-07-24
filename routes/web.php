@@ -55,10 +55,12 @@ Route::middleware('auth')->group(function () {
     Route::resource('positions', PositionController::class);
 
     Route::get('/staffs/list-partial', [StaffController::class, 'listPartial'])->name('staffs.list-partial');
-    Route::get('/staffs/create-partial', [StaffController::class, 'createPartial'])->name('staffs.create-partial');
+    Route::post('staffs/update/{id}', [StaffController::class, 'update'])->name('staff.update');
     Route::resource('staffs', StaffController::class);
     Route::resource('students', StudentController::class);
-    
+    // Route::get('/staffs/create-partial', [StaffController::class, 'createPartial'])->name('staffs.create-partial');
+    // Route::post('/staff/{id}', [StaffController::class, 'update'])->name('staffs.update');
+
     Route::get('/import', [HomeController::class, 'import'])->name('import');
     Route::get('/seat-plan', [HomeController::class, 'seatPlan'])->name('seat-plan');
     // Route::get('/students', [StudentController::class, 'partial'])->name('positions.partial');
@@ -67,8 +69,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/populate-data', [AcademicController::class, 'populateData'])->name('populate-data');
     
 
-    Route::resource('staff', StaffController::class);
-    Route::resource('students', StudentController::class);
+    // Route::resource('staff', StaffController::class);
+    // Route::resource('students', StudentController::class);
 });
 
 
