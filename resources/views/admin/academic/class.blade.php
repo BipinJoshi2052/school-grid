@@ -19,10 +19,13 @@ Class & Section
             margin-left: auto;
         }
         .card-header {
-            background-color: #f8f9fc;
+            background: linear-gradient(to right, #8971ea, #7f72ea, #7574ea, #6a75e9, #5f76e8);
             border-bottom: 1px solid #e3e6f0;
             padding: 1rem 1.25rem;
-            background: #d1d3f0;
+            /* background: #d1d3f0; */
+        }
+        .class-item .card-header .level-indicator{
+            color: white;
         }
         .nested-item {
             margin-left: 20px;
@@ -106,7 +109,7 @@ Class & Section
             margin-right: 0.5rem;
         }
         .search-div{
-            background: #d1d3f0;
+            background: linear-gradient(to right, #8971ea, #7f72ea, #7574ea, #6a75e9, #5f76e8);
             padding: 5px 10px 5px 5px;
             border-radius: 5px;
         }

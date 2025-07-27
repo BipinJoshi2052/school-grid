@@ -18,11 +18,14 @@
             margin-right: auto;
             margin-left: auto;
         }
+        .faculty-add-btn{
+            background: linear-gradient(to right, #8971ea, #7f72ea, #7574ea, #6a75e9, #5f76e8);
+        }
         .card-header {
-            background-color: #f8f9fc;
+            /* background-color: #f8f9fc; */
             border-bottom: 1px solid #e3e6f0;
             padding: 1rem 1.25rem;
-            background: #d1d3f0;
+            background: linear-gradient(to right, #8971ea, #7f72ea, #7574ea, #6a75e9, #5f76e8);
         }
         .nested-item {
             margin-left: 20px;
@@ -31,7 +34,7 @@
             margin-bottom: 0.5rem;
         }
         .batch-item {
-            background-color: #f8f9fc;
+            background-color: #e8e9ec;
             border-radius: 0.25rem;
             padding: 0.75rem;
             margin-bottom: 0.5rem;
@@ -100,13 +103,16 @@
             display: flex;
             gap: 0.5rem;
         }
+        .faculty-card .card-header .level-indicator{
+            color: white;
+        }
         .level-indicator {
             font-size: 0.75rem;
             color: #6c757d;
             margin-right: 0.5rem;
         }
         .search-div{
-            background: #d1d3f0;
+            background: linear-gradient(to right, #8971ea, #7f72ea, #7574ea, #6a75e9, #5f76e8);
             padding: 5px 10px 5px 5px;
             border-radius: 5px;
         }
@@ -147,7 +153,7 @@
             <div class="col-sm-12 col-lg-12">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <!-- Add Faculty Button centered -->
-                    <button class="btn btn-primary mx-auto" onclick="addFaculty()">
+                    <button class="btn btn-primary mx-auto faculty-add-btn" onclick="addFaculty()">
                         <i class="fas fa-plus me-2"></i>
                         Add Faculty
                     </button>

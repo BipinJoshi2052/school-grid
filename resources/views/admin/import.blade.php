@@ -7,7 +7,7 @@
 @section('styles')
     <style>
         .header {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: linear-gradient(135deg, #8971ea 0%, #c4b7f4 100%);
             color: white;
             padding: 30px;
             text-align: center;
