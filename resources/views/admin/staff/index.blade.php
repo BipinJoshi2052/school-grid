@@ -170,8 +170,20 @@
                     { "data": "user.name" },
                     { "data": "user.email" },
                     { "data": "user.phone" },
-                    { "data": "department.title" },
-                    { "data": "position.title" },
+                    {
+                        "data": "department",
+                        "render": function(data, type, row) {
+                            // Check if the department exists before accessing its title
+                            return data && data.title ? data.title : ''; // Return empty if no department
+                        }
+                    },
+                    {
+                        "data": "position",
+                        "render": function(data, type, row) {
+                            // Check if the position exists before accessing its title
+                            return data && data.title ? data.title : ''; // Return empty if no position
+                        }
+                    },
                     {
                         "data": null,
                         "render": function(data, type, row) {
