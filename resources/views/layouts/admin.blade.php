@@ -10,7 +10,7 @@
     <meta name="author" content="">
     <!-- Favicon icon -->
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon.ico') }}">
-    <title>EduSched - @yield('title')</title>
+    <title>SeatPlan-Pro - @yield('title')</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Custom CSS -->
     <link href="{{ asset('admin/assets/extra-libs/c3/c3.min.css') }}" rel="stylesheet">

@@ -154,7 +154,7 @@
 
                     <!-- Search bar aligned to the right -->
                     <div class="d-flex align-items-center search-div">
-                        <input type="text" id="facultySearch" class="form-control" placeholder="Search Class" onkeyup="searchFaculty()" style="width: 200px;">
+                        <input type="text" id="facultySearch" class="form-control" placeholder="Search Faculty" onkeyup="searchFaculty()" style="width: 200px;">
                         <i class="fas fa-search ms-2"></i>
                     </div>
                 </div>

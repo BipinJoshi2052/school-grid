@@ -58,23 +58,23 @@
                         </div> --}}
                         <div id="staff-container">
 
-                        <div class="table-responsive">
-                            <table id="staffTable" class="table border table-striped table-bordered text-nowrap" style="width:100%">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Name</th>
-                                        <th>Email</th>
-                                        <th>Phone</th>
-                                        <th>Department</th>
-                                        <th>Position</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                            </table>
-                        </div>
+                            <div class="table-responsive">
+                                <table id="staffTable" class="table border table-striped table-bordered text-nowrap" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Phone</th>
+                                            <th>Department</th>
+                                            <th>Position</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
 
                         </div>
                     </div>
@@ -139,22 +139,22 @@
 
             table = $('#staffTable').DataTable({
                 "paging": true, // Enable pagination
-                "pageLength": 10, // Number of rows per page (adjust as needed)
-                "lengthChange": false, // Disable page length change (optional)
-                "info": true, // Show information like "Showing 1 to 10 of X entries"
-                "ordering": true, // Enable column sorting
-                "processing": true, // Show processing indicator when data is being loaded
+                "lengthChange": true, // Enable the length menu (10/20/30/all)
+                "pageLength": 10, // Default number of rows per page
+                "lengthMenu": [10, 20, 30], // Show options for 10, 20, 30, and All
+                "info": true, // Show information about the number of entries
+                "ordering": true, // Enable sorting
+                "processing": true, // Show a processing indicator while loading data
                 "searching": true, // Enable the search box
-                "serverSide": true, // Enable server-side processing if you're handling pagination on the server
+                "serverSide": true, // Enable server-side processing
                 "ajax": {
                     "url": "{{ route('staffs.list-partial') }}", // The route to get the staff data
                     "type": "GET",
                     "data": function(d) {
-                        // Pass the 'draw' parameter (required by DataTables)
-                        d.page = Math.ceil(d.start / d.length) + 1; // Calculate page number based on DataTable's start/length
+                        d.page = Math.ceil(d.start / d.length) + 1;  // Pass page number to the server
+                        d.pageLength = d.length; // Send the selected length to the server
                     },
-                    "dataSrc": function (json) {
-                        // You can process data here if needed, but DataTables expects the following structure:
+                    "dataSrc": function(json) {
                         return json.data;
                     }
                 },

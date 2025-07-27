@@ -126,8 +126,9 @@ class AcademicController extends Controller
             $class = ClassModel::create([
                 'id' => $postData['id'],
                 'title' => $postData['title'],
-                'user_id' => $postData['user_id'],
+                'user_id' => session('school_id'),
                 'batch_id' => isset($postData['batch_id']) ? $postData['batch_id'] : null,
+                'added_by' => auth()->id(),
                 'created_at' => $postData['created_at'],
                 'updated_at' => $postData['updated_at'],
             ]);
@@ -139,8 +140,9 @@ class AcademicController extends Controller
             $section = Section::create([
                 'id' => $postData['id'],
                 'title' => $postData['title'],
-                'user_id' => $postData['user_id'],
+                'user_id' => session('school_id'),
                 'class_id' => $postData['class_id'],
+                'added_by' => auth()->id(),
                 'created_at' => $postData['created_at'],
                 'updated_at' => $postData['updated_at'],
             ]);
@@ -152,7 +154,8 @@ class AcademicController extends Controller
             $faculty = Faculty::create([
                 'id' => $postData['id'],
                 'title' => $postData['title'],
-                'user_id' => $postData['user_id'],
+                'user_id' => session('school_id'),
+                'added_by' => auth()->id(),
                 'created_at' => $postData['created_at'],    
                 'updated_at' => $postData['updated_at'],
             ]);
@@ -165,7 +168,8 @@ class AcademicController extends Controller
                 'id' => $postData['id'],
                 'title' => $postData['title'],
                 'faculty_id' => $postData['faculty_id'], // Assuming faculty_id is part of the batch model
-                'user_id' => $postData['user_id'],
+                'user_id' => session('school_id'),
+                'added_by' => auth()->id(),
                 'created_at' => $postData['created_at'],
                 'updated_at' => $postData['updated_at'],
             ]);

@@ -57,9 +57,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/staffs/list-partial', [StaffController::class, 'listPartial'])->name('staffs.list-partial');
     Route::post('staffs/update/{id}', [StaffController::class, 'update'])->name('staff.update');
     Route::resource('staffs', StaffController::class);
+
+    Route::get('/students/list-partial', [StudentController::class, 'listPartial'])->name('students.list-partial');
+    Route::get('/students/get-list', [StudentController::class, 'getList'])->name('students.get-list');
+    Route::get('/get-batches/{facultyId}', [StudentController::class, 'getBatches']);
+    Route::get('/get-classes/{batchId}', [StudentController::class, 'getClasses']);
+    Route::get('/get-sections/{classId}', [StudentController::class, 'getSections']);
+    Route::get('/get-classes-without-batch', [StudentController::class, 'getClassesWithoutBatch']);
     Route::resource('students', StudentController::class);
-    // Route::get('/staffs/create-partial', [StaffController::class, 'createPartial'])->name('staffs.create-partial');
-    // Route::post('/staff/{id}', [StaffController::class, 'update'])->name('staffs.update');
+    Route::post('students/update/{id}', [StudentController::class, 'update'])->name('students.update');
 
     Route::get('/import', [HomeController::class, 'import'])->name('import');
     Route::get('/seat-plan', [HomeController::class, 'seatPlan'])->name('seat-plan');

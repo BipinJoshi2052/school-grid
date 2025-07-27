@@ -30,7 +30,7 @@ class StaffController extends Controller
 
         // Pagination parameters
         $page = $request->get('page', 1);  // Default page is 1
-        $perPage = 10; // Number of items per page
+        $perPage = $request->get('pageLength', 10);  // Use the pageLength parameter to get the number of items per page
 
         // Build the query to filter data
         $query = Staff::where('school_id', session('school_id'))
