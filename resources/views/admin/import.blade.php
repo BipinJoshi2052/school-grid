@@ -6,8 +6,187 @@
 
 @section('styles')
     <style>
+        .help-button {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: rgb(19 30 148);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .help-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .help-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .help-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .help-header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .help-header h2 {
+            color: #4facfe;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .help-section {
+            margin-bottom: 30px;
+        }
+
+        .help-section h3 {
+            color: #333;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #4facfe;
+            padding-bottom: 5px;
+        }
+
+        .help-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .help-list li {
+            background: #f8f9fa;
+            margin-bottom: 8px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+
+        .help-list li.required {
+            border-left-color: #dc3545;
+            background: #fff5f5;
+        }
+
+        .help-list li.optional {
+            border-left-color: #ffc107;
+            background: #fffbf0;
+        }
+
+        .download-sample {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin: 20px 0;
+        }
+
+        .download-sample:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(40, 167, 69, 0.4);
+            text-decoration: none;
+            color: white;
+        }
+
+        .close-help {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: #999;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-help:hover {
+            color: #333;
+        }
+
+        .validation-progress {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .validation-errors {
+            display: none;
+            background: #f8d7da;
+            border: 2px solid #f5c6cb;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .validation-errors h4 {
+            color: #721c24;
+            margin-bottom: 15px;
+        }
+
+        .error-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .error-list li {
+            background: white;
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            border-left: 4px solid #dc3545;
+            color: #721c24;
+        }
+
+        .status-info {
+            background: #e7f3ff;
+            border: 2px solid #b3d9ff;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            color: #0056b3;
+        }
+
         .header {
-            background: linear-gradient(135deg, #8971ea 0%, #c4b7f4 100%);
+            background: linear-gradient(to right, #8971ea, #7f72ea, #7574ea, #6a75e9, #5f76e8);
+            /* background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); */
             color: white;
             padding: 30px;
             text-align: center;
@@ -352,6 +531,9 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="header">
+                            <div class="help-button" onclick="showHelp()" title="Help & Instructions">
+                                ?
+                            </div>
                             <h1>CSV Upload & Mapping System</h1>
                             <p>Upload your CSV file and map the columns to our system</p>
                         </div>
@@ -374,6 +556,14 @@
 
                         <div class="mapping-section">
                             <div class="validation-message" id="validationMessage"></div>
+                            <div class="validation-progress">
+                                <div class="loading-spinner"></div>
+                                <div class="loading-text" id="validationText">Validating Data...</div>
+                            </div>
+                            <div class="validation-errors" id="validationErrors">
+                                <h4>❌ Validation Errors Found:</h4>
+                                <ul class="error-list" id="errorList"></ul>
+                            </div>
                             
                             <div class="mapping-container">
                                 <div class="column csv-headings">
@@ -389,7 +579,7 @@
 
                             <div class="action-buttons">
                                 <button class="btn btn-secondary" onclick="resetSystem()">Reset</button>
-                                <button class="btn btn-primary" onclick="validateAndUpload()">Validate & Upload</button>
+                                <button class="btn btn-primary" onclick="validateData()">Validate Data</button>
                             </div>
 
                             <div class="upload-progress">
@@ -402,6 +592,71 @@
 
                         <div class="success-message" id="successMessage"></div>
                     </div>
+
+                    <!-- Help Modal -->
+                    <div class="help-modal" id="helpModal">
+                        <div class="help-content">
+                            <button class="close-help" onclick="hideHelp()">&times;</button>
+                            <div class="help-header">
+                                <h2>📋 CSV Import Instructions</h2>
+                                <p>Learn how to properly format and import your data</p>
+                            </div>
+
+                            <div class="help-section">
+                                <h3>🎯 How It Works</h3>
+                                <p>Our system allows you to import data from any CSV file format. You don't need to worry about having exact column names - simply map your CSV columns to our system requirements and we'll handle the rest!</p>
+                            </div>
+
+                            <div class="help-section">
+                                <h3>📊 Required vs Optional Columns</h3>
+                                <ul class="help-list">
+                                    <li class="required"><strong>Name</strong> - Full name of the person (Required)</li>
+                                    <li class="required"><strong>Email</strong> - Valid email address (Required)</li>
+                                    <li class="optional"><strong>Phone</strong> - Phone number (Optional)</li>
+                                    <li class="optional"><strong>Status</strong> - Employee status (Optional)</li>
+                                    <li class="optional"><strong>Department</strong> - Work department (Optional)</li>
+                                    <li class="optional"><strong>Position</strong> - Job position/title (Optional)</li>
+                                    <li class="optional"><strong>Gender</strong> - Gender information (Optional)</li>
+                                    <li class="optional"><strong>Joined Date</strong> - Date of joining (Optional)</li>
+                                    <li class="optional"><strong>Address</strong> - Physical address (Optional)</li>
+                                </ul>
+                            </div>
+
+                            <div class="help-section">
+                                <h3>⚙️ Special Column Requirements</h3>
+                                <div class="status-info">
+                                    <strong>Status Column:</strong> Can contain values like:
+                                    <br>• <code>1</code> or <code>0</code> (Active/Inactive)
+                                    <br>• <code>yes</code> or <code>no</code> (Active/Inactive)
+                                    <br>• <code>active</code> or <code>inactive</code>
+                                </div>
+                                <div class="status-info">
+                                    <strong>Joined Date:</strong> Should be in valid date formats like:
+                                    <br>• <code>YYYY-MM-DD</code> (2024-01-15)
+                                    <br>• <code>MM/DD/YYYY</code> (01/15/2024)
+                                    <br>• <code>DD/MM/YYYY</code> (15/01/2024)
+                                </div>
+                            </div>
+
+                            <div class="help-section">
+                                <h3>📝 Step-by-Step Process</h3>
+                                <ol style="padding-left: 20px; color: #333;">
+                                    <li style="margin-bottom: 10px;"><strong>Upload:</strong> Choose your CSV file</li>
+                                    <li style="margin-bottom: 10px;"><strong>Map:</strong> Click on your CSV column, then click on the corresponding system column</li>
+                                    <li style="margin-bottom: 10px;"><strong>Validate:</strong> Click "Validate Data" to check for errors</li>
+                                    <li style="margin-bottom: 10px;"><strong>Import:</strong> If validation passes, data will be sent to our system</li>
+                                </ol>
+                            </div>
+
+                            <div class="help-section">
+                                <h3>📥 Sample File</h3>
+                                <p>Download our sample CSV file to see the correct format:</p>
+                                <button class="download-sample" onclick="downloadSample()">
+                                    📊 Download Sample CSV File
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -412,11 +667,39 @@
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.5.3/papaparse.min.js"></script>
     <script>
         // System configuration
-        const requiredHeadings = ['name', 'class_name', 'section_name'];
+        const requiredHeadings = ['Name', 'Email', 'Phone', 'Status', 'Department', 'Position', 'Gender', 'Joined Date', 'Address'];
+        const mandatoryHeadings = ['Name', 'Email'];
         let csvData = [];
         let csvHeadings = [];
         let mappings = {};
         let selectedCsvHeading = null;
+        let validationErrors = [];
+
+        // Sample data for download
+        const sampleData = [
+            {
+                'Name': 'John Doe',
+                'Email': 'john.doe@company.com',
+                'Phone': '+1-555-0123',
+                'Status': 'active',
+                'Department': 'Engineering',
+                'Position': 'Software Developer',
+                'Gender': 'Male',
+                'Joined Date': '2023-01-15',
+                'Address': '123 Main St, New York, NY 10001'
+            },
+            {
+                'Name': 'Jane Smith',
+                'Email': 'jane.smith@company.com',
+                'Phone': '+1-555-0456',
+                'Status': 'inactive',
+                'Department': 'Marketing',
+                'Position': 'Marketing Manager',
+                'Gender': 'Female',
+                'Joined Date': '2022-08-20',
+                'Address': '456 Oak Ave, Los Angeles, CA 90210'
+            }
+        ];
 
         // File input handling
         $('#fileInput').on('change', function(e) {
@@ -584,40 +867,142 @@
         }
 
         function updateValidation() {
-            const unmappedHeadings = requiredHeadings.filter(heading => !mappings[heading]);
+            const unmappedMandatory = mandatoryHeadings.filter(heading => !mappings[heading]);
             const validationMessage = $('#validationMessage');
             
-            if (unmappedHeadings.length === 0) {
+            if (unmappedMandatory.length === 0) {
+                const totalMapped = Object.keys(mappings).length;
                 validationMessage.removeClass('validation-error').addClass('validation-success');
-                validationMessage.text('All required headings have been mapped successfully!');
+                validationMessage.text(`✅ All required headings mapped! (${totalMapped}/${requiredHeadings.length} columns mapped)`);
                 validationMessage.show();
             } else {
                 validationMessage.removeClass('validation-success').addClass('validation-error');
-                validationMessage.text(`Please map the following headings: ${unmappedHeadings.join(', ')}`);
+                validationMessage.text(`❌ Please map required headings: ${unmappedMandatory.join(', ')}`);
                 validationMessage.show();
             }
         }
 
-        function validateAndUpload() {
-            const unmappedHeadings = requiredHeadings.filter(heading => !mappings[heading]);
+        function validateData() {
+            // Reset validation state
+            validationErrors = [];
+            hideMessages();
+            $('.validation-errors').hide();
             
-            if (unmappedHeadings.length > 0) {
-                showError(`Please map all required headings: ${unmappedHeadings.join(', ')}`);
+            // Check if mandatory headings are mapped
+            const unmappedMandatory = mandatoryHeadings.filter(heading => !mappings[heading]);
+            
+            if (unmappedMandatory.length > 0) {
+                showError(`Please map all required headings: ${unmappedMandatory.join(', ')}`);
                 return;
             }
 
+            // Show validation progress
+            $('.validation-progress').show();
+            $('#validationText').text('Validating Data...');
+
+            // Simulate validation delay
+            setTimeout(() => {
+                performDataValidation();
+            }, 1500);
+        }
+
+        function performDataValidation() {
+            validationErrors = [];
+
+            // Validate each row of data
+            csvData.forEach((row, index) => {
+                const rowNumber = index + 1;
+
+                // Check required fields
+                mandatoryHeadings.forEach(heading => {
+                    const csvColumn = mappings[heading];
+                    const value = row[csvColumn];
+                    
+                    if (!value || value.toString().trim() === '') {
+                        validationErrors.push(`Row ${rowNumber}: Missing required field '${heading}'`);
+                    }
+                });
+
+                // Validate email format
+                if (mappings['email']) {
+                    const email = row[mappings['email']];
+                    if (email && !isValidEmail(email)) {
+                        validationErrors.push(`Row ${rowNumber}: Invalid email format '${email}'`);
+                    }
+                }
+
+                // Validate phone format
+                if (mappings['phone']) {
+                    const phone = row[mappings['phone']];
+                    if (phone && !isValidPhone(phone)) {
+                        validationErrors.push(`Row ${rowNumber}: Invalid phone format '${phone}'`);
+                    }
+                }
+
+                // Validate date format
+                if (mappings['joined_date']) {
+                    const date = row[mappings['joined_date']];
+                    if (date && !isValidDate(date)) {
+                        validationErrors.push(`Row ${rowNumber}: Invalid date format '${date}' (use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY)`);
+                    }
+                }
+
+                // Validate status values
+                if (mappings['status']) {
+                    const status = row[mappings['status']];
+                    if (status && !isValidStatus(status)) {
+                        validationErrors.push(`Row ${rowNumber}: Invalid status '${status}' (use: active/inactive, yes/no, or 1/0)`);
+                    }
+                }
+            });
+
+            $('.validation-progress').hide();
+
+            if (validationErrors.length > 0) {
+                showValidationErrors();
+            } else {
+                showValidationSuccess();
+            }
+        }
+
+        function showValidationErrors() {
+            const errorList = $('#errorList');
+            errorList.empty();
+            
+            validationErrors.forEach(error => {
+                errorList.append(`<li>${error}</li>`);
+            });
+            
+            $('.validation-errors').show();
+        }
+
+        function showValidationSuccess() {
+            $('.validation-errors').hide();
+            $('#validationMessage').removeClass('validation-error').addClass('validation-success');
+            $('#validationMessage').text('✅ Data validation passed! Ready to upload.').show();
+            
+            // Change button to upload
+            $('.action-buttons').html(`
+                <button class="btn btn-secondary" onclick="resetSystem()">Reset</button>
+                <button class="btn btn-primary" onclick="uploadData()">Upload Data</button>
+            `);
+        }
+
+        function uploadData() {
             // Prepare data for upload
             const mappedData = csvData.map(row => {
                 const mappedRow = {};
                 Object.keys(mappings).forEach(requiredHeading => {
                     const csvHeading = mappings[requiredHeading];
-                    mappedRow[requiredHeading] = row[csvHeading];
+                    mappedRow[requiredHeading] = row[csvHeading] || '';
                 });
                 return mappedRow;
             });
 
             // Show upload progress
             $('.upload-progress').show();
+            $('#validationText').text('Sending Data to our server...');
+            $('.validation-progress').show();
             animateProgress();
 
             // Simulate upload to backend
@@ -626,8 +1011,99 @@
             }, 2000);
         }
 
+        // Validation helper functions
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email.toString().trim());
+        }
+
+        function isValidPhone(phone) {
+            const phoneStr = phone.toString().trim();
+            // Allow various phone formats
+            const phoneRegex = /^[\+]?[1-9][\d]{0,15}$|^[\+]?[(]?[\d\s\-\(\)]{10,}$/;
+            return phoneRegex.test(phoneStr.replace(/[\s\-\(\)]/g, ''));
+        }
+
+        function isValidDate(dateStr) {
+            const date = new Date(dateStr);
+            return date instanceof Date && !isNaN(date);
+        }
+
+        function isValidStatus(status) {
+            const statusStr = status.toString().toLowerCase().trim();
+            const validStatuses = ['active', 'inactive', 'yes', 'no', '1', '0', 'true', 'false'];
+            return validStatuses.includes(statusStr);
+        }
+
+        // Help modal functions
+        function showHelp() {
+            $('#helpModal').fadeIn(300);
+        }
+
+        function hideHelp() {
+            $('#helpModal').fadeOut(300);
+        }
+
+        // Download sample CSV
+        function downloadSample() {
+            window.location.href = '/download/sample';
+        }
+
+        // Close help modal when clicking outside
+        $(document).on('click', function(e) {
+            if ($(e.target).is('#helpModal')) {
+                hideHelp();
+            }
+        });
+
         function uploadToBackend(data) {
+            const backendUrl = '/import/staff';
+
+            $.ajax({
+                url: backendUrl,
+                method: 'POST',
+                data: JSON.stringify({
+                    data: data,
+                    mappings: mappings,
+                    originalHeadings: csvHeadings
+                }),
+                headers: {  
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                },
+                contentType: 'application/json',
+                success: function(response) {
+                    console.log('success')
+                    console.log(response)
+                    $('.upload-progress').hide();
+                    $('.validation-progress').hide();
+                    showSuccess(`🎉 Successfully uploaded ${response.imported} records to the system!`);
+                    setTimeout(() => {
+                        resetSystem();
+                    }, 3000);
+                },
+                error: function(xhr, status, error) {
+                    console.log('error')
+                    console.log(status)
+                    $('.upload-progress').hide();
+                    $('.validation-progress').hide();
+                    let errorMessage = 'Failed to upload data to server.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message.join(', ');
+                    } else if (xhr.responseText) {
+                        errorMessage = xhr.responseText;
+                    }
+                    showError(`❌ Upload failed: ${errorMessage}`);
+                }
+            });
+        }
+
+        function uploadToBackend2(data) {
             // Replace this URL with your actual backend endpoint
+            console.log([
+                data,
+                mappings,
+                csvHeadings
+            ])
             const backendUrl = '/api/upload-csv-data';
             
             $.ajax({
@@ -641,12 +1117,32 @@
                 contentType: 'application/json',
                 success: function(response) {
                     $('.upload-progress').hide();
-                    showSuccess(`Successfully uploaded ${data.length} records to the system!`);
+                    $('.validation-progress').hide();
+                    showSuccess(`🎉 Successfully uploaded ${data.length} records to the system!`);
+                    setTimeout(() => {
+                        resetSystem();
+                    }, 3000);
                 },
                 error: function(xhr, status, error) {
                     $('.upload-progress').hide();
-                    // For demo purposes, show success even on error
-                    showSuccess(`Successfully uploaded ${data.length} records to the system! (Demo mode)`);
+                    $('.validation-progress').hide();
+                    
+                    let errorMessage = 'Failed to upload data to server.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    } else if (xhr.responseText) {
+                        errorMessage = xhr.responseText;
+                    }
+                    
+                    showError(`❌ Upload failed: ${errorMessage}`);
+                    
+                    // For demo purposes, show success after error
+                    setTimeout(() => {
+                        showSuccess(`🎉 Demo mode: Successfully processed ${data.length} records!`);
+                        setTimeout(() => {
+                            resetSystem();
+                        }, 3000);
+                    }, 2000);
                 }
             });
         }
@@ -668,11 +1164,21 @@
             csvHeadings = [];
             mappings = {};
             selectedCsvHeading = null;
+            validationErrors = [];
             
             $('.mapping-section').hide();
             $('.upload-section').show();
             $('.loading-container').hide();
+            $('.validation-progress').hide();
+            $('.validation-errors').hide();
+            $('.upload-progress').hide();
             $('#fileInput').val('');
+            
+            // Reset action buttons
+            $('.action-buttons').html(`
+                <button class="btn btn-secondary" onclick="resetSystem()">Reset</button>
+                <button class="btn btn-primary" onclick="validateData()">Validate Data</button>
+            `);
             
             hideMessages();
         }
@@ -684,9 +1190,9 @@
 
         function showError(message) {
             $('#errorMessage').text(message).show();
-            setTimeout(() => {
-                $('#errorMessage').hide();
-            }, 5000);
+            // setTimeout(() => {
+            //     $('#errorMessage').hide();
+            // }, 10000);
         }
 
         function showSuccess(message) {

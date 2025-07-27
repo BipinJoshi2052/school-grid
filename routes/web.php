@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ImportController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\SeatPlanController;
 use App\Http\Controllers\StaffController;
@@ -67,7 +68,10 @@ Route::middleware('auth')->group(function () {
     Route::resource('students', StudentController::class);
     Route::post('students/update/{id}', [StudentController::class, 'update'])->name('students.update');
 
+    Route::get('/download/sample', [ImportController::class, 'downloadSample'])->name('import.downloadSample');
+    Route::post('/import/staff', [ImportController::class, 'staffImport'])->name('import.staff');
     Route::get('/import', [HomeController::class, 'import'])->name('import');
+    
     Route::get('/seat-plan', [HomeController::class, 'seatPlan'])->name('seat-plan');
     // Route::get('/students', [StudentController::class, 'partial'])->name('positions.partial');
 
