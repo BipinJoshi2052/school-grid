@@ -26,10 +26,16 @@ class HomeController extends Controller
         return view('landing', compact('data'));
     }   
 
-    public function import()
+    public function importStaff()
     {
-        return view('admin.import');
+        return view('admin.import.import-staff');
     }
+
+    public function importStudent()
+    {
+        return view('admin.import.import-student');
+    }
+
     public function seatPlan()
     {
         return view('admin.seat-plan.index');

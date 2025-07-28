@@ -383,7 +383,7 @@
         .validation-message {
             padding: 20px;
             border-radius: 10px;
-            margin-bottom: 20px;
+            margin-top: 10px;
             font-weight: 600;
             text-align: center;
             display: none;
@@ -454,6 +454,18 @@
             margin-top: 20px;
             border: 2px solid #f5c6cb;
             display: none;
+            margin-bottom: 5px;
+        }
+
+        .warning-message{
+            color: #000;
+            background: #fdc16a;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border: 2px solid #f5c6cb;
+            display: none;
+            margin-bottom: 5px;
         }
 
         .success-message {
@@ -518,7 +530,7 @@
                                     Dashboard
                                 </a>
                             </li>
-                            <li class="breadcrumb-item text-muted active" aria-current="page">Import</li>
+                            <li class="breadcrumb-item text-muted active" aria-current="page">Import Student</li>
                         </ol>
                     </nav>
                 </div>
@@ -552,18 +564,8 @@
                             <div class="loading-text">Processing your CSV file...</div>
                         </div>
 
-                        <div class="error-message" id="errorMessage"></div>
 
                         <div class="mapping-section">
-                            <div class="validation-message" id="validationMessage"></div>
-                            <div class="validation-progress">
-                                <div class="loading-spinner"></div>
-                                <div class="loading-text" id="validationText">Validating Data...</div>
-                            </div>
-                            <div class="validation-errors" id="validationErrors">
-                                <h4>❌ Validation Errors Found:</h4>
-                                <ul class="error-list" id="errorList"></ul>
-                            </div>
                             
                             <div class="mapping-container">
                                 <div class="column csv-headings">
@@ -579,14 +581,29 @@
 
                             <div class="action-buttons">
                                 <button class="btn btn-secondary" onclick="resetSystem()">Reset</button>
-                                <button class="btn btn-primary" onclick="validateData()">Validate Data</button>
+                                <button class="btn btn-primary" id="validateDataBtn" onclick="validateData()">Validate & Upload Data</button>
+                            </div>
+
+
+                            <div class="error-message" id="errorMessage"></div>
+                            <div class="warning-message" id="warningMessage"></div>
+                            <div class="validation-message" id="validationMessage"></div>
+
+
+                            <div class="validation-progress">
+                                <div class="loading-spinner"></div>
+                                <div class="loading-text" id="validationText">Validating Data...</div>
                             </div>
 
                             <div class="upload-progress">
                                 <div class="progress-bar">
                                     <div class="progress-fill"></div>
                                 </div>
-                                <div style="text-align: center; margin-top: 10px;">Uploading data...</div>
+                                {{-- <div style="text-align: center; margin-top: 10px;">Uploading data...</div> --}}
+                            </div>
+                            <div class="validation-errors" id="validationErrors">
+                                <h4>❌ Validation Errors Found:</h4>
+                                <ul class="error-list" id="errorList"></ul>
                             </div>
                         </div>
 
@@ -613,11 +630,13 @@
                                     <li class="required"><strong>Name</strong> - Full name of the person (Required)</li>
                                     <li class="required"><strong>Email</strong> - Valid email address (Required)</li>
                                     <li class="optional"><strong>Phone</strong> - Phone number (Optional)</li>
-                                    <li class="optional"><strong>Status</strong> - Employee status (Optional)</li>
-                                    <li class="optional"><strong>Department</strong> - Work department (Optional)</li>
-                                    <li class="optional"><strong>Position</strong> - Job position/title (Optional)</li>
+                                    <li class="optional"><strong>Status</strong> - Student status (Optional)</li>
+                                    <li class="optional"><strong>Faculty</strong> - Student Faculty (Optional)</li>
+                                    <li class="optional"><strong>Batch</strong> - Student Batch (Optional - but required if faculty present)</li>
+                                    <li class="required"><strong>Class</strong> - Student Class (Required)</li>
+                                    <li class="required"><strong>Section</strong> - Student Section (Required)</li>
+                                    <li class="optional"><strong>Handicapped</strong> - Handicapped information (Optional)</li>
                                     <li class="optional"><strong>Gender</strong> - Gender information (Optional)</li>
-                                    <li class="optional"><strong>Joined Date</strong> - Date of joining (Optional)</li>
                                     <li class="optional"><strong>Address</strong> - Physical address (Optional)</li>
                                 </ul>
                             </div>
@@ -631,10 +650,13 @@
                                     <br>• <code>active</code> or <code>inactive</code>
                                 </div>
                                 <div class="status-info">
-                                    <strong>Joined Date:</strong> Should be in valid date formats like:
-                                    <br>• <code>YYYY-MM-DD</code> (2024-01-15)
-                                    <br>• <code>MM/DD/YYYY</code> (01/15/2024)
-                                    <br>• <code>DD/MM/YYYY</code> (15/01/2024)
+                                    <strong>Handicapped Column:</strong> Can contain values like:
+                                    <br>• <code>1</code> or <code>0</code> (Active/Inactive)
+                                    <br>• <code>yes</code> or <code>no</code> (Active/Inactive)
+                                </div>
+                                <div class="status-info">
+                                    <strong>Gender Column:</strong> Can contain values like:
+                                    <br>• <code>male</code> or <code>female</code> or <code>other</code> (Active/Inactive)
                                 </div>
                             </div>
 
@@ -646,6 +668,7 @@
                                     <li style="margin-bottom: 10px;"><strong>Validate:</strong> Click "Validate Data" to check for errors</li>
                                     <li style="margin-bottom: 10px;"><strong>Import:</strong> If validation passes, data will be sent to our system</li>
                                 </ol>
+                                <p><b>Note :</b> Data is created or updated based on the email. If user with same email exists, then the users data will be updated.</p>
                             </div>
 
                             <div class="help-section">
@@ -667,8 +690,8 @@
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.5.3/papaparse.min.js"></script>
     <script>
         // System configuration
-        const requiredHeadings = ['Name', 'Email', 'Phone', 'Status', 'Department', 'Position', 'Gender', 'Joined Date', 'Address'];
-        const mandatoryHeadings = ['Name', 'Email'];
+        const requiredHeadings = ['Name', 'Email', 'Phone', 'Status', 'Faculty', 'Batch', 'Class', 'Section', 'Handicapped', 'Gender', 'Address'];
+        const mandatoryHeadings = ['Name', 'Email', 'Class', 'Section'];
         let csvData = [];
         let csvHeadings = [];
         let mappings = {};
@@ -818,6 +841,7 @@
         function addClickHandlers() {
             // CSV heading click handler
             $('.csv-heading').on('click', function() {
+                hideMessages();
                 $('.csv-heading').removeClass('selected');
                 $(this).addClass('selected');
                 selectedCsvHeading = $(this).data('heading');
@@ -961,7 +985,57 @@
             if (validationErrors.length > 0) {
                 showValidationErrors();
             } else {
-                showValidationSuccess();
+                const mappedData = csvData.map(row => {
+                    const mappedRow = {};
+                    Object.keys(mappings).forEach(requiredHeading => {
+                        const csvHeading = mappings[requiredHeading];
+                        mappedRow[requiredHeading] = row[csvHeading] || '';
+                    });
+                    return mappedRow;
+                });
+
+                $.ajax({
+                    url: '/validate-student-import', // Validation route
+                    type: 'POST',
+                    data: {
+                        data: mappedData,
+                        mappings: mappings,
+                    },
+                    headers: {  
+                        'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                    },
+                    success: function(response) {
+                        // If validation passes, trigger data upload
+                        if (response.status === 'success') {
+                            console.log('Validation passed, proceeding to upload...');
+                            uploadData();
+                            // uploadData(data, mappings);
+                        } else {
+                            console.log(response)
+                            
+                            showWarning(`Duplicate Data: ${response.message} These users will be updated. Press Upload if you wish to go on or update your file.`);
+                            $('.action-buttons').html(`
+                                <button class="btn btn-secondary" onclick="resetSystem()">Reset</button>
+                                <button class="btn btn-primary" onclick="uploadData()">Upload Data</button>
+                            `);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.log('reached error section of performValidation');
+                        // console.log(xhr)
+                        // console.log(xhr.responseJSON)
+                        $('#validateDataBtn').attr('disabled','disabled');
+                        $('.validation-progress').hide();
+                        let errorMessage = 'Failed to upload data to server.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message.join(', ');
+                        } else if (xhr.responseText) {
+                            errorMessage = xhr.responseText;
+                        }
+                        showError(`❌ Upload failed: ${errorMessage}. Please fix the issue and reupload the file.`);
+                    }
+                });
+                // showValidationSuccess();
             }
         }
 
@@ -980,16 +1054,18 @@
             $('.validation-errors').hide();
             $('#validationMessage').removeClass('validation-error').addClass('validation-success');
             $('#validationMessage').text('✅ Data validation passed! Ready to upload.').show();
-            
+            uploadData();
             // Change button to upload
-            $('.action-buttons').html(`
-                <button class="btn btn-secondary" onclick="resetSystem()">Reset</button>
-                <button class="btn btn-primary" onclick="uploadData()">Upload Data</button>
-            `);
+            // $('.action-buttons').html(`
+            //     <button class="btn btn-secondary" onclick="resetSystem()">Reset</button>
+            //     <button class="btn btn-primary" onclick="uploadData()">Upload Data</button>
+            // `);
         }
 
         function uploadData() {
             // Prepare data for upload
+            hideMessages();
+
             const mappedData = csvData.map(row => {
                 const mappedRow = {};
                 Object.keys(mappings).forEach(requiredHeading => {
@@ -1046,7 +1122,7 @@
 
         // Download sample CSV
         function downloadSample() {
-            window.location.href = '/download/sample';
+            window.location.href = '/download/sample/student';
         }
 
         // Close help modal when clicking outside
@@ -1057,7 +1133,7 @@
         });
 
         function uploadToBackend(data) {
-            const backendUrl = '/import/staff';
+            const backendUrl = '/import-student-data';
 
             $.ajax({
                 url: backendUrl,
@@ -1190,8 +1266,14 @@
 
         function showError(message) {
             $('#errorMessage').text(message).show();
+            setTimeout(() => {
+                $('#errorMessage').hide();
+            }, 10000);
+        }
+        function showWarning(message) {
+            $('#warningMessage').text(message).show();
             // setTimeout(() => {
-            //     $('#errorMessage').hide();
+            //     $('#warningMessage').hide();
             // }, 10000);
         }
 

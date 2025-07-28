@@ -321,13 +321,29 @@
                             </a>
                         </li>
 
-                        <li class="sidebar-item"> 
+                        {{-- <li class="sidebar-item"> 
                             <a class="sidebar-link" href="{{route('import')}}" aria-expanded="false">
                                 <i data-feather="download" class="feather-icon"></i>
                                 <span
                                     class="hide-menu">Import
                                 </span>
                             </a>
+                        </li> --}}
+                        <li class="sidebar-item"> 
+                            <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
+                                <i data-feather="download" class="feather-icon"></i>
+                                <span class="hide-menu">Import </span>
+                            </a>
+                            <ul aria-expanded="false" class="collapse first-level base-level-line">
+                                <li class="sidebar-item"><a href="{{route('import.staff')}}" class="sidebar-link"><span
+                                            class="hide-menu"> Staff
+                                        </span></a>
+                                </li>
+                                <li class="sidebar-item"><a href="{{route('import.student')}}" class="sidebar-link"><span
+                                            class="hide-menu"> Student
+                                        </span></a>
+                                </li>
+                            </ul>
                         </li>
 
                         <li class="list-divider"></li>
@@ -343,7 +359,7 @@
                                     class="hide-menu">Seat Plan
                                 </span>
                             </a>
-                        </li>
+                        </li> 
 
                         <li class="list-divider"></li>
 

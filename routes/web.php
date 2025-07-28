@@ -69,9 +69,16 @@ Route::middleware('auth')->group(function () {
     Route::post('students/update/{id}', [StudentController::class, 'update'])->name('students.update');
 
     Route::get('/download/sample', [ImportController::class, 'downloadSample'])->name('import.downloadSample');
-    Route::post('/import/staff', [ImportController::class, 'staffImport'])->name('import.staff');
-    Route::get('/import', [HomeController::class, 'import'])->name('import');
+    Route::post('/validate-staff-import', [ImportController::class, 'validateStaffImport'])->name('import.staff.validate');
+    Route::post('/import-staff-data', [ImportController::class, 'staffImport'])->name('import.staff-data');
+    Route::get('/import-staff', [HomeController::class, 'importStaff'])->name('import.staff');
     
+
+    Route::get('/download/sample/student', [ImportController::class, 'downloadSampleStudent'])->name('import.downloadSampleStudent');
+    Route::post('/validate-student-import', [ImportController::class, 'validateStudentImport'])->name('import.student.validate');
+    Route::post('/import-student-data', [ImportController::class, 'StudentImport'])->name('import.student-data');
+    Route::get('/import-student', [HomeController::class, 'importStudent'])->name('import.student');
+
     Route::get('/seat-plan', [HomeController::class, 'seatPlan'])->name('seat-plan');
     // Route::get('/students', [StudentController::class, 'partial'])->name('positions.partial');
 
