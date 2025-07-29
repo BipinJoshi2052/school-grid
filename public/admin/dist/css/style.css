@@ -3325,7 +3325,7 @@ textarea.form-control-lg {
   }
 }
 .btn:hover {
-  color: var(--bs-btn-hover-color);
+  /* color: var(--bs-btn-hover-color); */
   background-color: var(--bs-btn-hover-bg);
   border-color: var(--bs-btn-hover-border-color);
 }
@@ -17853,7 +17853,7 @@ strong {
 }
 
 .btn-secondary:hover {
-    background: #e9ecef;
+    /* background: #e9ecef; */
     transform: translateY(-2px);
 }
 
@@ -17863,7 +17863,7 @@ strong {
 }
 
 .btn-danger:hover {
-    background: #c82333;
+    /* background: #c82333; */
     transform: translateY(-2px);
 }
 .modal-content{

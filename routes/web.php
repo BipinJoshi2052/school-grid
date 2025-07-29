@@ -80,6 +80,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/import-student-data', [ImportController::class, 'StudentImport'])->name('import.student-data');
     Route::get('/import-student', [HomeController::class, 'importStudent'])->name('import.student');
 
+    Route::post('/buildings/add-element', [BuildingsController::class, 'addElement'])->name('buildings.addElement');
+    Route::delete('/buildings/delete-element', [BuildingsController::class, 'deleteElement']);
     Route::get('/buildings', [BuildingsController::class, 'index'])->name('buildings.index');
     
     Route::get('/seat-plan', [HomeController::class, 'seatPlan'])->name('seat-plan');

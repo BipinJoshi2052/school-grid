@@ -260,7 +260,7 @@
                     <ul id="sidebarnav">
                         <li class="sidebar-item {{ request()->routeIs('dashboard') ? 'selected' : '' }}"> 
                             <a class="sidebar-link" href="{{route('dashboard')}}" aria-expanded="false">
-                                <i data-feather="home" class="feather-icon"></i>
+                                <i data-feather="cpu" class="feather-icon"></i>
                                 <span class="hide-menu">Dashboard</span>
                             </a>
                         </li>
@@ -293,14 +293,6 @@
                                 <i data-feather="tag" class="feather-icon"></i>
                                 <span
                                     class="hide-menu">Department & Position
-                                </span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item"> 
-                            <a class="sidebar-link" href="{{route('buildings.index')}}" aria-expanded="false">
-                                <i data-feather="tag" class="feather-icon"></i>
-                                <span
-                                    class="hide-menu">Building & Rooms
                                 </span>
                             </a>
                         </li>
@@ -358,6 +350,15 @@
 
                         <li class="nav-small-cap">
                             <span class="hide-menu">Feature</span>
+                        </li>
+
+                        <li class="sidebar-item"> 
+                            <a class="sidebar-link" href="{{route('buildings.index')}}" aria-expanded="false">
+                                <i data-feather="home" class="feather-icon"></i>
+                                <span
+                                    class="hide-menu">Building Plan
+                                </span>
+                            </a>
                         </li>
 
                         <li class="sidebar-item"> 
