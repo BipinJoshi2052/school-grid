@@ -17,6 +17,7 @@ class Student extends Model
         'address',
         'class_id',
         'section_id',
+        'roll_no',
         'added_by',
     ];
 

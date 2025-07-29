@@ -4,6 +4,7 @@ use App\Http\Controllers\AcademicController;
 use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\BuildingsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\HomeController;
@@ -79,6 +80,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/import-student-data', [ImportController::class, 'StudentImport'])->name('import.student-data');
     Route::get('/import-student', [HomeController::class, 'importStudent'])->name('import.student');
 
+    Route::get('/buildings', [BuildingsController::class, 'index'])->name('buildings.index');
+    
     Route::get('/seat-plan', [HomeController::class, 'seatPlan'])->name('seat-plan');
     // Route::get('/students', [StudentController::class, 'partial'])->name('positions.partial');
 

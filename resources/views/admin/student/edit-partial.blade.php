@@ -355,7 +355,11 @@
             </div>
 
             <div class="form-row">
-                <div class="form-group full-width">
+                <div class="form-group">
+                    <label class="form-label" for="roll_no">Roll No.</label>
+                    <input type="number" id="roll_no" name="roll_no" class="form-input" placeholder="Enter Roll No." value="{{ $student->roll_no }}">
+                </div>
+                <div class="form-group">
                     <label class="form-label" for="address">Address</label>
                     <input type="text" id="address" name="address" class="form-input" placeholder="Enter full address..." value="{{ nl2br(e($student->address)) }}">
                 </div>
@@ -472,6 +476,7 @@
                     formData.append('batch_id', $('#batch-select-edit').val());
                     formData.append('class_id', $('#class-select-edit').val());
                     formData.append('section_id', $('#section-select-edit').val());
+                    formData.append('roll_no', $('#roll_no').val());
                     formData.append('handicapped', $('#handicapped-edit').val());
                     // formData.append('old_avatar', $('#old_avatar').val());
                     // console.log(avatarInput[0].files[0])

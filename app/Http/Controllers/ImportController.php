@@ -44,12 +44,11 @@ class ImportController extends Controller
         }
     }
 
-    public function validateStaffImport(Request $request)
+    public function validateStaffImport1(Request $request)
     {
         // Get the incoming data
         $data = $request->input('data');
         $mappings = $request->input('mappings');
-
         $invalidEmails = [];
         $updatedEmails = [];
         $errors = [];
@@ -58,8 +57,8 @@ class ImportController extends Controller
             $schoolId = session('school_id');
 
             foreach ($data as $row) {
-                $email = $row[$mappings['Email']] ?? null;
-                // echo $email;
+                $email = $row['Email'] ?? null;
+                echo $email.'---';
 
                 // Check if the email belongs to the main school account
                 $mainSchoolUser = User::where('email', $email)->where('id', $schoolId)->first();
@@ -92,6 +91,10 @@ class ImportController extends Controller
             // Collect error messages
             $errorMessages = [];
 
+        dd([
+            $data,
+            $mappings
+        ]);
             if (count($invalidEmails) > 0) {
                 $errorMessages[] = "The following emails are already exists and are invalid to be uploaded: " . implode(', ', $invalidEmails);
                 return response()->json([
@@ -117,10 +120,89 @@ class ImportController extends Controller
         }
         catch (\Exception $e) {
             // If there is an error, store the error message for this row
-            $errors[] = "Error processing row with email: {$row[$mappings['Email']]}. Error: " . $e->getMessage();
+            $errors[] = "Error processing row with email: {$row['Email']}. Error: " . $e->getMessage();
         }
     }
 
+    public function validateStaffImport(Request $request)
+    {
+        // Get the incoming data
+        $data = $request->input('data');
+        $mappings = $request->input('mappings');
+        $invalidEmails = [];
+        $updatedEmails = [];
+        $errors = [];
+
+        try {
+            $schoolId = session('school_id');
+
+            foreach ($data as $row) {
+                $email = $row['Email'] ?? null;
+                // echo $email.'---';
+
+                // Check if the email belongs to the main school account
+                $mainSchoolUser = User::where('email', $email)->where('id', $schoolId)->first();
+                if ($mainSchoolUser) {
+                    $invalidEmails[] = $email;
+                    continue; // Skip this row
+                }
+
+                // Check if the email exists in a student account
+                $existingStudentUser = User::where('email', $email)->where('parent_id', $schoolId)->where('user_type_id',4)->first();
+                if ($existingStudentUser) {
+                    $invalidEmails[] = $email;
+                    continue; // Skip this row
+                }
+
+                // Check if the email exists within the same school (by parent_id)
+                $existingUser = User::where('email', $email)->where('parent_id', $schoolId)->where('user_type_id',3)->first();
+                if ($existingUser) {
+                    $updatedEmails[] = $email;
+                } else {
+                    // Check if email exists elsewhere
+                    $existingUserElsewhere = User::where('email', $email)->where('parent_id', '!=', $schoolId)->first();
+                    if ($existingUserElsewhere) {
+                        $invalidEmails[] = $email;
+                        continue; // Skip this row
+                    }
+                }
+            }
+
+            // Collect error messages
+            $errorMessages = [];
+
+        // dd([
+        //     $data,
+        //     $mappings
+        // ]);
+            if (count($invalidEmails) > 0) {
+                $errorMessages[] = "The following emails are already exists and are invalid to be uploaded: " . implode(', ', $invalidEmails);
+                return response()->json([
+                    'status' => 'error',
+                    'message' => $errorMessages,
+                    'invalidEmails' => count($invalidEmails) > 0
+                ], 400);
+            }
+
+            if (count($updatedEmails) > 0) {
+                $errorMessages[] = "The following emails already exist and will be updated: " . implode(', ', $updatedEmails);
+                return response()->json([
+                    'status' => 'error',
+                    'message' => $errorMessages
+                ], 200);
+            }
+
+            // If no errors, return a success message
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Validation passed. Ready to upload data.',
+            ]);
+        }
+        catch (\Exception $e) {
+            // If there is an error, store the error message for this row
+            $errors[] = "Error processing row with email: {$row['Email']}. Error: " . $e->getMessage();
+        }
+    }
     
     public function staffImport(Request $request)
     {
@@ -128,6 +210,10 @@ class ImportController extends Controller
         $data = $request->input('data');
         $mappings = $request->input('mappings');
         $csvHeadings = $request->input('originalHeadings');
+        // dd([
+        //     $data,
+        //     $mappings
+        // ]);
 
         $imported = 0;
         $errors = [];
@@ -136,8 +222,8 @@ class ImportController extends Controller
             try {
                 // Start with required fields, these will always be present
                 $userData = [
-                    'name' => $row[$mappings['Name']] ?? null, // Map 'Name' if present
-                    'email' => $row[$mappings['Email']] ?? null, // Map 'Email' if present
+                    'name' => $row['Name'] ?? null, // Map 'Name' if present
+                    'email' => $row['Email'] ?? null, // Map 'Email' if present
                     'password' => bcrypt('secret'), // Set a default password
                     'parent_id' => session('school_id'),
                     'user_type_id' => 3, // Default user type (3 - staff)
@@ -145,13 +231,13 @@ class ImportController extends Controller
 
                 // Check if any other columns were mapped and add them to the user data if present
                 if (isset($mappings['Phone'])) {
-                    $userData['phone'] = $row[$mappings['Phone']] ?? null;
+                    $userData['phone'] = $row['Phone'] ?? null;
                 }
 
                 // Status mapping (set to 0 if 'inactive', 1 if 'active')
                 $userData['status'] = 1;
                 if (isset($mappings['Status'])) {
-                    $userData['status'] =  ($row[$mappings['Status']] == 0 || strtolower($row[$mappings['Status']]) == 'inactive') ? 0 : 1;;
+                    $userData['status'] =  ($row['Status'] == 0 || strtolower($row['Status']) == 'inactive') ? 0 : 1;;
                 }
 
                 $userAlreadyExists = 0;
@@ -175,11 +261,11 @@ class ImportController extends Controller
                 //     $userData
                 // );
 
-                $gender = isset($mappings['Gender']) ? $this->mapGender($row[$mappings['Gender']] ?? null) : null;
+                $gender = isset($mappings['Gender']) ? $this->mapGender($row['Gender'] ?? null) : null;
 
                 $joined_date = Carbon::now();  // Default to today's date
                 if (isset($mappings['Joined Date'])) {
-                    $joinedDateValue = $row[$mappings['Joined Date']];
+                    $joinedDateValue = $row['Joined Date'];
                     
                     // Check if the value is a valid date
                     try {
@@ -191,22 +277,22 @@ class ImportController extends Controller
                 }                
 
                 // Department: check if department exists, create if not
-                $department = (isset($mappings['Department']) && $row[$mappings['Department']]) ? Department::firstOrCreate(
+                $department = (isset($mappings['Department']) && $row['Department']) ? Department::firstOrCreate(
                     [
-                        'title' => $row[$mappings['Department']] ?? null
+                        'title' => $row['Department'] ?? null
                     ],
                     [
-                        'title' => $row[$mappings['Department']] ?? null,'user_id' => session('school_id'),'added_by' => auth()->id()
+                        'title' => $row['Department'] ?? null,'user_id' => session('school_id'),'added_by' => auth()->id()
                     ]
                 ) : null;
 
                 // Position: check if position exists, create if not
-                $position = (isset($mappings['Position']) && $row[$mappings['Position']]) ? Position::firstOrCreate(
+                $position = (isset($mappings['Position']) && $row['Position']) ? Position::firstOrCreate(
                     [
-                        'title' => $row[$mappings['Position']] ?? null
+                        'title' => $row['Position'] ?? null
                     ],
                     [
-                        'title' => $row[$mappings['Position']] ?? null,'user_id' => session('school_id'),'added_by' => auth()->id()
+                        'title' => $row['Position'] ?? null,'user_id' => session('school_id'),'added_by' => auth()->id()
                     ]
                 ) : null;
 
@@ -215,12 +301,12 @@ class ImportController extends Controller
                     $staff = Staff::create([
                         'school_id' => session('school_id'),
                         'user_id' => $user->id,
-                        'name' => $row[$mappings['Name']] ?? null,
+                        'name' => $row['Name'] ?? null,
                         'department_id' => $department->id ?? null,
                         'position_id' => $position->id ?? null,
                         'gender' => $gender, // Map gender if present
                         'joined_date' => $joined_date, // Map joined_date if present
-                        'address' => isset($mappings['Address']) ? $row[$mappings['Address']] : null, // Map address if present
+                        'address' => isset($mappings['Address']) ? $row['Address'] : null, // Map address if present
                         'added_by' => auth()->id(),  // Set 'added_by' only for new staff
                     ]);
                 }else{
@@ -229,12 +315,12 @@ class ImportController extends Controller
                                     ->first();
                     // If the staff already exists, update the existing record without changing 'added_by'
                     $existingStaff->update([
-                        'name' => $row[$mappings['Name']] ?? null,
+                        'name' => $row['Name'] ?? null,
                         'department_id' => $department->id ?? null,
                         'position_id' => $position->id ?? null,
                         'gender' => $gender, // Map gender if present
                         'joined_date' => $joined_date, // Map joined_date if present
-                        'address' => isset($mappings['Address']) ? $row[$mappings['Address']] : null, // Map address if present
+                        'address' => isset($mappings['Address']) ? $row['Address'] : null, // Map address if present
                     ]);
                 }
                 // Create the staff record, only map values that exist in the mappings
@@ -246,7 +332,7 @@ class ImportController extends Controller
                 //     [
                 //     'school_id' => session('school_id'),
                 //     'user_id' => $user->id,
-                //     'name' => $row[$mappings['Name']] ?? null,
+                //     'name' => $row['Name'] ?? null,
                 //     'department_id' => $department->id ?? null,
                 //     'position_id' => $position->id ?? null,
                 //     'gender' => $gender, // Map gender, if present
@@ -258,7 +344,7 @@ class ImportController extends Controller
                 $imported++;
             } catch (\Exception $e) {
                 // If there is an error, store the error message for this row
-                $errors[] = "Error processing row with email: {$row[$mappings['Email']]}. Error: " . $e->getMessage();
+                $errors[] = "Error processing row with email: {$row['Email']}. Error: " . $e->getMessage();
             }
         }
 
@@ -292,7 +378,7 @@ class ImportController extends Controller
             $schoolId = session('school_id');
 
             foreach ($data as $row) {
-                $email = $row[$mappings['Email']] ?? null;
+                $email = $row['Email'] ?? null;
                 // echo $email;
 
                 // Check if the email belongs to the main school account
@@ -351,7 +437,7 @@ class ImportController extends Controller
         }
         catch (\Exception $e) {
             // If there is an error, store the error message for this row
-            $errors[] = "Error processing row with email: {$row[$mappings['Email']]}. Error: " . $e->getMessage();
+            $errors[] = "Error processing row with email: {$row['Email']}. Error: " . $e->getMessage();
         }
     }
 
@@ -369,8 +455,8 @@ class ImportController extends Controller
             try {
                 // Start with required fields, these will always be present
                 $userData = [
-                    'name' => $row[$mappings['Name']] ?? null, // Map 'Name' if present
-                    'email' => $row[$mappings['Email']] ?? null, // Map 'Email' if present
+                    'name' => $row['Name'] ?? null, // Map 'Name' if present
+                    'email' => $row['Email'] ?? null, // Map 'Email' if present
                     'password' => bcrypt('secret'), // Set a default password
                     'parent_id' => session('school_id'),
                     'user_type_id' => 4, // Default user type (3 - staff)
@@ -379,18 +465,18 @@ class ImportController extends Controller
 
                 // Check if any other columns were mapped and add them to the user data if present
                 if (isset($mappings['Phone'])) {
-                    $userData['phone'] = $row[$mappings['Phone']] ?? null;
+                    $userData['phone'] = $row['Phone'] ?? null;
                 }
 
                 // Status mapping (set to 0 if 'inactive', 1 if 'active')
                 $userData['status'] = 1;
                 if (isset($mappings['Status'])) {
-                    $userData['status'] =  ($row[$mappings['Status']] == 0 || strtolower($row[$mappings['Status']]) == 'inactive') ? 0 : 1;;
+                    $userData['status'] =  ($row['Status'] == 0 || strtolower($row['Status']) == 'inactive') ? 0 : 1;;
                 }
 
                 $handicapped = 0;
                 if (isset($mappings['Handicapped'])) {
-                    $handicapped =  ($row[$mappings['Handicapped']] == 0 || strtolower($row[$mappings['Handicapped']]) == 'no') ? 0 : 1;;
+                    $handicapped =  ($row['Handicapped'] == 0 || strtolower($row['Handicapped']) == 'no') ? 0 : 1;;
                 }
 
                 $userAlreadyExists = 0;
@@ -413,26 +499,26 @@ class ImportController extends Controller
                 //     $userData
                 // );
 
-                $gender = isset($mappings['Gender']) ? $this->mapGender($row[$mappings['Gender']] ?? null) : null;
+                $gender = isset($mappings['Gender']) ? $this->mapGender($row['Gender'] ?? null) : null;
 
 
                 // Faculty: check if Faculty exists, create if not
-                $faculty = (isset($mappings['Faculty']) && $row[$mappings['Faculty']]) ? Faculty::firstOrCreate(
+                $faculty = (isset($mappings['Faculty']) && $row['Faculty']) ? Faculty::firstOrCreate(
                     [
-                        'title' => $row[$mappings['Faculty']] ?? null
+                        'title' => $row['Faculty'] ?? null
                     ],
                     [
-                        'title' => $row[$mappings['Faculty']] ?? null,'user_id' => session('school_id'),'added_by' => auth()->id()
+                        'title' => $row['Faculty'] ?? null,'user_id' => session('school_id'),'added_by' => auth()->id()
                     ]
                 ) : null;
 
                 // Batch: check if Batch exists, create if not
-                $batch = (isset($mappings['Batch']) && $row[$mappings['Batch']]) ? Batch::firstOrCreate(
+                $batch = (isset($mappings['Batch']) && $row['Batch']) ? Batch::firstOrCreate(
                     [
-                        'title' => $row[$mappings['Batch']] ?? null
+                        'title' => $row['Batch'] ?? null
                     ],
                     [
-                        'title' => $row[$mappings['Batch']] ?? null,
+                        'title' => $row['Batch'] ?? null,
                         'user_id' => session('school_id'),
                         'faculty_id' => $faculty->id,
                         'added_by' => auth()->id()
@@ -440,22 +526,22 @@ class ImportController extends Controller
                 ) : null;
 
                 // Faculty: check if Faculty exists, create if not
-                $class = (isset($mappings['Class']) && $row[$mappings['Class']]) ? ClassModel::firstOrCreate(
+                $class = (isset($mappings['Class']) && $row['Class']) ? ClassModel::firstOrCreate(
                     [
-                        'title' => $row[$mappings['Class']] ?? null
+                        'title' => $row['Class'] ?? null
                     ],
                     [
-                        'title' => $row[$mappings['Class']] ?? null,'user_id' => session('school_id'),'added_by' => auth()->id()
+                        'title' => $row['Class'] ?? null,'user_id' => session('school_id'),'added_by' => auth()->id()
                     ]
                 ) : null;
 
                 // Position: check if position exists, create if not
-                $section = (isset($mappings['Section']) && $row[$mappings['Section']]) ? Section::firstOrCreate(
+                $section = (isset($mappings['Section']) && $row['Section']) ? Section::firstOrCreate(
                     [
-                        'title' => $row[$mappings['Section']] ?? null
+                        'title' => $row['Section'] ?? null
                     ],
                     [
-                        'title' => $row[$mappings['Section']] ?? null,
+                        'title' => $row['Section'] ?? null,
                         'user_id' => session('school_id'),
                         'class_id' => $class->id,
                         'added_by' => auth()->id()
@@ -467,7 +553,7 @@ class ImportController extends Controller
                     $staff = Student::create([
                         'school_id' => session('school_id'),
                         'user_id' => $user->id,
-                        'name' => $row[$mappings['Name']] ?? null,
+                        'name' => $row['Name'] ?? null,
                         'faculty_id' => $faculty->id ?? null,
                         'batch_id' => $batch->id ?? null,
                         'class_id' => $class->id ?? null,
@@ -485,7 +571,7 @@ class ImportController extends Controller
                     $existingStudent->update([
                         'school_id' => session('school_id'),
                         'user_id' => $user->id,
-                        'name' => $row[$mappings['Name']] ?? null,
+                        'name' => $row['Name'] ?? null,
                         'faculty_id' => $faculty->id ?? null,
                         'batch_id' => $batch->id ?? null,
                         'class_id' => $class->id ?? null,
@@ -504,7 +590,7 @@ class ImportController extends Controller
                 //     [
                 //     'school_id' => session('school_id'),
                 //     'user_id' => $user->id,
-                //     'name' => $row[$mappings['Name']] ?? null,
+                //     'name' => $row['Name'] ?? null,
                 //     'faculty_id' => $faculty->id ?? null,
                 //     'batch_id' => $batch->id ?? null,
                 //     'class_id' => $class->id ?? null,
@@ -518,7 +604,7 @@ class ImportController extends Controller
                 $imported++;
             } catch (\Exception $e) {
                 // If there is an error, store the error message for this row
-                $errors[] = "Error processing row with email: {$row[$mappings['Email']]}. Error: " . $e->getMessage();
+                $errors[] = "Error processing row with email: {$row['Email']}. Error: " . $e->getMessage();
             }
         }
 

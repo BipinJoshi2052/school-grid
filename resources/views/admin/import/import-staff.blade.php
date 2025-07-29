@@ -861,6 +861,7 @@
 
                     // Add new mapping
                     mappings[requiredHeading] = selectedCsvHeading;
+                    console.log(mappings)
                     
                     // Update UI
                     updateMappingDisplay();

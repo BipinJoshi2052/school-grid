@@ -296,6 +296,14 @@
                                 </span>
                             </a>
                         </li>
+                        <li class="sidebar-item"> 
+                            <a class="sidebar-link" href="{{route('buildings.index')}}" aria-expanded="false">
+                                <i data-feather="tag" class="feather-icon"></i>
+                                <span
+                                    class="hide-menu">Building & Rooms
+                                </span>
+                            </a>
+                        </li>
 
                         <li class="list-divider"></li>
 

@@ -193,6 +193,7 @@ class StudentController extends Controller
                 'batch_id' => $request->batch_id,
                 'class_id' => $request->class_id,
                 'section_id' => $request->section_id,
+                'roll_no' => $request->roll_no,
                 'handicapped' => $request->handicapped,
                 'added_by' => auth()->id(),
             ]);
@@ -306,6 +307,7 @@ class StudentController extends Controller
                 'batch_id' => $request->batch_id,
                 'class_id' => $request->class_id,
                 'section_id' => $request->section_id,
+                'roll_no' => $request->roll_no,
                 'handicapped' => $request->handicapped
             ]);
 

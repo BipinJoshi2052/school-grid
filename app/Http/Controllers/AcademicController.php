@@ -427,6 +427,7 @@ class AcademicController extends Controller
                 'user_type_id' => 4,  // Student user type
                 'phone' => $faker->phoneNumber,  // Generate phone number
                 'parent_id' => $schoolId,  // Set parent_id as the authenticated school ID
+                'roll_no' => 1,
                 'added_by' => $userId,
                 'created_at' => now(),
                 'updated_at' => now()
@@ -441,6 +442,7 @@ class AcademicController extends Controller
                 'address' => $faker->address,  // Generate address
                 'class_id' => $class->id,  // Assign class_id from the first class
                 'section_id' => $section->id,  // Assign section_id
+                'roll_no' => 1,
                 'added_by' => $userId,
                 'created_at' => now(),
                 'updated_at' => now()
