@@ -14,7 +14,7 @@ class AddRollNoToStudentsTable extends Migration
     public function up()
     {
         Schema::table('students', function (Blueprint $table) {
-            $table->integer('roll_no')->after('section_id');
+            $table->integer('roll_no')->default(0)->after('section_id');
         });
     }
 
