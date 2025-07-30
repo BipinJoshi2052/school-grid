@@ -378,9 +378,9 @@
 @section('scripts')
 <script>
     let buildingCounter = 0;
-        let roomCounter = 0;
-        let rowCounter = 0;
-        let benchCounter = 0;
+        // let roomCounter = 0;
+        // let rowCounter = 0;
+        // let benchCounter = 0;
 
         // Simulate AJAX requests (replace with actual endpoints)
         function sendAjaxRequest(data, callback) {
@@ -391,6 +391,7 @@
                 callback(success, success ? { id: Date.now() + Math.random() } : null);
             }, 500);
         }
+
         function sendAjaxAddRequest(data, callback) {
             console.log('Sending AJAX request to /buildings/add-element:', data);
             
@@ -436,10 +437,6 @@
             else{
                 toastr.success(message);
             }
-            // const statusEl = $('#statusMessage');
-            // statusEl.removeClass('success error').addClass(type).text(message);
-            // statusEl.addClass('show');
-            // setTimeout(() => statusEl.removeClass('show'), 3000);
         }
 
         function updateRoomStats(roomEl) {
@@ -483,7 +480,7 @@
                         <div class="building" data-id="${buildingId}">
                             <div class="building-header">
                                 <div class="building-title">
-                                    <input type="text" placeholder="Enter building title" class="building-title-input" style="background: transparent; border: none; color: white; font-weight: 500; width: 100%; outline: none;" value="Building ${buildingCounter}">
+                                    <input type="text" placeholder="Enter building title" class="building-title-input" style="background: transparent; border: none; color: white; font-weight: 500; width: 50%; outline: none;" value="Building ${buildingCounter}">
                                 </div>
                                 <div class="building-actions">
                                     <button class="btn btn-secondary add-room-btn">+ Add Room</button>
@@ -499,32 +496,42 @@
                     $('#buildingsContainer .empty-state').remove();
                     $('#buildingsContainer').append(buildingHtml);
 
-                    showStatus('Building added successfully!', 'success');
-                    $(`[data-id="${buildingId}"]`).attr('data-server-id', response.id);
+                    $(`.building[data-id="${buildingId}"]`).attr('data-server-id', response.id);
+                    // showStatus('Building added successfully!', 'success');
                 } else {
                     showStatus('Error adding building', 'error');
                 }
             });
         });
 
+        $(document).on('focus', '.building-title-input', function() {
+            const initialTitle = $(this).val();
+            $(this).data('initial-title', initialTitle); // Store the initial value
+        });
         // Building title edit
         $(document).on('blur', '.building-title-input', function() {
             const buildingEl = $(this).closest('.building');
             const title = $(this).val();
+            const initialTitle = $(this).data('initial-title'); // Retrieve the initial value
             
-            const buildingData = {
-                title: title,
-                type: 'building',
-                id: buildingEl.attr('data-server-id')
-            };
+            // Only send request if the title has changed
+            if (title !== initialTitle) {
+                const buildingData = {
+                    title: title,
+                    type: 'building',
+                    id: buildingEl.attr('data-server-id')
+                };
 
-            sendAjaxRequest(buildingData, (success) => {
-                if (success) {
-                    showStatus('Building title updated!', 'success');
-                } else {
-                    showStatus('Error updating building title', 'error');
-                }
-            });
+                sendAjaxRequest(buildingData, (success) => {
+                    if (success) {
+                        showStatus('Building title updated!', 'success');
+                    } else {
+                        showStatus('Error updating building title', 'error');
+                    }
+                });
+            }
+            // After blur, reset the initialTitle to prevent further comparisons
+            $(this).removeData('initial-title');
         });
 
         // Blur on Enter key press
@@ -536,76 +543,85 @@
 
         // Delete building
         $(document).on('click', '.delete-building-btn', function() {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: `You are about to delete this building and all its data! This action cannot be undone.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const buildingEl = $(this).closest('.building');
+                    const buildingId = buildingEl.attr('data-server-id');
+                    const type = 'building';  // Element type: building
 
-        Swal.fire({
-            title: 'Are you sure?',
-            text: `You are about to delete this building and all its data! This action cannot be undone.`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const buildingEl = $(this).closest('.building');
-                const buildingId = buildingEl.attr('data-server-id');
-                const type = 'building';  // Element type: building
-
-                // Make AJAX DELETE request
-                $.ajax({
-                    url: '/buildings/delete-element',  // Your delete route
-                    type: 'DELETE',
-                    data: {
+                    // Make AJAX DELETE request
+                    $.ajax({
+                        url: '/buildings/delete-element',  // Your delete route
+                        type: 'DELETE',
                         data: {
-                            type: type,            // Type of element to delete (building)
-                            building_id: buildingId // ID of the building to delete
-                        }
-                    },
-                    headers: {  
-                        'X-CSRF-TOKEN': "{{ csrf_token() }}"
-                    },
-                    success: function(response) {
-                        // If successful, remove the building from the UI
-                        buildingEl.remove();
-                        
-                        // Check if there are no buildings left and display empty state
-                        if ($('.building').length === 0) {
-                            $('#buildingsContainer').html(`
-                                <div class="empty-state">
-                                    <h3>No Buildings Added Yet</h3>
-                                    <p>Click "Add Building" to get started</p>
-                                </div>
-                            `);
-                        }
+                            data: {
+                                type: type,            // Type of element to delete (building)
+                                building_id: buildingId // ID of the building to delete
+                            }
+                        },
+                        headers: {  
+                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                        },
+                        success: function(response) {
+                            // If successful, remove the building from the UI
+                            buildingEl.remove();
+                            
+                            // Check if there are no buildings left and display empty state
+                            if ($('.building').length === 0) {
+                                $('#buildingsContainer').html(`
+                                    <div class="empty-state">
+                                        <h3>No Buildings Added Yet</h3>
+                                        <p>Click "Add Building" to get started</p>
+                                    </div>
+                                `);
+                            } else {
+                                // Re-index remaining buildings
+                                $('.building').each(function(index) {
+                                    // Update the data-server-id based on the new index
+                                    $(this).attr('data-server-id', index + 1); // Assuming the new server ID should be 1-based index
+                                });
+                            }
 
-                        // Optionally, show a success message
-                        Swal.fire({
-                            title: 'Deleted!',
-                            text: 'The building has been deleted.',
-                            icon: 'success',
-                            confirmButtonText: 'Ok'
-                        });
-                    },
-                    error: function(xhr, status, error) {
-                        // Handle error if any
-                        Swal.fire({
-                            title: 'Error!',
-                            text: 'There was an error deleting the building. Please try again.',
-                            icon: 'error',
-                            confirmButtonText: 'Ok'
-                        });
-                    }
-                });
-            }
+                            // Optionally, show a success message
+                            Swal.fire({
+                                title: 'Deleted!',
+                                text: 'The building has been deleted.',
+                                icon: 'success',
+                                confirmButtonText: 'Ok'
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            // Handle error if any
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'There was an error deleting the building. Please try again.',
+                                icon: 'error',
+                                confirmButtonText: 'Ok'
+                            });
+                        }
+                    });
+                }
+            });
         });
-    });
 
 
         // Add room
         $(document).on('click', '.add-room-btn', function() {
-            roomCounter++;
+            // roomCounter++;
             const buildingEl = $(this).closest('.building');
             const buildingId = buildingEl.attr('data-server-id');
+            
+            // Count the number of existing room elements inside this building
+            const roomCounter = buildingEl.find('.room').length + 1;  // Increment the count to create the next room ID
+
             const roomId = `room_${roomCounter}`;
             
             // Send AJAX request for room
@@ -617,7 +633,7 @@
 
             sendAjaxAddRequest(roomData, (success, response) => {
                 if (success) {
-                    showStatus('Room added successfully!', 'success');
+                    // showStatus('Room added successfully!', 'success');
 
                     const roomHtml = `
                         <div class="room" data-id="${roomId}">
@@ -669,7 +685,7 @@
                     `;
 
                     buildingEl.find('.rooms-container').append(roomHtml);
-                    $(`[data-id="${roomId}"]`).attr('data-server-id', response.id);
+                    $(`.room[data-id="${roomId}"]`).attr('data-server-id', response.id);
                 } else {
                     showStatus('Error adding room', 'error');
                 }
@@ -729,11 +745,148 @@
 
         // Delete room
         $(document).on('click', '.delete-room-btn', function() {
-            if (confirm('Are you sure you want to delete this room?')) {
-                $(this).closest('.room').remove();
-            }
+            Swal.fire({
+                title: 'Are you sure?',
+                text: `You are about to delete this building and all its data! This action cannot be undone.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const buildingEl = $(this).closest('.building');
+                    const buildingId = buildingEl.attr('data-server-id');
+
+                    const roomEl = $(this).closest('.room');
+                    const roomId = roomEl.attr('data-server-id');
+                    const type = 'room';  // Element type: building
+
+                    // Make AJAX DELETE request
+                    $.ajax({
+                        url: '/buildings/delete-element',  // Your delete route
+                        type: 'DELETE',
+                        data: {
+                            data: {
+                                type: type,            // Type of element to delete (building)
+                                building_id: buildingId, // ID of the building to delete
+                                room_id: roomId
+                            }
+                        },
+                        headers: {  
+                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                        },
+                        success: function(response) {
+                            // If successful, remove the building from the UI
+                            roomEl.remove();
+
+                            // Re-index remaining buildings
+                            $('.room').each(function(index) {
+                                // Update the data-server-id based on the new index
+                                $(this).attr('data-server-id', index + 1); // Assuming the new server ID should be 1-based index
+                            });
+
+                            // Optionally, show a success message
+                            Swal.fire({
+                                title: 'Deleted!',
+                                text: 'The room has been deleted.',
+                                icon: 'success',
+                                confirmButtonText: 'Ok'
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            // Handle error if any
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'There was an error deleting the room. Please try again.',
+                                icon: 'error',
+                                confirmButtonText: 'Ok'
+                            });
+                        }
+                    });
+                }
+            });
+            // if (confirm('Are you sure you want to delete this room?')) {
+            //     $(this).closest('.room').remove();
+            // }
         });
 
+        // Delete room
+        $(document).on('click', '.delete-bench-btn', function() {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: `You are about to delete this bench and all its data! This action cannot be undone.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const buildingEl = $(this).closest('.building');
+                    const buildingId = buildingEl.attr('data-server-id');
+
+                    const roomEl = $(this).closest('.room');
+                    const roomId = roomEl.attr('data-server-id');
+
+                    const rowEl = $(this).closest('.row-section');
+                    const rowId = rowEl.attr('data-server-id');
+
+                    const benchEl = $(this).closest('.bench-item');
+                    const benchId = benchEl.attr('data-server-id');
+
+                    const type = 'bench';  // Element type: building
+
+                    // Make AJAX DELETE request
+                    $.ajax({
+                        url: '/buildings/delete-element',  // Your delete route
+                        type: 'DELETE',
+                        data: {
+                            data: {
+                                type: type,            // Type of element to delete (building)
+                                building_id: buildingId, // ID of the building to delete
+                                room_index: roomId,
+                                row_index: rowId,
+                                bench_index: benchId,
+                            }
+                        },
+                        headers: {  
+                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                        },
+                        success: function(response) {
+                            // If successful, remove the building from the UI
+                            benchEl.remove();
+
+                            // Re-index remaining buildings
+                            $('.bench-item').each(function(index) {
+                                // Update the data-server-id based on the new index
+                                $(this).attr('data-server-id', index); // Assuming the new server ID should be 1-based index
+                            });
+
+                            // Optionally, show a success message
+                            Swal.fire({
+                                title: 'Deleted!',
+                                text: 'The room has been deleted.',
+                                icon: 'success',
+                                confirmButtonText: 'Ok'
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            // Handle error if any
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'There was an error deleting the room. Please try again.',
+                                icon: 'error',
+                                confirmButtonText: 'Ok'
+                            });
+                        }
+                    });
+                }
+            });
+            // if (confirm('Are you sure you want to delete this room?')) {
+            //     $(this).closest('.room').remove();
+            // }
+        });
         // Bench type toggle
         $(document).on('change', 'input[name^="bench_type_"]', function() {
             const roomEl = $(this).closest('.room');
@@ -752,18 +905,23 @@
 
         // Submit total bench data
         $(document).on('click', '.submit-total-bench-btn', function() {
+            const buildingEl = $(this).closest('.building');
+            const buildingId = buildingEl.attr('data-server-id');
+            const buildingName = buildingEl.find('.building-title-input').val();
+
             const roomEl = $(this).closest('.room');
             const roomId = roomEl.attr('data-server-id');
+            const roomName = roomEl.find('.room-title-input').val();
+
             const totalBenches = roomEl.find('.total-benches-input').val();
             const seatsPerBench = roomEl.find('.seats-per-bench-input').val();
 
-            const buildingEl = $(this).closest('.building');
-            const buildingId = buildingEl.attr('data-server-id');
             
             const benchData = {
                 title: `Total Bench Data`,
                 type: 'bench',
                 room_id: roomId,
+                room_name: roomName,
                 selected_type: 'total',
                 building_id: buildingId,
                 total_benches: parseInt(totalBenches),
@@ -782,13 +940,15 @@
 
         // Add row for individual bench data
         $(document).on('click', '.add-row-btn', function() {
-            rowCounter++;
+            // rowCounter++;
             const roomEl = $(this).closest('.room');
             const roomId = roomEl.attr('data-server-id');
+            const rowCounter = roomEl.find('.row-section').length + 1;
             const rowId = `row_${rowCounter}`;
             const buildingEl = $(this).closest('.building');
             const buildingId = buildingEl.attr('data-server-id');
-
+            
+            // console.log(rowCounter)
             // Send AJAX request for row
             const rowData = {
                 title: `Row ${rowCounter}`,
@@ -799,22 +959,26 @@
 
             sendAjaxAddRequest(rowData, (success, response) => {
                 if (success) {
+                    console.log(success)
+                    console.log(response)
                     showStatus('Row added successfully!', 'success');
 
-            
-            const rowHtml = `
-                <div class="row-section" data-id="${rowId}">
-                    <div class="row-header">
-                        <div class="row-title">Row ${rowCounter}</div>
-                        <button class="btn btn-secondary add-bench-btn">+ Add Bench</button>
-                    </div>
-                    <div class="benches-container"></div>
-                </div>
-            `;
+                    const rowHtml = `
+                        <div class="row-section" data-id="${rowId}">
+                            <div class="row-header">
+                                <div class="row-title">Row ${rowCounter}</div>
+                                <button class="btn btn-secondary add-bench-btn">+ Add Bench</button>
+                            </div>
+                            <div class="benches-container"></div>
+                        </div>
+                    `;
 
-            roomEl.find('.rows-container').append(rowHtml);
+                    roomEl.find('.rows-container').append(rowHtml);
+                    console.log($(`.row-section[data-id="${rowId}"]`))
+                    // console.log(response)
+                    // console.log(response.row_index)
             
-                    $(`[data-id="${rowId}"]`).attr('data-server-id', response.id);
+                    $(`.row-section[data-id="${rowId}"]`).attr('data-server-id', response.id);
                 } else {
                     showStatus('Error adding row', 'error');
                 }
@@ -823,16 +987,30 @@
 
         // Add bench to row
         $(document).on('click', '.add-bench-btn', function() {
-            benchCounter++;
+            // benchCounter++;
+
+            const buildingEl = $(this).closest('.building');
+            const buildingId = buildingEl.attr('data-server-id');
+            const buildingName = buildingEl.find('.building-title-input').val();
+            // console.log(buildingName)
+
+            const roomEl = $(this).closest('.room');
+            const roomId = roomEl.attr('data-server-id');
+            const roomName = buildingEl.find('.room-title-input').val();
+
             const rowEl = $(this).closest('.row-section');
             const rowId = rowEl.attr('data-server-id');
+            const rowName = buildingEl.find('.row-title').text();
+
+            const benchCounter = rowEl.find('.bench-item').length + 1;
+
             const benchId = `bench_${benchCounter}`;
             
             const benchHtml = `
                 <div class="bench-item" data-id="${benchId}">
                     <div class="bench-header">
                         <strong>Bench ${benchCounter}</strong>
-                        <button class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;" onclick="$(this).closest('.bench-item').remove(); updateRoomStats($(this).closest('.room'));">Delete</button>
+                        <button class="btn btn-danger delete-bench-btn" style="padding: 5px 10px; font-size: 12px;" >Delete</button>
                     </div>
                     <div class="form-group">
                         <label>Number of Seats</label>
@@ -848,13 +1026,20 @@
             const benchData = {
                 title: `Bench ${benchCounter}`,
                 type: 'bench',
-                row_id: rowId
+                row_id: rowId,
+                row_name: rowName,
+                room_id: roomId,
+                room_name: roomName,
+                building_id:buildingId,
+                building_name: buildingName,
+                selected_type: 'individual',
             };
+            console.log(benchData)
 
-            sendAjaxRequest(benchData, (success, response) => {
+            sendAjaxAddRequest(benchData, (success, response) => {
                 if (success) {
                     showStatus('Bench added successfully!', 'success');
-                    $(`[data-id="${benchId}"]`).attr('data-server-id', response.id);
+                    $(`.bench-item[data-id="${benchId}"]`).attr('data-server-id', response.id);
                 } else {
                     showStatus('Error adding bench', 'error');
                 }
@@ -863,20 +1048,46 @@
 
         // Submit individual bench
         $(document).on('click', '.submit-bench-btn', function() {
-            const benchEl = $(this).closest('.bench-item');
+            const buildingEl = $(this).closest('.building');
+            const buildingId = buildingEl.attr('data-server-id');
+            const buildingName = buildingEl.find('.building-title-input').val();
+            // console.log(buildingName)
+
             const rowEl = $(this).closest('.row-section');
-            const roomEl = $(this).closest('.room');
-            const benchId = benchEl.attr('data-server-id');
             const rowId = rowEl.attr('data-server-id');
+            const rowName = buildingEl.find('.row-title').text();
+
+            const roomEl = $(this).closest('.room');
+            const roomId = roomEl.attr('data-server-id');
+            const roomName = roomEl.find('.room-title-input').val();
+
+            const benchEl = $(this).closest('.bench-item');
+            const benchId = benchEl.attr('data-server-id');
+            const benchName = benchEl.find('.bench-header strong').text(); 
+            
             const seatsValue = benchEl.find('.seats-input').val();
             
-            const seatData = {
+            // const seatData = {
+            //     bench_id: benchId,
+            //     seats_value: parseInt(seatsValue),
+            //     room_name: roomName,
+            //     row_id: rowId
+            // };
+            const benchData = {
+                title: benchName,
+                type: 'bench-edit',
+                row_id: rowId,
+                row_name: rowName,
+                room_id: roomId,
+                room_name: roomName,
                 bench_id: benchId,
+                building_id:buildingId,
+                building_name: buildingName,
+                selected_type: 'individual',
                 seats_value: parseInt(seatsValue),
-                row_id: rowId
             };
 
-            sendAjaxRequest(seatData, (success) => {
+            sendAjaxAddRequest(benchData, (success) => {
                 if (success) {
                     showStatus('Bench seats submitted successfully!', 'success');
                     updateRoomStats(roomEl);

@@ -36,6 +36,8 @@ class BuildingsController extends Controller
                 return $this->addRow($data);
             case 'bench':
                 return $this->addBench($data);
+            case 'bench-edit':
+                return $this->editBench($data);
             default:
                 return response()->json([
                     'status' => 'error',
@@ -113,55 +115,55 @@ class BuildingsController extends Controller
     }
 
     // Private function to add a row to a room
-private function addRow($data)
-{
-    try {
-        // Retrieve building and room data
-        $building = Building::findOrFail($data['building_id']);
-        $roomId = $data['room_id'];
+    private function addRow($data)
+    {
+        try {
+            // Retrieve building and room data
+            $building = Building::findOrFail($data['building_id']);
+            $roomId = $data['room_id'];
 
-        // Initialize the row data
-        $rowData = [
-            'name' => $data['title'], // Row name from the request
-            'bench' => [] // Start with an empty bench array
-        ];
+            // Initialize the row data
+            $rowData = [
+                'name' => $data['title'], // Row name from the request
+                'bench' => [] // Start with an empty bench array
+            ];
 
-        // Decode the rooms data to find the room
-        $roomsData = json_decode($building->rooms, true);
+            // Decode the rooms data to find the room
+            $roomsData = json_decode($building->rooms, true);
 
-        // Check if the room exists
-        if (!isset($roomsData[$roomId])) {
+            // Check if the room exists
+            if (!isset($roomsData[$roomId])) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Room not found.'
+                ], 400);
+            }
+
+            // Add the new row to the room's 'individual' array
+            $roomsData[$roomId]['individual'][] = $rowData;
+
+            // Get the index of the new row
+            $rowIndex = count($roomsData[$roomId]['individual']) - 1;  // Index of the newly added row
+
+            // Save the updated rooms data back to the building
+            $building->rooms = json_encode($roomsData);
+            $building->save();
+
+            // Return the success response
+            return response()->json([
+                'status' => 'success',
+                'message' => "Row added to {$roomsData[$roomId]['name']}.",
+                'room_id' => $roomId, // Return the room_id and row data
+                'id' => $rowIndex,  // Return the index of the new row
+                'row_data' => $rowData  // Optionally return the new row data
+            ]);
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Room not found.'
+                'message' => $e->getMessage()
             ], 400);
         }
-
-        // Add the new row to the room's 'individual' array
-        $roomsData[$roomId]['individual'][] = $rowData;
-
-        // Get the index of the new row
-        $rowIndex = count($roomsData[$roomId]['individual']) - 1;  // Index of the newly added row
-
-        // Save the updated rooms data back to the building
-        $building->rooms = json_encode($roomsData);
-        $building->save();
-
-        // Return the success response
-        return response()->json([
-            'status' => 'success',
-            'message' => "Row added to {$roomsData[$roomId]['name']}.",
-            'room_id' => $roomId, // Return the room_id and row data
-            'row_index' => $rowIndex,  // Return the index of the new row
-            'row_data' => $rowData  // Optionally return the new row data
-        ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'status' => 'error',
-            'message' => $e->getMessage()
-        ], 400);
     }
-}
 
 
     // Add bench method
@@ -174,7 +176,7 @@ private function addRow($data)
             // Decode the rooms data from JSON format
             $roomsData = json_decode($building->rooms, true);
 
-            // Check if the room exists in the rooms data
+            // Check if the room exists using the room_id index
             if (!isset($roomsData[$data['room_id']])) {
                 return response()->json([
                     'status' => 'error',
@@ -182,37 +184,81 @@ private function addRow($data)
                 ], 400);
             }
 
-            // Retrieve the room data
-            $roomData = &$roomsData[$data['room_id']]; // Reference to modify directly
+            // Retrieve the room data directly
+            $roomDataReference = &$roomsData[$data['room_id']];
 
-
-            if ($data['selected_type'] == 'individual') {
-            // Create row and bench data
-            $rowData = [
-                'name' => $data['row_name'],
-                'bench' => [
-                    [
-                        'name' => $data['bench_name'],
-                        'seats' => $data['seats']
-                    ]
-                ]
-            ];
-                // If the selected type is 'individual', we add the row and bench data
-                $roomData['individual'][] = $rowData;
-            } else {
-                // If the selected type is 'total', we add benches to the 'total' section
-                $roomData['total']['benches'] += $data['total_benches'];  // Increment total benches
-                $roomData['total']['seats'] += $data['total_seats']; // Add seats
+            // Check if the room name matches the provided room_name
+            if ($roomDataReference['name'] !== $data['room_name']) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Room name does not match the provided room data.'
+                ], 400);
             }
 
-            // Update the rooms data in the building
-            $building->rooms = json_encode($roomsData);
-            $building->save();
+            // If selected_type is 'individual'
+            if ($data['selected_type'] == 'individual') {
+                // Check if the row exists using the row_id index
+                // $rowFound = false;
+                $row = &$roomDataReference['individual'][$data['row_id']];
 
-            return response()->json([
-                'status' => 'success',
-                'message' => "Bench data added to room {$roomData['name']}."
-            ]);
+                if ($row['name'] !== $data['row_name']) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Row name does not match the provided row data.'
+                    ], 400);
+                }
+                $row['bench'][] = [
+                    'name' => $data['title'],
+                    'seats' => 0
+                ];
+
+                // dd($row);
+                // foreach ($roomDataReference['individual'] as &$row) {
+                //     if ($row['name'] === $data['row_name'] && $row['id'] === $data['row_id']) {
+                //         $rowFound = true;
+                //         // Add the bench to the row
+                //         $row['bench'][] = [
+                //             'name' => $data['title'],
+                //             'seats' => $data['seats']
+                //         ];
+                //         break;
+                //     }
+                // }
+
+                // if (!$rowFound) {
+                //     return response()->json([
+                //         'status' => 'error',
+                //         'message' => 'Row not found in the room.'
+                //     ], 400);
+                // }
+
+                // Get the index of the bench added
+                $benchIndex = count($row['bench']) - 1;
+
+                // Update the rooms data in the building
+                $building->rooms = json_encode($roomsData);
+                $building->save();
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => "Bench data added to row {$data['row_name']} in room {$data['room_name']}.",
+                    'id' => $benchIndex // Send the index of the added bench
+                ]);
+            } else {
+                // If selected_type is 'total', we add benches to the 'total' section
+                $roomDataReference['total']['benches'] += $data['total_benches'];  // Increment total benches
+                $roomDataReference['total']['seats'] += $data['total_seats']; // Add seats
+
+                // Update the rooms data in the building
+                $building->rooms = json_encode($roomsData);
+                $building->save();
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => "Total bench data added to room {$roomDataReference['name']}.",
+                    'bench_index' => '' // Empty string for non-individual type
+                ]);
+            }
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -220,6 +266,91 @@ private function addRow($data)
             ], 400);
         }
     }
+
+    // Add bench method
+    private function editBench($data)
+    {
+        try {
+            // Find the building by building_id from the passed data
+            $building = Building::findOrFail($data['building_id']);
+
+            // Decode the rooms data from JSON format
+            $roomsData = json_decode($building->rooms, true);
+
+            // Check if the room exists using the room_id index
+            if (!isset($roomsData[$data['room_id']])) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Room not found in the building.'
+                ], 400);
+            }
+
+            // Retrieve the room data directly
+            $roomDataReference = &$roomsData[$data['room_id']];
+
+            // Check if the room name matches the provided room_name
+            if ($roomDataReference['name'] !== $data['room_name']) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Room name does not match the provided room data.'
+                ], 400);
+            }
+
+            // If selected_type is 'individual'
+            if ($data['selected_type'] == 'individual') {
+                // Check if the row exists using the row_id index
+                // $rowFound = false;
+                $row = &$roomDataReference['individual'][$data['row_id']];
+
+                if ($row['name'] !== $data['row_name']) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Row name does not match the provided row data.'
+                    ], 400);
+                }
+
+                $bench = &$row['bench'][$data['bench_id']];
+                $bench['seats'] = $data['seats_value'];
+                // $row['bench'][] = [
+                //     'name' => $data['title'],
+                //     'seats' => $data['seats_value']
+                // ];
+
+                // Get the index of the bench added
+                $benchIndex = count($row['bench']) - 1;
+
+                // Update the rooms data in the building
+                $building->rooms = json_encode($roomsData);
+                $building->save();
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => "Bench data added to row {$data['row_name']} in room {$data['room_name']}.",
+                    'id' => $benchIndex // Send the index of the added bench
+                ]);
+            } else {
+                // If selected_type is 'total', we add benches to the 'total' section
+                $roomDataReference['total']['benches'] += $data['total_benches'];  // Increment total benches
+                $roomDataReference['total']['seats'] += $data['total_seats']; // Add seats
+
+                // Update the rooms data in the building
+                $building->rooms = json_encode($roomsData);
+                $building->save();
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => "Total bench data added to room {$roomDataReference['name']}.",
+                    'bench_index' => '' // Empty string for non-individual type
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 400);
+        }
+    }
+
 
     public function deleteElement(Request $request)
     {
@@ -231,7 +362,7 @@ private function addRow($data)
                 case 'building':
                     return $this->deleteBuilding($data['building_id']);
                 case 'room':
-                    return $this->deleteRoom($data['building_id'], $data['room_index']);
+                    return $this->deleteRoom($data['building_id'], $data['room_id']);
                 case 'row':
                     return $this->deleteRow($data['building_id'], $data['room_index'], $data['row_index']);
                 case 'bench':
