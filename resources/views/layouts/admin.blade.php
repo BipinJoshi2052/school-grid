@@ -17,7 +17,7 @@
     <link href="{{ asset('admin/assets/libs/chartist/dist/chartist.min.css') }}" rel="stylesheet">
     <link href="{{ asset('admin/assets/extra-libs/jvector/jquery-jvectormap-2.0.2.css') }}" rel="stylesheet" />
     <!-- Custom CSS -->
-    <link href="{{ asset('admin/dist/css/style.css') }}" rel="stylesheet">
+    <link href="{{ asset('admin/dist/css/style.css?v=1') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{asset('admin/assets/libs/toastr/toastr.min.css')}}">   
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
