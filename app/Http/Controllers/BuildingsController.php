@@ -10,14 +10,19 @@ class BuildingsController extends Controller
 {
     public function index(){
         $data = [];
-        // $data = Faculty::where('user_id', session('school_id'))
-        //         // ->with('addedBy')
-        //         ->with('batches.classes.sections')
-        //         ->orderBy('id','desc')
-        //         ->get()
-        //         ->toArray();
+        $data = Building::where('user_id', session('school_id'))
+                ->get()
+                ->toArray();
                 // dd($data);
         return view('admin.buildings.index', compact('data'));
+    }
+    public function visualize(){
+        $data = [];
+        $data = Building::where('user_id', session('school_id'))
+                ->get()
+                ->toArray();
+                // dd($data);
+        return view('admin.buildings.show', compact('data'));
     }
 
     public function addElement(Request $request)
@@ -29,15 +34,19 @@ class BuildingsController extends Controller
             case 'building':
                 return $this->addBuilding($data['title']);
             case 'room':
-                // dd($data);
                 return $this->addRoom($data);
             case 'row':
-                // dd($data);
                 return $this->addRow($data);
             case 'bench':
                 return $this->addBench($data);
             case 'bench-edit':
                 return $this->editBench($data);
+            case 'building-title':
+                return $this->editBuildingTitle($data);
+            case 'room-title':
+                return $this->editRoomTitle($data);
+            case 'bench-type':
+                return $this->editBenchType($data);
             default:
                 return response()->json([
                     'status' => 'error',
@@ -45,6 +54,130 @@ class BuildingsController extends Controller
                 ], 400);
         }
     }
+
+    private function editBenchType($data)
+    {
+        // Find the building using the provided building_id
+        $building = Building::find($data['building_id']);
+        
+        if (!$building) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Building not found.'
+            ], 404);
+        }
+
+        // Decode the rooms data stored as JSON
+        $roomsData = json_decode($building->rooms, true);
+
+        // Check if the room exists using the room_id index
+        if (!isset($roomsData[$data['room_id']])) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Room not found in the building.'
+            ], 400);
+        }
+
+        // Retrieve the room data directly
+        $roomDataReference = &$roomsData[$data['room_id']];
+
+        // Update the selected_type to the new value from the data
+        $roomDataReference['selected_type'] = $data['bench_type'];
+
+        // Save the updated rooms data back into the building record
+        $building->rooms = json_encode($roomsData);
+
+        if ($building->save()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Bench type updated successfully.',
+                'data' => $building
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to update bench type.'
+            ], 500);
+        }
+    }
+
+
+    private function editBuildingTitle($data)
+    {
+        // Find the building by ID
+        $building = Building::find($data['id']);
+        
+        if (!$building) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Building not found.'
+            ], 404);
+        }
+
+        // Update the building title
+        $building->name = $data['title'];
+
+        // Save the updated building data
+        if ($building->save()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Building title updated successfully.',
+                'data' => $building
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to update building title.'
+            ], 500);
+        }
+    }
+
+    private function editRoomTitle($data)
+    {
+        // Find the building by ID using the building_id from the request
+        $building = Building::find($data['building_id']);
+        
+        if (!$building) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Building not found.'
+            ], 404);
+        }
+
+        // Decode the rooms data stored as JSON
+        $roomsData = json_decode($building->rooms, true);
+
+        // Check if the room exists using the room_id index
+        if (!isset($roomsData[$data['id']])) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Room not found in the building.'
+            ], 400);
+        }
+
+        // Retrieve the room data directly
+        $roomDataReference = &$roomsData[$data['id']];
+
+        // Update the room title (name)
+        $roomDataReference['name'] = $data['title'];
+
+        // Save the updated rooms data back into the building record
+        $building->rooms = json_encode($roomsData);
+
+        if ($building->save()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Room title updated successfully.',
+                'data' => $building
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to update room title.'
+            ], 500);
+        }
+    }
+
 
     // Add building method
     private function addBuilding($title)

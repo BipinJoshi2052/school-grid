@@ -82,9 +82,11 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/buildings/add-element', [BuildingsController::class, 'addElement'])->name('buildings.addElement');
     Route::delete('/buildings/delete-element', [BuildingsController::class, 'deleteElement']);
+    Route::get('/buildings/visualize', [BuildingsController::class, 'visualize'])->name('buildings.visualize');
     Route::get('/buildings', [BuildingsController::class, 'index'])->name('buildings.index');
     
     Route::get('/seat-plan', [HomeController::class, 'seatPlan'])->name('seat-plan');
+    Route::get('/seat-plan-config', [HomeController::class, 'seatPlanConfig'])->name('seat-plan-config');
     // Route::get('/students', [StudentController::class, 'partial'])->name('positions.partial');
 
     Route::post('/erase-data', [AcademicController::class, 'eraseData'])->name('erase-data');

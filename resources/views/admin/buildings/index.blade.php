@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('title')
-    Faculty & Batch
+    Building & Rooms
 @endsection
 
 @section('styles')
@@ -518,11 +518,11 @@
             if (title !== initialTitle) {
                 const buildingData = {
                     title: title,
-                    type: 'building',
+                    type: 'building-title',
                     id: buildingEl.attr('data-server-id')
                 };
 
-                sendAjaxRequest(buildingData, (success) => {
+                sendAjaxAddRequest(buildingData, (success) => {
                     if (success) {
                         showStatus('Building title updated!', 'success');
                     } else {
@@ -649,11 +649,11 @@
                             <div class="room-content active">
                                 <div class="bench-type-selector">
                                     <label>
-                                        <input type="radio" name="bench_type_${roomCounter}" value="total" checked>
+                                        <input class="bench_type" type="radio" name="bench_type_${roomCounter}" value="total" checked>
                                         <span>Total Bench Data</span>
                                     </label>
                                     <label>
-                                        <input type="radio" name="bench_type_${roomCounter}" value="individual">
+                                        <input class="bench_type" type="radio" name="bench_type_${roomCounter}" value="individual">
                                         <span>Individual Bench Data</span>
                                     </label>
                                 </div>
@@ -716,18 +716,53 @@
             }
         });
 
+        // Listen for click events on the radio buttons
+        $(document).on('click', '.bench_type', function(event) {
+            // Get the selected bench type (either 'total' or 'individual')
+            const benchType = $(this).val();
+
+            // Get the closest building element and retrieve the building ID from data-server-id
+            const buildingEl = $(this).closest('.building');
+            const buildingId = buildingEl.attr('data-server-id');
+
+            const roomEl = $(this).closest('.room');
+            const roomId = roomEl.attr('data-server-id');
+
+            // Prepare the data to be sent with the AJAX request
+            const benchTypeData = {
+                building_id: buildingId, // Building ID
+                bench_type: benchType,    // Selected bench type (total or individual)
+                room_id: roomId,
+                type: 'bench-type'
+            };
+
+            // Send the AJAX request to update the bench type
+            sendAjaxAddRequest(benchTypeData, (success) => {
+                if (success) {
+                    showStatus('Bench Type updated!', 'success');
+                } else {
+                    showStatus('Error updating bench type', 'error');
+                }
+            });
+        });
+        
         // Room title edit
         $(document).on('blur', '.room-title-input', function() {
+            const buildingEl = $(this).closest('.building');
+            const buildingId = buildingEl.attr('data-server-id');
+
             const roomEl = $(this).closest('.room');
             const title = $(this).val();
+            // console.log('object')
             
             const roomData = {
                 title: title,
-                type: 'room',
+                type: 'room-title',
+                building_id: buildingId,
                 id: roomEl.attr('data-server-id')
             };
 
-            sendAjaxRequest(roomData, (success) => {
+            sendAjaxAddRequest(roomData, (success) => {
                 if (success) {
                     showStatus('Room title updated!', 'success');
                 } else {
@@ -1000,7 +1035,7 @@
 
             const rowEl = $(this).closest('.row-section');
             const rowId = rowEl.attr('data-server-id');
-            const rowName = buildingEl.find('.row-title').text();
+            const rowName = rowEl.find('.row-title').text();
 
             const benchCounter = rowEl.find('.bench-item').length + 1;
 
@@ -1055,7 +1090,7 @@
 
             const rowEl = $(this).closest('.row-section');
             const rowId = rowEl.attr('data-server-id');
-            const rowName = buildingEl.find('.row-title').text();
+            const rowName = rowEl.find('.row-title').text();
 
             const roomEl = $(this).closest('.room');
             const roomId = roomEl.attr('data-server-id');

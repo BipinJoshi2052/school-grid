@@ -360,12 +360,29 @@
                                 </span>
                             </a>
                         </li>
+                        <li class="sidebar-item"> 
+                            <a class="sidebar-link" href="{{route('buildings.visualize')}}" aria-expanded="false">
+                                <i data-feather="home" class="feather-icon"></i>
+                                <span
+                                    class="hide-menu">Layout
+                                </span>
+                            </a>
+                        </li>
 
                         <li class="sidebar-item"> 
                             <a class="sidebar-link" href="{{route('seat-plan')}}" aria-expanded="false">
                                 <i data-feather="file-plus" class="feather-icon"></i>
                                 <span
                                     class="hide-menu">Seat Plan
+                                </span>
+                            </a>
+                        </li> 
+
+                        <li class="sidebar-item"> 
+                            <a class="sidebar-link" href="{{route('seat-plan-config')}}" aria-expanded="false">
+                                <i data-feather="file-plus" class="feather-icon"></i>
+                                <span
+                                    class="hide-menu">Seat Plan V2
                                 </span>
                             </a>
                         </li> 

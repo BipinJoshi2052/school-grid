@@ -40,5 +40,9 @@ class HomeController extends Controller
     {
         return view('admin.seat-plan.index');
     }
+    public function seatPlanConfig()
+    {
+        return view('admin.seat-plan.config');
+    }
 
 }

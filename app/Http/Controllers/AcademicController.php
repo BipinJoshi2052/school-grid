@@ -340,6 +340,7 @@ class AcademicController extends Controller
                 'user_id' => $schoolId,
                 'title' => $classId === 1 ? 'A' : 'B', // Adjust titles based on class_id
                 'class_id' => $classId,
+                'added_by' => $userId,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);
@@ -449,6 +450,20 @@ class AcademicController extends Controller
             ]);
         }
 
+        Building::create(
+            [
+                'name' => 'Engineering Building',
+                'rooms' => '[{"name": "Room 1", "total": {"seats": 3, "benches": 12}, "individual": [], "selected_type": "total"}, {"name": "Room 2", "total": {"seats": 3, "benches": 12}, "individual": [], "selected_type": "total"}, {"name": "Room 3", "total": {"seats": 2, "benches": 10}, "individual": [], "selected_type": "total"}]',
+                'user_id' => $schoolId,
+                'added_by' => $userId
+            ],
+            [
+                'name' => 'Management Building',
+                'rooms' => '[{"name": "Room 1", "total": {"seats": 0, "benches": 0}, "individual": [{"name": "Row 1", "bench": [{"name": "Bench 1", "seats": 3}, {"name": "Bench 2", "seats": 3}, {"name": "Bench 3", "seats": 2}]}, {"name": "Row 2", "bench": [{"name": "Bench 1", "seats": 3}, {"name": "Bench 2", "seats": 3}, {"name": "Bench 3", "seats": 4}]}], "selected_type": "total"}, {"name": "Room 2", "total": {"seats": 3, "benches": 10}, "individual": [], "selected_type": "total"}]',
+                'user_id' => $schoolId,
+                'added_by' => $userId
+            ]
+        );
         // Optionally, you can add a success message or redirect
         return redirect()->back()->with('success', 'Your data has been populated successfully.');
     }
