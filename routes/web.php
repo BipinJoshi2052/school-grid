@@ -58,6 +58,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/staffs/list-partial', [StaffController::class, 'listPartial'])->name('staffs.list-partial');
     Route::post('staffs/update/{id}', [StaffController::class, 'update'])->name('staff.update');
+    Route::get('/staffs/v2', [StaffController::class, 'listV2'])->name('staffs.v2');
     Route::resource('staffs', StaffController::class);
 
     Route::get('/students/list-partial', [StudentController::class, 'listPartial'])->name('students.list-partial');

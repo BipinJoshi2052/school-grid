@@ -24,6 +24,10 @@ class StaffController extends Controller
         return view('admin.staff.index');
     }
 
+    public function listV2() {
+        return view('admin.staff.v2');
+    }
+
     public function listPartial(Request $request) {
         // Get the search term from the request
         $searchTerm = $request->get('search')['value'] ?? '';  // DataTables sends the search term in search[value]

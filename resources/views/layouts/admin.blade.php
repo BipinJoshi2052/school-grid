@@ -53,7 +53,7 @@
                     <!-- ============================================================== -->
                     <div class="navbar-brand">
                         <!-- Logo icon -->
-                        <a href="index.html">
+                        <a href="{{route('dashboard')}}">
                             <img src="{{ asset('admin/assets/images/edusched.png') }}" alt=""
                                 class="img-fluid">
                         </a>
@@ -317,6 +317,15 @@
                                 <i data-feather="users" class="feather-icon"></i>
                                 <span
                                     class="hide-menu">Students
+                                </span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item"> 
+                            <a class="sidebar-link" href="{{route('staffs.v2')}}" aria-expanded="false">
+                                <i data-feather="users" class="feather-icon"></i>
+                                <span
+                                    class="hide-menu">Users V2
                                 </span>
                             </a>
                         </li>

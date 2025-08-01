@@ -363,25 +363,194 @@
                     </div>
                     
                     <div id="buildingsContainer">
-                        <div class="empty-state">
-                            <h3>No Buildings Added Yet</h3>
-                            <p>Click "Add Building" to get started</p>
-                        </div>
+                        @if (!isset($data) || !empty($data))
+                            <div class="empty-state">
+                                <h3>No Buildings Added Yet</h3>
+                                <p>Click "Add Building" to get started</p>
+                            </div>                   
+                        @endif
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <div id="statusMessage" class="status-message"></div>
+    <?php 
+        $data = json_encode($data, JSON_HEX_TAG);  
+        // dd($data);
+    ?>
 @endsection
 
 @section('scripts')
 <script>
-    let buildingCounter = 0;
+        let buildingCounter = 0;
         // let roomCounter = 0;
         // let rowCounter = 0;
         // let benchCounter = 0;
+        const existingData = JSON.parse('<?php echo addslashes($data); ?>');
 
+        console.log(existingData);
+        // Function to populate existing data
+        function populateExistingData() {
+            if (existingData.length === 0) return;
+
+            $('#buildingsContainer .empty-state').remove();
+
+            existingData.forEach(buildingData => {
+                const rooms = JSON.parse(buildingData.rooms);
+                const buildingId = `building_${buildingData.id}`;
+                
+                // Create building HTML
+                const buildingHtml = `
+                    <div class="building" data-id="${buildingId}" data-server-id="${buildingData.id}">
+                        <div class="building-header">
+                            <div class="building-title">
+                                <input type="text" placeholder="Enter building title" class="building-title-input" style="background: transparent; border: none; color: white; font-size: 1.5em; font-weight: 500; width: 100%; outline: none;" value="${buildingData.name}">
+                            </div>
+                            <div class="building-actions">
+                                <button class="btn btn-secondary add-room-btn">+ Add Room</button>
+                                <button class="btn btn-danger delete-building-btn" style="margin-left: 10px;">Delete</button>
+                            </div>
+                        </div>
+                        <div class="building-content">
+                            <div class="rooms-container"></div>
+                        </div>
+                    </div>
+                `;
+
+                $('#buildingsContainer').append(buildingHtml);
+                const buildingEl = $(`[data-id="${buildingId}"]`);
+
+                // Populate rooms
+                rooms.forEach((roomData, roomIndex) => {
+                    var roomCounter = roomIndex;
+                    const roomId = `room_${roomIndex}`;
+                    
+                    // Calculate total stats
+                    let totalBenches = 0;
+                    let totalSeats = 0;
+                    
+                    if (roomData.selected_type === 'total') {
+                        totalBenches = roomData.total.benches || 0;
+                        totalSeats = roomData.total.seats || 0;
+                    } else if (roomData.selected_type === 'individual') {
+                        roomData.individual.forEach(row => {
+                            if (row.bench) {
+                                totalBenches += row.bench.length;
+                                row.bench.forEach(bench => {
+                                    totalSeats += bench.seats || 0;
+                                });
+                            }
+                        });
+                    }
+
+                    const roomHtml = `
+                        <div class="room collapsed" data-id="${roomId}" data-server-id="${roomId}">
+                            <div class="room-header">
+                                <div class="room-title">
+                                    <input type="text" placeholder="Enter room title" class="room-title-input" style="background: transparent; border: none; color: white; font-size: 1.2em; font-weight: 500; outline: none;" value="${roomData.name}">
+                                </div>
+                                <div>
+                                    <span class="room-stats">${totalBenches} benches, ${totalSeats} seats</span>
+                                    <span class="collapse-icon" style="margin-left: 15px; font-size: 1.2em;">▶</span>
+                                </div>
+                            </div>
+                            <div class="room-content">
+                                <div class="bench-type-selector">
+                                    <label>
+                                        <input type="radio" name="bench_type_${roomCounter}" value="total" ${roomData.selected_type === 'total' ? 'checked' : ''}>
+                                        <span>Total Bench Data</span>
+                                    </label>
+                                    <label>
+                                        <input type="radio" name="bench_type_${roomCounter}" value="individual" ${roomData.selected_type === 'individual' ? 'checked' : ''}>
+                                        <span>Individual Bench Data</span>
+                                    </label>
+                                </div>
+                                
+                                <div class="total-bench-section" style="display: ${roomData.selected_type === 'total' ? 'block' : 'none'};">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Total Benches</label>
+                                            <input type="number" class="total-benches-input" min="0" value="${roomData.total.benches || 0}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Seats per Bench</label>
+                                            <input type="number" class="seats-per-bench-input" min="0" value="${roomData.total.seats || 0}">
+                                        </div>
+                                    </div>
+                                    <button class="btn submit-total-bench-btn">Submit Bench Data</button>
+                                </div>
+                                
+                                <div class="individual-bench-section" style="display: ${roomData.selected_type === 'individual' ? 'block' : 'none'};">
+                                    <button class="btn btn-secondary add-row-btn">+ Add Row</button>
+                                    <div class="rows-container"></div>
+                                </div>
+                                
+                                <div style="text-align: right; margin-top: 20px;">
+                                    <button class="btn btn-danger delete-room-btn">Delete Room</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    buildingEl.find('.rooms-container').append(roomHtml);
+                    const roomEl = $(`[data-id="${roomId}"]`);
+
+                    // Populate individual bench data if selected
+                    if (roomData.selected_type === 'individual' && roomData.individual) {
+                        roomData.individual.forEach((rowData, rowIndex) => {
+                            var rowCounter = rowIndex;
+                            const rowId = `row_${buildingData.id}_${rowIndex}`;
+                            
+                            const rowHtml = `
+                                <div class="row-section" data-id="${rowId}" data-server-id="${rowId}">
+                                    <div class="row-header">
+                                        <div class="row-title">${rowData.name}</div>
+                                        <button class="btn btn-secondary add-bench-btn">+ Add Bench</button>
+                                    </div>
+                                    <div class="benches-container"></div>
+                                </div>
+                            `;
+
+                            roomEl.find('.rows-container').append(rowHtml);
+                            const rowEl = $(`[data-id="${rowId}"]`);
+
+                            // Populate benches in this row
+                            if (rowData.bench) {
+                                rowData.bench.forEach((benchData, benchIndex) => {
+                                    var benchCounter = benchIndex;
+                                    const benchId = `bench_${benchIndex}`;
+                                    
+                                    const benchHtml = `
+                                        <div class="bench-item" data-id="${benchId}" data-server-id="${benchId}">
+                                            <div class="bench-header">
+                                                <strong>${benchData.name}</strong>
+                                                <button class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;" onclick="$(this).closest('.bench-item').remove(); updateRoomStats($(this).closest('.room'));">Delete</button>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Number of Seats</label>
+                                                <input type="number" class="seats-input" min="0" value="${benchData.seats || 0}">
+                                            </div>
+                                            <button class="btn submit-bench-btn">Submit Bench</button>
+                                        </div>
+                                    `;
+
+                                    rowEl.find('.benches-container').append(benchHtml);
+                                });
+                            }
+                        });
+                    }
+                });
+
+                // Update counters to avoid conflicts
+                buildingCounter = Math.max(buildingCounter, buildingData.id);
+            });
+        }
+
+        // Initialize the application
+        $(document).ready(function() {
+            populateExistingData();
+        });
         // Simulate AJAX requests (replace with actual endpoints)
         function sendAjaxRequest(data, callback) {
             console.log('Sending AJAX request to /buildings/add-element:', data);
