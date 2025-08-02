@@ -30,7 +30,7 @@ jobs:
           mkdir -p storage/framework/cache
           mkdir -p storage/logs
           mkdir -p bootstrap/cache
-          
+
       - name: Install Composer Dependencies
         run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
@@ -41,12 +41,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-
-      - name: Install NPM Dependencies
-        run: npm install
-
-      - name: Build Assets
-        run: npm run production
 
       - name: Deploy to Server
         uses: appleboy/ssh-action@v1.0.3
