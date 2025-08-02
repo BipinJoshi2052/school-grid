@@ -50,6 +50,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
+            sudo chown -R ubuntu:ubuntu /var/www/school-grid
             cd /var/www/school-grid
             git fetch origin main
             git reset --hard origin/main
@@ -61,4 +62,6 @@ jobs:
             php artisan config:cache
             php artisan route:cache
             php artisan view:cache
+            sudo chown -R www-data:www-data storage bootstrap/cache
+            sudo chmod -R 775 storage bootstrap/cache
             php artisan queue:restart
