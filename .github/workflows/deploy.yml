@@ -41,7 +41,7 @@ jobs:
         run: npm run production
 
       - name: Deploy to Server
-        uses: appleboy/ssh-action@main
+        uses: appleboy/ssh-action@v0.2.0
         with:
           host: 13.60.20.164
           username: ubuntu
