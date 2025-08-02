@@ -27,7 +27,7 @@ jobs:
         run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
       - name: Generate Application Key
-        run: php artisan key:generate
+        run: sudo php artisan key:generate
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -51,8 +51,8 @@ jobs:
             cd /var/www/school-grid/
             git pull origin main
             composer install --no-dev --optimize-autoloader
-            php artisan migrate --force
-            php artisan config:cache
-            php artisan route:cache
-            php artisan view:cache
-            php artisan queue:restart
+            sudo php artisan migrate --force
+            sudo php artisan config:cache
+            sudo php artisan route:cache
+            sudo php artisan view:cache
+            sudo php artisan queue:restart
