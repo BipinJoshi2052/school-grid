@@ -7,6 +7,98 @@
 @section('styles')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/ui-lightness/jquery-ui.min.css">
     <style>
+
+        .main-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .main-container.unassigned-visible {
+            grid-template-columns: 1fr 150px;
+        }
+
+        .room-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .room-section.shrunk {
+            /* margin-right: 370px; */
+        }
+
+        .unassigned-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: fixed;
+            top: 87px;
+            right: -370px;
+            width: 350px;
+            height: calc(94vh - 40px);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .unassigned-section.visible {
+            right: 20px;
+        }
+
+        .unassigned-toggle-btn {
+            position: fixed;
+            top: 100px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            z-index: 1001;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .unassigned-toggle-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .unassigned-toggle-btn.active {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            right: 390px;
+        }
+
+        .unassigned-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #f39c12;
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+        }
+
         .header {
             background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
             color: white;
@@ -15,34 +107,30 @@
             position: relative;
         }
 
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="rgba(255,255,255,0.1)"><polygon points="0,0 1000,0 1000,60 0,100"/></svg>');
-            background-size: cover;
-        }
-
         .header h1 {
             font-size: 2.5em;
             margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-            position: relative;
-            z-index: 1;
         }
 
         .header h2 {
             font-size: 1.5em;
             opacity: 0.9;
-            position: relative;
-            z-index: 1;
+        }
+
+        .unassigned-header {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .unassigned-header h3 {
+            font-size: 1.3em;
         }
 
         .room-layout {
-            padding: 40px;
+            padding: 30px;
             background: #f8f9fa;
         }
 
@@ -56,24 +144,11 @@
             overflow-y: hidden;
         }
 
-        .room-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(52, 152, 219, 0.03) 0%, transparent 70%);
-            pointer-events: none;
-            z-index: 0;
-        }
-
         .benches-container {
             display: grid;
             grid-template-columns: 1fr 100px 1fr;
             gap: 20px;
             position: relative;
-            z-index: 1;
             min-width: 800px;
         }
 
@@ -124,11 +199,20 @@
         .students-row {
             display: flex;
             gap: 15px;
-            justify-content: space-between;
+            flex-wrap: wrap;
+            min-height: 80px;
+            padding: 10px;
+            border: 2px dashed transparent;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .students-row.drag-over {
+            border-color: #3498db;
+            background: rgba(52, 152, 219, 0.1);
         }
 
         .student-card {
-            flex: 1;
             background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
             border: 2px solid #e9ecef;
             border-radius: 12px;
@@ -139,6 +223,11 @@
             display: flex;
             gap: 10px;
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            user-select: none;
+            width: calc(33.333% - 10px);
+            min-width: 200px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .student-card:hover {
@@ -152,13 +241,20 @@
             background: linear-gradient(135deg, #fff5f5 0%, #ffeaea 100%);
         }
 
-        .student-card.handicapped::before {
+        .student-card.handicapped::after {
             content: '♿';
             position: absolute;
             top: 5px;
             right: 5px;
             font-size: 16px;
             color: #e74c3c;
+        }
+
+        .student-card.dragging {
+            opacity: 0.5;
+            transform: rotate(5deg) scale(1.05);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3) !important;
+            z-index: 1000;
         }
 
         .student-avatar {
@@ -217,10 +313,15 @@
         .drag-handle {
             background: #95a5a6;
             color: white;
+            cursor: grab;
         }
 
         .drag-handle:hover {
             background: #7f8c8d;
+        }
+
+        .drag-handle:active {
+            cursor: grabbing;
         }
 
         .sms-btn {
@@ -241,23 +342,54 @@
             background: #e67e22;
         }
 
-        .ui-sortable-helper {
-            transform: rotate(5deg);
-            z-index: 1000;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+        .unassigned-students {
+            padding: 20px;
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
         }
 
-        .dragging {
-            transform: rotate(5deg);
-            z-index: 1000;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+        .unassigned-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
-        .ui-sortable-placeholder {
-            background: #e8f4f8;
-            border: 2px dashed #3498db;
+        .unassigned-card {
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+            border: 2px solid #e74c3c;
             border-radius: 12px;
-            margin: 5px;
+            padding: 12px;
+            cursor: move;
+            transition: all 0.3s ease;
+            display: flex;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            user-select: none;
+        }
+
+        .unassigned-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .unassigned-card.dragging {
+            opacity: 0.5;
+            transform: rotate(3deg) scale(1.05);
+            z-index: 1000;
+        }
+
+        .unassigned-card .student-avatar {
+            width: 40px;
+            height: 40px;
+            font-size: 14px;
+        }
+
+        .unassigned-card .student-name {
+            font-size: 13px;
+        }
+
+        .unassigned-card .student-details {
+            font-size: 11px;
         }
 
         .controls {
@@ -332,8 +464,44 @@
             background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
             border-color: #e9ecef;
         }
-        #right-column{
-            padding-right: 30px;
+
+        .legend-color.unassigned {
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+            border-color: #e74c3c;
+        }
+
+        @media (max-width: 1200px) {
+            .unassigned-section {
+                right: -100%;
+                width: 90%;
+                max-width: 400px;
+            }
+            
+            .unassigned-section.visible {
+                right: 5%;
+            }
+            
+            .unassigned-toggle-btn.active {
+                right: calc(95% - 60px);
+            }
+            
+            .room-section.shrunk {
+                margin-right: 0;
+                transform: scale(0.95);
+            }
+            
+            .unassigned-students {
+                max-height: calc(100vh - 200px);
+            }
+            
+            .unassigned-list {
+                flex-direction: column;
+            }
+            
+            .unassigned-card {
+                flex: none;
+                min-width: auto;
+            }
         }
 
         @media (max-width: 768px) {
@@ -358,27 +526,8 @@
                 gap: 15px;
             }
             
-            .students-row {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
             .student-card {
-                min-height: 80px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .header h1 {
-                font-size: 2em;
-            }
-            
-            .room-layout {
-                padding: 20px;
-            }
-            
-            .room-container {
-                padding: 20px;
+                width: 100%;
             }
         }
     </style>
@@ -411,54 +560,80 @@
             <div class="col-sm-12 col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        {{-- <div class="container"> --}}
-                            <div class="header">
-                                <h1>Engineering Building</h1>
-                                <h2>Room 101 - Computer Science</h2>
-                            </div>
+ <div class="main-container" id="main-container">
+        <!-- Floating Toggle Button -->
+        <button class="unassigned-toggle-btn" id="unassigned-toggle" onclick="toggleUnassignedPanel()">
+            <i class="fas fa-users"></i>
+            <span class="unassigned-count" id="unassigned-count">10</span>
+        </button>
 
-                            <div class="room-layout">
-                                <div class="legend">
-                                    <div class="legend-item">
-                                        <div class="legend-color normal"></div>
-                                        <span>Regular Student</span>
-                                    </div>
-                                    <div class="legend-item">
-                                        <div class="legend-color handicapped"></div>
-                                        <span>♿ Handicapped Student</span>
-                                    </div>
-                                    <div class="legend-item">
-                                        <i class="fas fa-arrows-alt" style="color: #95a5a6;"></i>
-                                        <span>Drag to move</span>
-                                    </div>
-                                </div>
+        <!-- Main Room Section -->
+        <div class="room-section" id="room-section">
+            <div class="header">
+                <h1>Engineering Building</h1>
+                <h2>Room 101 - Computer Science</h2>
+            </div>
 
-                                <div class="room-container">
-                                    <div class="benches-container">
-                                        <div class="bench-column" id="left-column">
-                                            <!-- Left side benches will be generated here -->
-                                        </div>
-                                        <div class="aisle">
-                                            <span>AISLE</span>
-                                        </div>
-                                        <div class="bench-column" id="right-column">
-                                            <!-- Right side benches will be generated here -->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+            <div class="room-layout">
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color normal"></div>
+                        <span>Regular Student</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color handicapped"></div>
+                        <span>♿ Handicapped Student</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color unassigned"></div>
+                        <span>Unassigned Student</span>
+                    </div>
+                    <div class="legend-item">
+                        <i class="fas fa-arrows-alt" style="color: #95a5a6;"></i>
+                        <span>Drag to move</span>
+                    </div>
+                </div>
 
-                            <div class="controls">
-                                <button class="control-btn sms-btn" onclick="sendBulkSMS()">
-                                    <i class="fas fa-envelope"></i>
-                                    Send SMS to All
-                                </button>
-                                <button class="control-btn notification-btn" onclick="sendBulkNotification()">
-                                    <i class="fas fa-bell"></i>
-                                    Send Notification to All
-                                </button>
-                            </div>
-                        {{-- </div> --}}
+                <div class="room-container">
+                    <div class="benches-container">
+                        <div class="bench-column" id="left-column">
+                            <!-- Left side benches will be generated here -->
+                        </div>
+                        <div class="aisle">
+                            <span>AISLE</span>
+                        </div>
+                        <div class="bench-column" id="right-column">
+                            <!-- Right side benches will be generated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="control-btn sms-btn" onclick="sendBulkSMS()">
+                    <i class="fas fa-sms"></i>
+                    Send SMS to All
+                </button>
+                <button class="control-btn notification-btn" onclick="sendBulkNotification()">
+                    <i class="fas fa-bell"></i>
+                    Send Notification to All
+                </button>
+            </div>
+        </div>
+
+        <!-- Unassigned Students Section -->
+        <div class="unassigned-section" id="unassigned-section">
+            <div class="unassigned-header">
+                <h3><i class="fas fa-users"></i> Unassigned Students</h3>
+                <p>Drag students to assign seats</p>
+            </div>
+            <div class="unassigned-students">
+                <div class="unassigned-list" id="unassigned-list">
+                    <!-- Unassigned students will be generated here -->
+                </div>
+            </div>
+        </div>
+    </div>
                     </div>
                 </div>
             </div>
@@ -469,39 +644,38 @@
 @section('scripts')  
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
     <script>
-        // Sample student data
-        const students = [
-            { id: 1, name: 'Ram Kumar', class: 'CSE-A', roll: 'CS001', handicapped: false },
-            { id: 2, name: 'Sita Sharma', class: 'CSE-A', roll: 'CS002', handicapped: true },
-            { id: 3, name: 'Hari Bahadur', class: 'CSE-A', roll: 'CS003', handicapped: false },
-            { id: 4, name: 'Gita Patel', class: 'CSE-B', roll: 'CS004', handicapped: false },
-            { id: 5, name: 'Shyam Thapa', class: 'CSE-B', roll: 'CS005', handicapped: false },
-            { id: 6, name: 'Radha Gurung', class: 'CSE-B', roll: 'CS006', handicapped: true },
-            { id: 7, name: 'Krishna Lama', class: 'CSE-C', roll: 'CS007', handicapped: false },
-            { id: 8, name: 'Sarita Magar', class: 'CSE-C', roll: 'CS008', handicapped: false },
-            { id: 9, name: 'Ravi Tamang', class: 'CSE-C', roll: 'CS009', handicapped: false },
-            { id: 10, name: 'Mina Rai', class: 'CSE-D', roll: 'CS010', handicapped: false },
-            { id: 11, name: 'Dipak Limbu', class: 'CSE-D', roll: 'CS011', handicapped: false },
-            { id: 12, name: 'Kamala Subedi', class: 'CSE-D', roll: 'CS012', handicapped: true },
-            { id: 13, name: 'Bikash Adhikari', class: 'CSE-E', roll: 'CS013', handicapped: false },
-            { id: 14, name: 'Sunita Karki', class: 'CSE-E', roll: 'CS014', handicapped: false },
-            { id: 15, name: 'Mohan Bastola', class: 'CSE-E', roll: 'CS015', handicapped: false },
-            { id: 16, name: 'Laxmi Thapa', class: 'CSE-F', roll: 'CS016', handicapped: false },
-            { id: 17, name: 'Kiran Shrestha', class: 'CSE-F', roll: 'CS017', handicapped: false },
-            { id: 18, name: 'Prema Ghimire', class: 'CSE-F', roll: 'CS018', handicapped: false },
-            { id: 19, name: 'Anil Pokharel', class: 'CSE-G', roll: 'CS019', handicapped: false },
-            { id: 20, name: 'Rita Bhattarai', class: 'CSE-G', roll: 'CS020', handicapped: false },
-            { id: 21, name: 'Sunil Dhakal', class: 'CSE-G', roll: 'CS021', handicapped: false },
-            { id: 22, name: 'Maya Joshi', class: 'CSE-H', roll: 'CS022', handicapped: false },
-            { id: 23, name: 'Gopal Neupane', class: 'CSE-H', roll: 'CS023', handicapped: false },
-            { id: 24, name: 'Sushma Gautam', class: 'CSE-H', roll: 'CS024', handicapped: false },
-            { id: 25, name: 'Ramesh Khadka', class: 'CSE-I', roll: 'CS025', handicapped: false },
-            { id: 26, name: 'Bindu Parajuli', class: 'CSE-I', roll: 'CS026', handicapped: false },
-            { id: 27, name: 'Nabin Maharjan', class: 'CSE-I', roll: 'CS027', handicapped: false },
-            { id: 28, name: 'Sabina Manandhar', class: 'CSE-J', roll: 'CS028', handicapped: false },
-            { id: 29, name: 'Prakash Silwal', class: 'CSE-J', roll: 'CS029', handicapped: false },
-            { id: 30, name: 'Anita Pandey', class: 'CSE-J', roll: 'CS030', handicapped: false }
+        // All student data - some assigned, some unassigned
+        const allStudents = [
+            { id: 1, name: 'Ram Kumar', class: 'CSE-A', roll: 'CS001', handicapped: false, assigned: true },
+            { id: 2, name: 'Sita Sharma', class: 'CSE-A', roll: 'CS002', handicapped: true, assigned: true },
+            { id: 3, name: 'Hari Bahadur', class: 'CSE-A', roll: 'CS003', handicapped: false, assigned: true },
+            { id: 4, name: 'Gita Patel', class: 'CSE-B', roll: 'CS004', handicapped: false, assigned: true },
+            { id: 5, name: 'Shyam Thapa', class: 'CSE-B', roll: 'CS005', handicapped: false, assigned: true },
+            { id: 6, name: 'Radha Gurung', class: 'CSE-B', roll: 'CS006', handicapped: true, assigned: true },
+            { id: 7, name: 'Krishna Lama', class: 'CSE-C', roll: 'CS007', handicapped: false, assigned: true },
+            { id: 8, name: 'Sarita Magar', class: 'CSE-C', roll: 'CS008', handicapped: false, assigned: true },
+            { id: 9, name: 'Ravi Tamang', class: 'CSE-C', roll: 'CS009', handicapped: false, assigned: true },
+            { id: 10, name: 'Mina Rai', class: 'CSE-D', roll: 'CS010', handicapped: false, assigned: true },
+            { id: 11, name: 'Dipak Limbu', class: 'CSE-D', roll: 'CS011', handicapped: false, assigned: true },
+            { id: 12, name: 'Kamala Subedi', class: 'CSE-D', roll: 'CS012', handicapped: true, assigned: true },
+            { id: 13, name: 'Bikash Adhikari', class: 'CSE-E', roll: 'CS013', handicapped: false, assigned: true },
+            { id: 14, name: 'Sunita Karki', class: 'CSE-E', roll: 'CS014', handicapped: false, assigned: true },
+            { id: 15, name: 'Mohan Bastola', class: 'CSE-E', roll: 'CS015', handicapped: false, assigned: true },
+            // Unassigned students
+            { id: 16, name: 'Laxmi Thapa', class: 'CSE-F', roll: 'CS016', handicapped: false, assigned: false },
+            { id: 17, name: 'Kiran Shrestha', class: 'CSE-F', roll: 'CS017', handicapped: false, assigned: false },
+            { id: 18, name: 'Prema Ghimire', class: 'CSE-F', roll: 'CS018', handicapped: false, assigned: false },
+            { id: 19, name: 'Anil Pokharel', class: 'CSE-G', roll: 'CS019', handicapped: false, assigned: false },
+            { id: 20, name: 'Rita Bhattarai', class: 'CSE-G', roll: 'CS020', handicapped: true, assigned: false },
+            { id: 21, name: 'Sunil Dhakal', class: 'CSE-G', roll: 'CS021', handicapped: false, assigned: false },
+            { id: 22, name: 'Maya Joshi', class: 'CSE-H', roll: 'CS022', handicapped: false, assigned: false },
+            { id: 23, name: 'Gopal Neupane', class: 'CSE-H', roll: 'CS023', handicapped: false, assigned: false },
+            { id: 24, name: 'Sushma Gautam', class: 'CSE-H', roll: 'CS024', handicapped: false, assigned: false },
+            { id: 25, name: 'Ramesh Khadka', class: 'CSE-I', roll: 'CS025', handicapped: false, assigned: false }
         ];
+
+        let draggedElement = null;
+        let draggedData = null;
 
         // Configure toastr
         toastr.options = {
@@ -515,10 +689,12 @@
             return name.split(' ').map(n => n[0]).join('').toUpperCase();
         }
 
-        function createStudentCard(student) {
+        function createStudentCard(student, isUnassigned = false) {
             const handicappedClass = student.handicapped ? 'handicapped' : '';
+            const cardClass = isUnassigned ? 'unassigned-card' : `student-card ${handicappedClass}`;
+            
             return `
-                <div class="student-card ${handicappedClass}" data-student-id="${student.id}">
+                <div class="${cardClass}" draggable="true" data-student-id="${student.id}">
                     <div class="student-avatar">${getStudentInitials(student.name)}</div>
                     <div class="student-info">
                         <div class="student-name">${student.name}</div>
@@ -527,6 +703,7 @@
                             Roll: ${student.roll}
                         </div>
                     </div>
+                    ${!isUnassigned ? `
                     <div class="student-actions">
                         <button class="action-btn drag-handle" title="Drag to move">
                             <i class="fas fa-arrows-alt"></i>
@@ -538,16 +715,17 @@
                             <i class="fas fa-bell"></i>
                         </button>
                     </div>
+                    ` : ''}
                 </div>
             `;
         }
 
         function createBench(benchNumber, studentsInBench) {
-            const studentsHTML = studentsInBench.map(createStudentCard).join('');
+            const studentsHTML = studentsInBench.map(s => createStudentCard(s, false)).join('');
             return `
                 <div class="bench" data-bench="${benchNumber}">
                     <div class="bench-header">Bench ${benchNumber}</div>
-                    <div class="students-row">
+                    <div class="students-row" data-bench="${benchNumber}">
                         ${studentsHTML}
                     </div>
                 </div>
@@ -557,101 +735,215 @@
         function initializeRoom() {
             const leftColumn = $('#left-column');
             const rightColumn = $('#right-column');
+            const assignedStudents = allStudents.filter(s => s.assigned);
             
             // Create benches for left side (benches 1-5)
             for (let i = 1; i <= 5; i++) {
                 const startIndex = (i - 1) * 3;
-                const benchStudents = students.slice(startIndex, startIndex + 3);
+                const benchStudents = assignedStudents.slice(startIndex, Math.min(startIndex + 3, assignedStudents.length));
                 leftColumn.append(createBench(i, benchStudents));
             }
             
             // Create benches for right side (benches 6-10)
             for (let i = 6; i <= 10; i++) {
                 const startIndex = (i - 1) * 3;
-                const benchStudents = students.slice(startIndex, startIndex + 3);
+                const benchStudents = assignedStudents.slice(startIndex, Math.min(startIndex + 3, assignedStudents.length));
                 rightColumn.append(createBench(i, benchStudents));
             }
+
+            // Create unassigned students list
+            const unassignedList = $('#unassigned-list');
+            const unassignedStudents = allStudents.filter(s => !s.assigned);
+            unassignedStudents.forEach(student => {
+                unassignedList.append(createStudentCard(student, true));
+            });
         }
 
         function initializeDragAndDrop() {
-            $('.students-row').sortable({
-                items: '.student-card',
-                handle: '.drag-handle',
-                connectWith: '.students-row',
-                placeholder: 'ui-sortable-placeholder',
-                tolerance: 'pointer',
-                cursor: 'move',
-                helper: 'clone',
-                opacity: 0.8,
-                scroll: true,
-                scrollSensitivity: 100,
-                scrollSpeed: 20,
-                start: function(event, ui) {
-                    ui.placeholder.height(ui.item.height());
-                    ui.helper.addClass('dragging');
-                },
-                stop: function(event, ui) {
-                    ui.item.removeClass('dragging');
-                },
-                update: function(event, ui) {
-                    const movedStudent = ui.item;
-                    const studentId = movedStudent.data('student-id');
-                    const student = students.find(s => s.id === studentId);
-                    
-                    if (student && ui.sender) {
-                        // Get the student that was replaced (if any)
-                        const targetRow = $(this);
-                        const allStudentsInRow = targetRow.find('.student-card');
-                        
-                        if (allStudentsInRow.length > 1) {
-                            // Find the student that was displaced
-                            const otherStudent = allStudentsInRow.not(movedStudent).first();
-                            if (otherStudent.length) {
-                                const otherStudentId = otherStudent.data('student-id');
-                                const otherStudentData = students.find(s => s.id === otherStudentId);
-                                
-                                if (otherStudentData) {
-                                    toastr.success(`${otherStudentData.name} is replaced by ${student.name}`);
-                                }
-                            }
-                        } else {
-                            toastr.info(`${student.name} moved to new position`);
-                        }
-                    }
-                }
+            console.log('Initializing drag and drop...');
+
+            // Handle drag start
+            $(document).on('dragstart', '.student-card, .unassigned-card', function(e) {
+                draggedElement = this;
+                draggedData = {
+                    id: $(this).data('student-id'),
+                    isUnassigned: $(this).hasClass('unassigned-card')
+                };
+                
+                $(this).addClass('dragging');
+                console.log('Drag started for student:', draggedData.id);
+                
+                e.originalEvent.dataTransfer.effectAllowed = 'move';
+                e.originalEvent.dataTransfer.setData('text/plain', draggedData.id);
             });
-            
-            // Make individual student cards draggable within their row
-            $('.student-card').draggable({
-                handle: '.drag-handle',
-                cursor: 'move',
-                opacity: 0.8,
-                helper: 'clone',
-                connectToSortable: '.students-row',
-                scroll: true,
-                scrollSensitivity: 100,
-                scrollSpeed: 20,
-                start: function(event, ui) {
-                    ui.helper.addClass('dragging');
-                },
-                stop: function(event, ui) {
-                    // This will be handled by sortable
+
+            // Handle drag end
+            $(document).on('dragend', '.student-card, .unassigned-card', function(e) {
+                $(this).removeClass('dragging');
+                $('.drag-over').removeClass('drag-over');
+                console.log('Drag ended');
+            });
+
+            // Handle drag over
+            $(document).on('dragover', '.students-row, .student-card, .unassigned-list', function(e) {
+                e.preventDefault();
+                e.originalEvent.dataTransfer.dropEffect = 'move';
+                $(this).addClass('drag-over');
+            });
+
+            // Handle drag leave
+            $(document).on('dragleave', '.students-row, .student-card, .unassigned-list', function(e) {
+                $(this).removeClass('drag-over');
+            });
+
+            // Handle drop
+            $(document).on('drop', '.students-row, .student-card, .unassigned-list', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const $dropTarget = $(this);
+                $dropTarget.removeClass('drag-over');
+                
+                if (!draggedElement || !draggedData) return;
+                
+                const draggedStudent = allStudents.find(s => s.id === draggedData.id);
+                if (!draggedStudent) return;
+
+                if ($dropTarget.hasClass('students-row')) {
+                    // Dropped on a bench row
+                    handleDropOnBench($dropTarget, draggedStudent);
+                } else if ($dropTarget.hasClass('student-card')) {
+                    // Dropped on another student - swap positions
+                    handleSwapStudents($dropTarget, draggedStudent);
+                } else if ($dropTarget.hasClass('unassigned-list')) {
+                    // Dropped back to unassigned list
+                    handleDropToUnassigned(draggedStudent);
                 }
+
+                // Clean up
+                draggedElement = null;
+                draggedData = null;
             });
         }
 
+        function handleDropOnBench($benchRow, draggedStudent) {
+            console.log('Dropping on bench:', $benchRow.data('bench'));
+            
+            // Create new student card for the bench
+            const newCard = createStudentCard(draggedStudent, false);
+            $benchRow.append(newCard);
+            
+            // Remove from original location
+            $(draggedElement).remove();
+            
+            // Update student status
+            draggedStudent.assigned = true;
+            
+            toastr.success(`${draggedStudent.name} assigned to Bench ${$benchRow.data('bench')}`);
+        }
+
+       
+        function handleSwapStudents($targetCard, draggedStudent) {
+            const targetStudentId = $targetCard.data('student-id');
+            const targetStudent = allStudents.find(s => s.id === targetStudentId);
+            
+            if (!targetStudent || draggedStudent.id === targetStudent.id) return;
+            
+            console.log(`Swapping ${draggedStudent.name} with ${targetStudent.name}`);
+            
+            // Get parent containers
+            const $draggedParent = $(draggedElement).parent();
+            const $targetParent = $targetCard.parent();
+            
+            // Create replacement cards
+            const draggedReplacement = draggedData.isUnassigned ? 
+                createStudentCard(draggedStudent, false) : 
+                createStudentCard(draggedStudent, false);
+            const targetReplacement = createStudentCard(targetStudent, false);
+            
+            // Replace elements
+            $(draggedElement).replaceWith(targetReplacement);
+            $targetCard.replaceWith(draggedReplacement);
+            
+            // Update assignment status
+            if (draggedData.isUnassigned) {
+                draggedStudent.assigned = true;
+                targetStudent.assigned = false;
+                
+                // Add target student to unassigned list
+                const unassignedCard = createStudentCard(targetStudent, true);
+                $('#unassigned-list').append(unassignedCard);
+            }
+            
+            // Update count
+            updateUnassignedCount();
+            
+            toastr.success(`${targetStudent.name} is replaced by ${draggedStudent.name}`);
+        }
+
+        function updateUnassignedCount() {
+            const unassignedStudents = allStudents.filter(s => !s.assigned);
+            $('#unassigned-count').text(unassignedStudents.length);
+            
+            // Hide count if no unassigned students
+            if (unassignedStudents.length === 0) {
+                $('#unassigned-count').hide();
+            } else {
+                $('#unassigned-count').show();
+            }
+        }
+
+
+        function toggleUnassignedPanel() {
+            const panel = $('#unassigned-section');
+            const button = $('#unassigned-toggle');
+            const roomSection = $('#room-section');
+            const mainContainer = $('#main-container');
+            
+            if (panel.hasClass('visible')) {
+                // Hide panel
+                panel.removeClass('visible');
+                button.removeClass('active');
+                roomSection.removeClass('shrunk');
+                mainContainer.removeClass('unassigned-visible');
+                console.log('Unassigned panel hidden');
+            } else {
+                // Show panel
+                panel.addClass('visible');
+                button.addClass('active');
+                roomSection.addClass('shrunk');
+                mainContainer.addClass('unassigned-visible');
+                console.log('Unassigned panel shown');
+            }
+        }
+        function handleDropToUnassigned(draggedStudent) {
+            console.log('Dropping to unassigned:', draggedStudent.name);
+            
+            // Create unassigned card
+            const unassignedCard = createStudentCard(draggedStudent, true);
+            $('#unassigned-list').append(unassignedCard);
+            
+            // Remove from original location
+            $(draggedElement).remove();
+            
+            // Update student status
+            draggedStudent.assigned = false;
+            
+            toastr.info(`${draggedStudent.name} moved to unassigned list`);
+            
+        }
+
         function sendIndividualSMS(studentId) {
-            const student = students.find(s => s.id === studentId);
+            const student = allStudents.find(s => s.id === studentId);
             if (student) {
-                Swal.fire({
+                swal.fire({
                     title: "Send SMS",
                     text: `Send SMS to ${student.name}?`,
                     icon: "info",
                     buttons: ["Cancel", "Send"],
                     dangerMode: false,
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Simulate SMS sending
+                }).then((willSend) => {
+                    if (willSend) {
                         setTimeout(() => {
                             if (Math.random() > 0.2) {
                                 toastr.success(`SMS sent successfully to ${student.name}`);
@@ -665,17 +957,16 @@
         }
 
         function sendIndividualNotification(studentId) {
-            const student = students.find(s => s.id === studentId);
+            const student = allStudents.find(s => s.id === studentId);
             if (student) {
-                Swal.fire({
+                swal.fire({
                     title: "Send Notification",
                     text: `Send notification to ${student.name}?`,
                     icon: "info",
                     buttons: ["Cancel", "Send"],
                     dangerMode: false,
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Simulate notification sending
+                }).then((willSend) => {
+                    if (willSend) {
                         setTimeout(() => {
                             if (Math.random() > 0.2) {
                                 toastr.success(`Notification sent successfully to ${student.name}`);
@@ -689,23 +980,21 @@
         }
 
         function sendBulkSMS() {
-            Swal.fire({
-                title: "Send SMS to All Students",
-                text: "This will send SMS to all 30 students in the room. Continue?",
+            const assignedStudents = allStudents.filter(s => s.assigned);
+            swal.fire({
+                title: "Send SMS to All Assigned Students",
+                text: `This will send SMS to ${assignedStudents.length} assigned students. Continue?`,
                 icon: "warning",
-                showCancelButton: true,
-                confirmButtonText: "Send All",
-                cancelButtonText: "Cancel",
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Simulate bulk SMS sending
+                buttons: ["Cancel", "Send All"],
+                dangerMode: false,
+            }).then((willSend) => {
+                if (willSend) {
                     setTimeout(() => {
-                        const successCount = Math.floor(Math.random() * 5) + 26; // 26-30 success
-                        const failCount = 30 - successCount;
-
+                        const successCount = Math.floor(Math.random() * 3) + assignedStudents.length - 2;
+                        const failCount = assignedStudents.length - successCount;
+                        
                         if (failCount === 0) {
-                            toastr.success(`SMS sent successfully to all ${successCount} students`);
+                            toastr.success(`SMS sent successfully to all ${successCount} assigned students`);
                         } else {
                             toastr.warning(`SMS sent to ${successCount} students, ${failCount} failed`);
                         }
@@ -715,21 +1004,21 @@
         }
 
         function sendBulkNotification() {
-            Swal.fire({
-                title: "Send Notification to All Students",
-                text: "This will send notifications to all 30 students in the room. Continue?",
+            const assignedStudents = allStudents.filter(s => s.assigned);
+            swal.fire({
+                title: "Send Notification to All Assigned Students",
+                text: `This will send notifications to ${assignedStudents.length} assigned students. Continue?`,
                 icon: "warning",
                 buttons: ["Cancel", "Send All"],
                 dangerMode: false,
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Simulate bulk notification sending
+            }).then((willSend) => {
+                if (willSend) {
                     setTimeout(() => {
-                        const successCount = Math.floor(Math.random() * 3) + 28; // 28-30 success
-                        const failCount = 30 - successCount;
+                        const successCount = Math.floor(Math.random() * 2) + assignedStudents.length - 1;
+                        const failCount = assignedStudents.length - successCount;
                         
                         if (failCount === 0) {
-                            toastr.success(`Notifications sent successfully to all ${successCount} students`);
+                            toastr.success(`Notifications sent successfully to all ${successCount} assigned students`);
                         } else {
                             toastr.warning(`Notifications sent to ${successCount} students, ${failCount} failed`);
                         }
@@ -740,11 +1029,16 @@
 
         // Initialize everything when document is ready
         $(document).ready(function() {
+            console.log('Document ready');
+            console.log('jQuery version:', $.fn.jquery);
+            
             initializeRoom();
-            // Add a small delay to ensure DOM is fully ready
+            
             setTimeout(function() {
+                console.log('Initializing drag and drop...');
                 initializeDragAndDrop();
-            }, 100);
+                console.log('Drag and drop initialized');
+            }, 300);
         });
     </script>
 @endsection

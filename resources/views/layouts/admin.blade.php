@@ -168,20 +168,67 @@
                                 <a class="dropdown-item" href="#">Something else here</a>
                             </div>
                         </li> --}}
-                        <li class="nav-item d-none d-md-block">
+                        {{-- <li class="nav-item d-none d-md-block">
                             <a class="nav-link" href="javascript:void(0)">
                                 <div class="customize-input">
-                                    <select
-                                        class="custom-select form-control bg-white custom-radius custom-shadow border-0">
-                                        <option selected>EN</option>
-                                        {{-- <option value="1">AB</option>
-                                        <option value="2">AK</option>
-                                        <option value="3">BE</option> --}}
-                                    </select>
-                                </div>
+                                <select class="custom-select form-control bg-white custom-radius custom-shadow border-0" id="language-selector">
+                                    <option value="en" selected>EN</option>
+                                    <option value="ne">NEP</option> <!-- Added Nepali option -->
+                                </select>
+                            </div>
                             </a>
-                        </li>
+                        </li> --}}
                     </ul>
+                    <!-- Google Translate Integration -->
+<script type="text/javascript">
+    // This is triggered once the Google Translate API is loaded
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement(
+            { 
+                pageLanguage: 'en', // Default page language
+                includedLanguages: 'en,ne', // Supported languages (English and Nepali)
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE 
+            }, 
+            'google_translate_element'
+        );
+    }
+
+    // Check localStorage for language preference and set it on page load
+    document.addEventListener('DOMContentLoaded', function () {
+        const languageSelector = document.getElementById('language-selector');
+        const savedLanguage = localStorage.getItem('language') || 'en'; // Default to English
+        languageSelector.value = savedLanguage;
+
+        // Trigger translation based on saved language
+        translatePage(savedLanguage);
+
+        // Listen for language change selection
+        languageSelector.addEventListener('change', function () {
+            const selectedLang = languageSelector.value;
+            localStorage.setItem('language', selectedLang); // Save selected language in localStorage
+            translatePage(selectedLang);
+        });
+    });
+
+    // Function to trigger page translation via Google Translate widget
+    function translatePage(language) {
+        const googleTranslateFrame = document.querySelector('iframe.goog-te-menu-frame');
+            console.log(googleTranslateFrame)
+        
+        if (googleTranslateFrame) {
+            const translateIframe = googleTranslateFrame.contentWindow.document.querySelector('.goog-te-menu2-item span');
+            if (translateIframe) {
+                googleTranslateFrame.contentWindow.document.querySelector('.goog-te-menu2-item span').click();
+            }
+        }
+    }
+</script>
+
+<!-- Include the Google Translate JavaScript API -->
+<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<!-- This is the div for the Google Translate widget to appear -->
+<div id="google_translate_element"></div>
                     <!-- ============================================================== -->
                     <!-- Right side toggle and nav items -->
                     <!-- ============================================================== -->
