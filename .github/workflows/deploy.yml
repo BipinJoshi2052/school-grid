@@ -13,34 +13,34 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '7.4'
-          extensions: mbstring, xml, ctype, json, tokenizer, dom, pdo, pdo_mysql
-          coverage: none
+      #- name: Setup PHP
+      #  uses: shivammathur/setup-php@v2
+      #  with:
+      #    php-version: '7.4'
+      #    extensions: mbstring, xml, ctype, json, tokenizer, dom, pdo, pdo_mysql
+      #    coverage: none
 
-      - name: Copy .env file
-        run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+      #- name: Copy .env file
+      #  run: php -r "file_exists('.env') || copy('.env.example', '.env');"
 
-      - name: Create Laravel Directories
-        run: |
-          mkdir -p storage/framework/sessions
-          mkdir -p storage/framework/views
-          mkdir -p storage/framework/cache
-          mkdir -p storage/logs
-          mkdir -p bootstrap/cache
+      #- name: Create Laravel Directories
+      #  run: |
+      #    mkdir -p storage/framework/sessions
+      #    mkdir -p storage/framework/views
+      #    mkdir -p storage/framework/cache
+      #    mkdir -p storage/logs
+      #    mkdir -p bootstrap/cache
 
-      - name: Install Composer Dependencies
-        run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+      #- name: Install Composer Dependencies
+      #  run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
-      - name: Generate Application Key
-        run: sudo php artisan key:generate
+      #- name: Generate Application Key
+      #  run: sudo php artisan key:generate
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
+      #- name: Setup Node.js
+      #  uses: actions/setup-node@v4
+      #  with:
+      #    node-version: '18'
 
       - name: Deploy to Server
         uses: appleboy/ssh-action@v1.0.3

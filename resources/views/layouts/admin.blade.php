@@ -22,6 +22,18 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     @yield('styles')
+    <style>
+        #google_translate_element {
+            height: 40px;
+            overflow: hidden;
+        }
+        .goog-te-banner-frame.skiptranslate {
+            display: none !important;
+        }
+        body {
+            top: 0px !important;
+        }
+    </style>
 </head>
 
 <body>
@@ -153,82 +165,12 @@
                             </div>
                         </li>
                         <!-- End Notification -->
-                        <!-- ============================================================== -->
-                        <!-- create new -->
-                        <!-- ============================================================== -->
-                        {{-- <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i data-feather="settings" class="svg-icon"></i>
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="#">Action</a>
-                                <a class="dropdown-item" href="#">Another action</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#">Something else here</a>
-                            </div>
-                        </li> --}}
-                        {{-- <li class="nav-item d-none d-md-block">
+                        <li class="nav-item d-none d-md-block">
                             <a class="nav-link" href="javascript:void(0)">
-                                <div class="customize-input">
-                                <select class="custom-select form-control bg-white custom-radius custom-shadow border-0" id="language-selector">
-                                    <option value="en" selected>EN</option>
-                                    <option value="ne">NEP</option> <!-- Added Nepali option -->
-                                </select>
-                            </div>
+                                <div id="google_translate_element"></div>
                             </a>
-                        </li> --}}
+                        </li>
                     </ul>
-                    <!-- Google Translate Integration -->
-<script type="text/javascript">
-    // This is triggered once the Google Translate API is loaded
-    function googleTranslateElementInit() {
-        new google.translate.TranslateElement(
-            { 
-                pageLanguage: 'en', // Default page language
-                includedLanguages: 'en,ne', // Supported languages (English and Nepali)
-                layout: google.translate.TranslateElement.InlineLayout.SIMPLE 
-            }, 
-            'google_translate_element'
-        );
-    }
-
-    // Check localStorage for language preference and set it on page load
-    document.addEventListener('DOMContentLoaded', function () {
-        const languageSelector = document.getElementById('language-selector');
-        const savedLanguage = localStorage.getItem('language') || 'en'; // Default to English
-        languageSelector.value = savedLanguage;
-
-        // Trigger translation based on saved language
-        translatePage(savedLanguage);
-
-        // Listen for language change selection
-        languageSelector.addEventListener('change', function () {
-            const selectedLang = languageSelector.value;
-            localStorage.setItem('language', selectedLang); // Save selected language in localStorage
-            translatePage(selectedLang);
-        });
-    });
-
-    // Function to trigger page translation via Google Translate widget
-    function translatePage(language) {
-        const googleTranslateFrame = document.querySelector('iframe.goog-te-menu-frame');
-            console.log(googleTranslateFrame)
-        
-        if (googleTranslateFrame) {
-            const translateIframe = googleTranslateFrame.contentWindow.document.querySelector('.goog-te-menu2-item span');
-            if (translateIframe) {
-                googleTranslateFrame.contentWindow.document.querySelector('.goog-te-menu2-item span').click();
-            }
-        }
-    }
-</script>
-
-<!-- Include the Google Translate JavaScript API -->
-<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-
-<!-- This is the div for the Google Translate widget to appear -->
-<div id="google_translate_element"></div>
                     <!-- ============================================================== -->
                     <!-- Right side toggle and nav items -->
                     <!-- ============================================================== -->
@@ -558,6 +500,35 @@
 
     {{-- <script src="{{ asset('admin/dist/js/pages/dashboards/dashboard1.min.js') }}"></script> --}}
     <script>
+    </script>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: 'en,ne',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+        }
+
+        function setLanguage(){
+            var language = localStorage.getItem('language');
+            console.log(language)
+            if (language) {
+                var select = document.querySelector('select.goog-te-combo');
+                select.value = language;
+                select.dispatchEvent(new Event('change'));
+            }
+        }
+
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <script>
+        $(document).ready(function(){
+            setLanguage();
+            $('select.goog-te-combo').on('change', function() {
+                localStorage.setItem('language', $(this).val());
+            });
+        });
     </script>
     @yield('scripts')
 </body>
