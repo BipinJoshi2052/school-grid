@@ -88,6 +88,7 @@ Route::middleware('auth')->group(function () {
     
     Route::get('/seat-plan', [HomeController::class, 'seatPlan'])->name('seat-plan');
     Route::get('/seat-plan-config', [HomeController::class, 'seatPlanConfig'])->name('seat-plan-config');
+    Route::get('/seat-plan-config-v3', [HomeController::class, 'seatPlanConfigV3'])->name('seat-plan-configV3');
     // Route::get('/students', [StudentController::class, 'partial'])->name('positions.partial');
 
     Route::post('/erase-data', [AcademicController::class, 'eraseData'])->name('erase-data');

@@ -23,10 +23,10 @@
 
     @yield('styles')
     <style>
-        #google_translate_element {
+        /* #google_translate_element {
             height: 40px;
             overflow: hidden;
-        }
+        } */
         .goog-te-banner-frame.skiptranslate {
             display: none !important;
         }
@@ -385,6 +385,15 @@
                             </a>
                         </li> 
 
+                        <li class="sidebar-item"> 
+                            <a class="sidebar-link" href="{{route('seat-plan-configV3')}}" aria-expanded="false">
+                                <i data-feather="file-plus" class="feather-icon"></i>
+                                <span
+                                    class="hide-menu">Seat Plan V3
+                                </span>
+                            </a>
+                        </li> 
+
                         <li class="list-divider"></li>
 
                         <li class="nav-small-cap">
@@ -525,7 +534,8 @@
     <script>
         $(document).ready(function(){
             setLanguage();
-            $('select.goog-te-combo').on('change', function() {
+            $('body').on('change', 'select.goog-te-combo', function() {
+                console.log('here')
                 localStorage.setItem('language', $(this).val());
             });
         });

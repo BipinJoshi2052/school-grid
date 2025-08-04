@@ -44,5 +44,9 @@ class HomeController extends Controller
     {
         return view('admin.seat-plan.config');
     }
+    public function seatPlanConfigV3()
+    {
+        return view('admin.seat-plan.config-2');
+    }
 
 }
