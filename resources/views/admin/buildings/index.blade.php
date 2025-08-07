@@ -452,7 +452,7 @@
                             }
                         });
                     }
-                    console.log(roomData.selected_type)
+                    // console.log(roomData.selected_type)
                     const roomHtml = `
                         <div class="room collapsed" data-id="${roomId}" data-server-id="${roomId}">
                             <div class="room-header">
