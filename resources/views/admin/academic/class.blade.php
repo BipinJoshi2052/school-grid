@@ -148,21 +148,25 @@ Class & Section
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-12 col-lg-12">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <button class="btn btn-primary" onclick="addClass()">
-                        <i class="fas fa-plus me-2"></i>
-                        Add Class
-                    </button>
-                    <!-- Search bar aligned to the right -->
-                    <div class="d-flex align-items-center search-div">
-                        <input type="text" id="facultySearch" class="form-control" placeholder="Search Class" onkeyup="searchFaculty()" style="width: 200px;">
-                        <i class="fas fa-search ms-2"></i>
-                    </div>
-                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <button class="btn btn-primary" onclick="addClass()">
+                                <i class="fas fa-plus me-2"></i>
+                                Add Class
+                            </button>
+                            <!-- Search bar aligned to the right -->
+                            <div class="d-flex align-items-center search-div">
+                                <input type="text" id="facultySearch" class="form-control" placeholder="Search Class" onkeyup="searchFaculty()" style="width: 200px;">
+                                <i class="fas fa-search ms-2"></i>
+                            </div>
+                        </div>
 
-                <!-- Faculty Container -->
-                <div id="faculty-container">
-                    <!-- Faculty items will be dynamically loaded here -->
+                        <!-- Faculty Container -->
+                        <div id="faculty-container">
+                            <!-- Faculty items will be dynamically loaded here -->
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -146,7 +146,12 @@
             margin-bottom: 25px;
             text-align: center;
         }
-
+        .door-placement-input{
+            margin-left: 5px;
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
         .bench-type-selector label {
             display: inline-block;
             margin: 0 15px;
@@ -338,37 +343,41 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-12 col-lg-12">
-                {{-- <div class="d-flex justify-content-between align-items-center mb-4">
-                    <!-- Add Faculty Button centered -->
-                    <button class="btn btn-primary mx-auto faculty-add-btn" onclick="addFaculty()">
-                        <i class="fas fa-plus me-2"></i>
-                        Add Faculty
-                    </button>
+                <div class="card">
+                    <div class="card-body">
+                        {{-- <div class="d-flex justify-content-between align-items-center mb-4">
+                            <!-- Add Faculty Button centered -->
+                            <button class="btn btn-primary mx-auto faculty-add-btn" onclick="addFaculty()">
+                                <i class="fas fa-plus me-2"></i>
+                                Add Faculty
+                            </button>
 
-                    <!-- Search bar aligned to the right -->
-                    <div class="d-flex align-items-center search-div">
-                        <input type="text" id="facultySearch" class="form-control" placeholder="Search Faculty" onkeyup="searchFaculty()" style="width: 200px;">
-                        <i class="fas fa-search ms-2"></i>
-                    </div>
-                </div> --}}
+                            <!-- Search bar aligned to the right -->
+                            <div class="d-flex align-items-center search-div">
+                                <input type="text" id="facultySearch" class="form-control" placeholder="Search Faculty" onkeyup="searchFaculty()" style="width: 200px;">
+                                <i class="fas fa-search ms-2"></i>
+                            </div>
+                        </div> --}}
 
-                {{-- <div class="header">
-                    <h1>Building Seat Planner</h1>
-                    <p>Manage buildings, rooms, benches, and seats with ease</p>
-                </div> --}}
+                        {{-- <div class="header">
+                            <h1>Building Seat Planner</h1>
+                            <p>Manage buildings, rooms, benches, and seats with ease</p>
+                        </div> --}}
                 
-                <div class="content">
-                    <div class="add-building-section">
-                        <button class="btn" id="addBuildingBtn">+ Add Building</button>
-                    </div>
-                    
-                    <div id="buildingsContainer">
-                        @if (!isset($data) || !empty($data))
-                            <div class="empty-state">
-                                <h3>No Buildings Added Yet</h3>
-                                <p>Click "Add Building" to get started</p>
-                            </div>                   
-                        @endif
+                        <div class="content">
+                            <div class="add-building-section">
+                                <button class="btn" id="addBuildingBtn">+ Add Building</button>
+                            </div>
+                            
+                            <div id="buildingsContainer">
+                                @if (!isset($data) || !empty($data))
+                                    <div class="empty-state">
+                                        <h3>No Buildings Added Yet</h3>
+                                        <p>Click "Add Building" to get started</p>
+                                    </div>                   
+                                @endif
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -405,7 +414,7 @@
                     <div class="building" data-id="${buildingId}" data-server-id="${buildingData.id}">
                         <div class="building-header">
                             <div class="building-title">
-                                <input type="text" placeholder="Enter building title" class="building-title-input" style="background: transparent; border: none; color: white; font-size: 1.5em; font-weight: 500; width: 100%; outline: none;" value="${buildingData.name}">
+                                <input type="text" placeholder="Enter building title" class="building-title-input" style="background: transparent; border: none; color: white; font-weight: 500; width: 50%; outline: none;" value="${buildingData.name}">
                             </div>
                             <div class="building-actions">
                                 <button class="btn btn-secondary add-room-btn">+ Add Room</button>
@@ -443,7 +452,7 @@
                             }
                         });
                     }
-
+                    console.log(roomData.selected_type)
                     const roomHtml = `
                         <div class="room collapsed" data-id="${roomId}" data-server-id="${roomId}">
                             <div class="room-header">
@@ -464,6 +473,19 @@
                                     <label>
                                         <input type="radio" name="bench_type_${roomCounter}" value="individual" ${roomData.selected_type === 'individual' ? 'checked' : ''}>
                                         <span>Individual Bench Data</span>
+                                    </label>
+                                    <label>
+                                        <span>Door Placement</span>
+                                        <select name="door_placement_${roomCounter}" class="door-placement-input">
+                                            <option value="top-left" ${roomData.door_placement === 'top-left' ? 'selected' : ''}>Top Left</option>
+                                            <option value="top-right" ${roomData.door_placement === 'top-right' ? 'selected' : ''}>Top Right</option>
+                                            <option value="left-top" ${roomData.door_placement === 'left-top' ? 'selected' : ''}>Left Top</option>
+                                            <option value="left-bottom" ${roomData.door_placement === 'left-bottom' ? 'selected' : ''}>Left Bottom</option>
+                                            <option value="right-top" ${roomData.door_placement === 'right-top' ? 'selected' : ''}>Right Top</option>
+                                            <option value="right-bottom" ${roomData.door_placement === 'right-bottom' ? 'selected' : ''}>Right Bottom</option>
+                                            <option value="bottom-left" ${roomData.door_placement === 'bottom-left' ? 'selected' : ''}>Bottom Left</option>
+                                            <option value="bottom-right" ${roomData.door_placement === 'bottom-right' ? 'selected' : ''}>Bottom Right</option>
+                                        </select>
                                     </label>
                                 </div>
                                 
@@ -663,7 +685,7 @@
                     `;
 
                     $('#buildingsContainer .empty-state').remove();
-                    $('#buildingsContainer').append(buildingHtml);
+                    $('#buildingsContainer').prepend(buildingHtml);
 
                     $(`.building[data-id="${buildingId}"]`).attr('data-server-id', response.id);
                     // showStatus('Building added successfully!', 'success');

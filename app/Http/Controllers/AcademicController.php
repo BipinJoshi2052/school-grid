@@ -453,13 +453,13 @@ class AcademicController extends Controller
         Building::create(
             [
                 'name' => 'Engineering Building',
-                'rooms' => '[{"name": "Room 1", "total": {"seats": 3, "benches": 12}, "individual": [], "selected_type": "total"}, {"name": "Room 2", "total": {"seats": 3, "benches": 12}, "individual": [], "selected_type": "total"}, {"name": "Room 3", "total": {"seats": 2, "benches": 10}, "individual": [], "selected_type": "total"}]',
+                'rooms' => '[{"name": "Room 1", "total": {"seats": 2, "benches": 10}, "individual": [], "room_total": {"total_bench": 0, "total_seats": 0}, "selected_type": "total"}, {"name": "Room 2", "total": {"seats": 2, "benches": 10}, "individual": [], "room_total": {"total_bench": 0, "total_seats": 0}, "selected_type": "total"}]',
                 'user_id' => $schoolId,
                 'added_by' => $userId
             ],
             [
                 'name' => 'Management Building',
-                'rooms' => '[{"name": "Room 1", "total": {"seats": 0, "benches": 0}, "individual": [{"name": "Row 1", "bench": [{"name": "Bench 1", "seats": 3}, {"name": "Bench 2", "seats": 3}, {"name": "Bench 3", "seats": 2}]}, {"name": "Row 2", "bench": [{"name": "Bench 1", "seats": 3}, {"name": "Bench 2", "seats": 3}, {"name": "Bench 3", "seats": 4}]}], "selected_type": "total"}, {"name": "Room 2", "total": {"seats": 3, "benches": 10}, "individual": [], "selected_type": "total"}]',
+                'rooms' => '[{"name": "Room 1", "total": {"seats": 0, "benches": 0}, "individual": [{"name": "Row 1", "bench": [{"name": "Bench 1", "seats": 2}, {"name": "Bench 2", "seats": 2}, {"name": "Bench 3", "seats": 3}]}, {"name": "Row 2", "bench": [{"name": "Bench 1", "seats": 2}, {"name": "Bench 2", "seats": 2}, {"name": "Bench 3", "seats": 3}]}], "room_total": {"total_bench": 6, "total_seats": 14}, "selected_type": "individual"}]',
                 'user_id' => $schoolId,
                 'added_by' => $userId
             ]

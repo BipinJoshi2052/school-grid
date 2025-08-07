@@ -349,7 +349,7 @@
 <body>
     <div class="container">
         <div class="left-panel">
-            <h1><a class="link-to-home" href="{{ route('home') }}"><b>Edu</b>Sched</a></h1>
+            <h1><a class="link-to-home" href="{{ route('home') }}"><b>Seat Plan Pro</b></a></h1>
             <h2>Smart Exam Seating Solutions</h2>
             
             <div class="benefit">

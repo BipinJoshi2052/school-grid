@@ -11,7 +11,7 @@ class Building extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['user_id', 'name', 'rooms','added_by'];
+    protected $fillable = ['user_id', 'name', 'rooms','total_room', 'total_bench', 'total_seats', 'added_by'];
 
     public function user()
     {

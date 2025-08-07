@@ -107,7 +107,7 @@
             color: white;
         }
         .level-indicator {
-            font-size: 0.75rem;
+            /* font-size: 0.75rem; */
             color: #6c757d;
             margin-right: 0.5rem;
         }
@@ -151,29 +151,33 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-12 col-lg-12">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <!-- Add Faculty Button centered -->
-                    <button class="btn btn-primary mx-auto faculty-add-btn" onclick="addFaculty()">
-                        <i class="fas fa-plus me-2"></i>
-                        Add Faculty
-                    </button>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <!-- Add Faculty Button centered -->
+                            <button class="btn btn-primary mx-auto faculty-add-btn" onclick="addFaculty()">
+                                <i class="fas fa-plus me-2"></i>
+                                Add Faculty
+                            </button>
 
-                    <!-- Search bar aligned to the right -->
-                    <div class="d-flex align-items-center search-div">
-                        <input type="text" id="facultySearch" class="form-control" placeholder="Search Faculty" onkeyup="searchFaculty()" style="width: 200px;">
-                        <i class="fas fa-search ms-2"></i>
+                            <!-- Search bar aligned to the right -->
+                            <div class="d-flex align-items-center search-div">
+                                <input type="text" id="facultySearch" class="form-control" placeholder="Search Faculty" onkeyup="searchFaculty()" style="width: 200px;">
+                                <i class="fas fa-search ms-2"></i>
+                            </div>
+                        </div>
+                        {{-- <div class="d-flex justify-content-between align-items-center mb-4">
+                            <button class="btn btn-primary" onclick="addFaculty()">
+                                <i class="fas fa-plus me-2"></i>
+                                Add Faculty
+                            </button>
+                        </div> --}}
+
+                        <!-- Faculty Container -->
+                        <div id="faculty-container">
+                            <!-- Faculty items will be dynamically loaded here -->
+                        </div>
                     </div>
-                </div>
-                {{-- <div class="d-flex justify-content-between align-items-center mb-4">
-                    <button class="btn btn-primary" onclick="addFaculty()">
-                        <i class="fas fa-plus me-2"></i>
-                        Add Faculty
-                    </button>
-                </div> --}}
-
-                <!-- Faculty Container -->
-                <div id="faculty-container">
-                    <!-- Faculty items will be dynamically loaded here -->
                 </div>
             </div>
         </div>
@@ -480,6 +484,60 @@
             if (result.isConfirmed) {
                 // Proceed to delete the element
                 deleteElement(elementId, type);
+            }
+        });
+    }
+
+    function deleteElement(elementId, type) {
+        $.ajax({
+            url: `/delete-element`,  // Controller URL for deleting elements
+            method: 'POST',
+            data: {
+                id: elementId,
+                type: type
+            },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // CSRF token
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Remove the deleted element from the DOM
+                    $(`[data-element="${type}-${elementId}"]`).remove();
+                    toastr.success(`${type.charAt(0).toUpperCase() + type.slice(1)} deleted successfully!`);
+                    console.log(type);
+                    console.log(facultyData)
+
+                    if (type === 'faculty') {
+                        facultyData = facultyData.filter(f => f.id != elementId);
+                    } else if (type === 'batch') {
+                        facultyData.forEach(faculty => {
+                            faculty.batches = faculty.batches.filter(b => b.id != elementId);
+                        });
+                    } else if (type === 'class') {
+                        facultyData.forEach(faculty => {
+                            faculty.batches.forEach(batch => {
+                                batch.classes = batch.classes.filter(c => c.id != elementId);
+                            });
+                        });
+                    } else if (type === 'section') {
+                        facultyData.forEach(faculty => {
+                            faculty.batches.forEach(batch => {
+                                batch.classes.forEach(cls => {
+                                    cls.sections = cls.sections.filter(s => s.id != elementId);
+                                });
+                            });
+                        });
+                    }
+                    renderFacultyData();
+                    console.log(facultyData)
+                    console.log(`${type} with ID: ${elementId} deleted successfully`);
+                } else {
+                    toastr.error('Failed to delete the ' + type);
+                }
+            },
+            error: function(xhr, status, error) {
+                toastr.error(`Error deleting ${type}:`, error);
+                console.error(`Error deleting ${type}:`, error);
             }
         });
     }

@@ -63,11 +63,12 @@
                     <!-- ============================================================== -->
                     <!-- Logo -->
                     <!-- ============================================================== -->
-                    <div class="navbar-brand">
+                    <div class="navbar-brand" style="    border-bottom: 2px solid #edf2f9;">
                         <!-- Logo icon -->
                         <a href="{{route('dashboard')}}">
-                            <img src="{{ asset('admin/assets/images/edusched.png') }}" alt=""
-                                class="img-fluid">
+                            <b>Seat Plan Pro</b>
+                            {{-- <img src="{{ asset('admin/assets/images/edusched.png') }}" alt=""
+                                class="img-fluid"> --}}
                         </a>
                     </div>
                     <!-- ============================================================== -->
@@ -90,7 +91,7 @@
                     <!-- ============================================================== -->
                     <ul class="navbar-nav float-left me-auto ms-3 ps-1">
                         <!-- Notification -->
-                        <li class="nav-item dropdown">
+                        {{-- <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle pl-md-3 position-relative" href="javascript:void(0)"
                                 id="bell" role="button" data-bs-toggle="dropdown" aria-haspopup="true"
                                 aria-expanded="false">
@@ -163,7 +164,7 @@
                                     </li>
                                 </ul>
                             </div>
-                        </li>
+                        </li> --}}
                         <!-- End Notification -->
                         <li class="nav-item d-none d-md-block">
                             <a class="nav-link" href="javascript:void(0)">
@@ -178,7 +179,7 @@
                         <!-- ============================================================== -->
                         <!-- Search -->
                         <!-- ============================================================== -->
-                        <li class="nav-item d-none d-md-block">
+                        {{-- <li class="nav-item d-none d-md-block">
                             <a class="nav-link" href="javascript:void(0)">
                                 <form>
                                     <div class="customize-input">
@@ -188,7 +189,7 @@
                                     </div>
                                 </form>
                             </a>
-                        </li>
+                        </li> --}}
                         <!-- ============================================================== -->
                         <!-- User profile and search -->
                         <!-- ============================================================== -->
@@ -202,9 +203,9 @@
                                         class="svg-icon"></i></span>
                             </a>
                             <div class="dropdown-menu dropdown-menu-end dropdown-menu-right user-dd animated flipInY">
-                                <a class="dropdown-item" href="javascript:void(0)"><i data-feather="user"
+                                {{-- <a class="dropdown-item" href="javascript:void(0)"><i data-feather="user"
                                         class="svg-icon me-2 ms-1"></i>
-                                    My Profile</a>
+                                    My Profile</a> --}}
                                 {{-- <a class="dropdown-item" href="javascript:void(0)"><i data-feather="credit-card"
                                         class="svg-icon me-2 ms-1"></i>
                                     My Balance</a>
@@ -212,10 +213,10 @@
                                         class="svg-icon me-2 ms-1"></i>
                                     Inbox</a> --}}
                                 {{-- <div class="dropdown-divider"></div> --}}
-                                <a class="dropdown-item" href="javascript:void(0)"><i data-feather="settings"
+                                {{-- <a class="dropdown-item" href="javascript:void(0)"><i data-feather="settings"
                                         class="svg-icon me-2 ms-1"></i>
-                                    Setting</a>
-                                <div class="dropdown-divider"></div>
+                                    Setting</a> --}}
+                                {{-- <div class="dropdown-divider"></div> --}}
 
                                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                     @csrf
@@ -366,6 +367,14 @@
                                 </span>
                             </a>
                         </li>
+                        <li class="sidebar-item"> 
+                            <a class="sidebar-link" href="{{route('buildings.visualizev2')}}" aria-expanded="false">
+                                <i data-feather="home" class="feather-icon"></i>
+                                <span
+                                    class="hide-menu">Layout V2
+                                </span>
+                            </a>
+                        </li>
 
                         <li class="sidebar-item"> 
                             <a class="sidebar-link" href="{{route('seat-plan')}}" aria-expanded="false">
@@ -377,7 +386,7 @@
                         </li> 
 
                         <li class="sidebar-item"> 
-                            <a class="sidebar-link" href="{{route('seat-plan-config')}}" aria-expanded="false">
+                            <a class="sidebar-link" href="{{route('seat-plan.configV3')}}" aria-expanded="false">
                                 <i data-feather="file-plus" class="feather-icon"></i>
                                 <span
                                     class="hide-menu">Seat Plan V2
@@ -386,10 +395,10 @@
                         </li> 
 
                         <li class="sidebar-item"> 
-                            <a class="sidebar-link" href="{{route('seat-plan-configV3')}}" aria-expanded="false">
+                            <a class="sidebar-link" href="{{route('seat-plan.config')}}" aria-expanded="false">
                                 <i data-feather="file-plus" class="feather-icon"></i>
                                 <span
-                                    class="hide-menu">Seat Plan V3
+                                    class="hide-menu">Generate Seat Plan
                                 </span>
                             </a>
                         </li> 
@@ -510,7 +519,7 @@
     {{-- <script src="{{ asset('admin/dist/js/pages/dashboards/dashboard1.min.js') }}"></script> --}}
     <script>
     </script>
-    <script type="text/javascript">
+    {{-- <script type="text/javascript">
         function googleTranslateElementInit() {
             new google.translate.TranslateElement({
                 pageLanguage: 'en',
@@ -539,7 +548,7 @@
                 localStorage.setItem('language', $(this).val());
             });
         });
-    </script>
+    </script> --}}
     @yield('scripts')
 </body>
 

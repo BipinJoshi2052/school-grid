@@ -582,12 +582,12 @@
                     </div>
                     <div class="legend-item">
                         <div class="legend-color handicapped"></div>
-                        <span>♿ Handicapped Student</span>
+                        <span>♿ Special Case Student</span>
                     </div>
-                    <div class="legend-item">
+                    {{-- <div class="legend-item">
                         <div class="legend-color unassigned"></div>
                         <span>Unassigned Student</span>
-                    </div>
+                    </div> --}}
                     <div class="legend-item">
                         <i class="fas fa-arrows-alt" style="color: #95a5a6;"></i>
                         <span>Drag to move</span>
@@ -690,6 +690,7 @@
         }
 
         function createStudentCard(student, isUnassigned = false) {
+            // console.log('isUnassigned - '+isUnassigned )
             const handicappedClass = student.handicapped ? 'handicapped' : '';
             const cardClass = isUnassigned ? 'unassigned-card' : `student-card ${handicappedClass}`;
             
@@ -760,7 +761,7 @@
         }
 
         function initializeDragAndDrop() {
-            console.log('Initializing drag and drop...');
+            // console.log('Initializing drag and drop...');
 
             // Handle drag start
             $(document).on('dragstart', '.student-card, .unassigned-card', function(e) {
@@ -793,6 +794,8 @@
 
             // Handle drag leave
             $(document).on('dragleave', '.students-row, .student-card, .unassigned-list', function(e) {
+                // console.log('object')
+                // console.log($(this))
                 $(this).removeClass('drag-over');
             });
 
@@ -802,7 +805,10 @@
                 e.stopPropagation();
                 
                 const $dropTarget = $(this);
+                const $closestStudentsRow = $(e.target).closest('.students-row');
+                // console.log($dropTarget)
                 $dropTarget.removeClass('drag-over');
+                $closestStudentsRow.removeClass('drag-over');
                 
                 if (!draggedElement || !draggedData) return;
                 
@@ -811,14 +817,22 @@
 
                 if ($dropTarget.hasClass('students-row')) {
                     // Dropped on a bench row
+                    // console.log('1');
+                    // console.log($dropTarget)
+                    // console.log(draggedStudent)
                     handleDropOnBench($dropTarget, draggedStudent);
                 } else if ($dropTarget.hasClass('student-card')) {
                     // Dropped on another student - swap positions
+                    // console.log('here');
+                    // console.log($dropTarget)
+                    // console.log(draggedStudent)
                     handleSwapStudents($dropTarget, draggedStudent);
                 } else if ($dropTarget.hasClass('unassigned-list')) {
                     // Dropped back to unassigned list
+                    // console.log('unassigned dropped');
                     handleDropToUnassigned(draggedStudent);
                 }
+                    // $dropTarget.removeClass('drag-over');
 
                 // Clean up
                 draggedElement = null;
@@ -859,21 +873,26 @@
             const draggedReplacement = draggedData.isUnassigned ? 
                 createStudentCard(draggedStudent, false) : 
                 createStudentCard(draggedStudent, false);
-            const targetReplacement = createStudentCard(targetStudent, false);
+                // console.log(draggedReplacement)
+            const targetReplacement = createStudentCard(targetStudent, true);
             
+                // console.log(targetReplacement)
             // Replace elements
             $(draggedElement).replaceWith(targetReplacement);
             $targetCard.replaceWith(draggedReplacement);
-            
+            // console.log(draggedData)
             // Update assignment status
             if (draggedData.isUnassigned) {
                 draggedStudent.assigned = true;
                 targetStudent.assigned = false;
+                // console.log('123')
                 
                 // Add target student to unassigned list
                 const unassignedCard = createStudentCard(targetStudent, true);
                 $('#unassigned-list').append(unassignedCard);
             }
+            // const unassignedCard = createStudentCard(draggedStudent, true);
+            // $('#unassigned-list').append(unassignedCard);
             
             // Update count
             updateUnassignedCount();
@@ -913,7 +932,7 @@
                 button.addClass('active');
                 roomSection.addClass('shrunk');
                 mainContainer.addClass('unassigned-visible');
-                console.log('Unassigned panel shown');
+                // console.log('Unassigned panel shown');
             }
         }
         function handleDropToUnassigned(draggedStudent) {
@@ -1029,15 +1048,15 @@
 
         // Initialize everything when document is ready
         $(document).ready(function() {
-            console.log('Document ready');
-            console.log('jQuery version:', $.fn.jquery);
+            // console.log('Document ready');
+            // console.log('jQuery version:', $.fn.jquery);
             
             initializeRoom();
             
             setTimeout(function() {
-                console.log('Initializing drag and drop...');
+                // console.log('Initializing drag and drop...');
                 initializeDragAndDrop();
-                console.log('Drag and drop initialized');
+                // console.log('Drag and drop initialized');
             }, 300);
         });
     </script>

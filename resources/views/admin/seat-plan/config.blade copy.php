@@ -52,67 +52,41 @@ Seat Plan Config
                                 
                                 <div class="grid" id="buildingsGrid">
                                     <!-- Sample buildings data -->
-                                    <div class="card" data-building="building1">
-                                        <div class="card-header">
-                                            <input type="checkbox" class="checkbox building-checkbox" id="building1" data-server-id="1">
-                                            <label for="building1" class="card-title">Science Block</label>
-                                        </div>
-                                        <div class="card-content">
-                                            <div class="room-item">
-                                                <input type="checkbox" class="checkbox room-checkbox" id="room1_1" data-room-index="0" data-building="building1">
-                                                <label for="room1_1">Room S101</label>
-                                                <span class="room-info">(15 benches, 30 seats)</span>
-                                            </div>
-                                            <div class="room-item">
-                                                <input type="checkbox" class="checkbox room-checkbox" id="room1_2" data-room-index="1"data-building="building1">
-                                                <label for="room1_2">Room S102</label>
-                                                <span class="room-info">(20 benches, 40 seats)</span>
-                                            </div>
-                                            <div class="room-item">
-                                                <input type="checkbox" class="checkbox room-checkbox" id="room1_3" data-room-index="2" data-building="building1">
-                                                <label for="room1_3">Room S103</label>
-                                                <span class="room-info">(12 benches, 24 seats)</span>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    {{-- @php
+                                        dd($data['buildings']);
+                                    @endphp --}}
+                                    @if (isset($data['buildings']) && !empty($data['buildings']))
+                                        @foreach ($data['buildings'] as $building)
+                                            <div class="card" data-building="{{$building['id']}}">
+                                                <div class="card-header">
+                                                    <input type="checkbox" class="checkbox building-checkbox" id="building{{$building['id']}}" data-server-id="{{$building['id']}}">
+                                                    <label for="building{{$building['id']}}" class="card-title">{{$building['name']}}</label>
+                                                </div>
+                                                <div class="card-content">
+                                                    <?php 
+                                                        $rooms = json_decode($building['rooms'],true);
+                                                        // dd($rooms);
+                                                    ?>
+                                                    @foreach ($rooms as $index => $room)
+                                                        <div class="room-item">
+                                                            <input type="checkbox" class="checkbox room-checkbox" id="{{str_replace(' ', '_', strtolower($room['name'])).'_'.$index}}" data-room-index="{{$index}}" data-building="{{$building['id']}}">
+                                                            <label for="room1_1">{{$room['name']}}</label>
+                                                            <span class="room-info">
+                                                                @if ($room['selected_type'] == 'total')
+                                                                    ({{$room['total']['benches']}} benches, {{($room['total']['benches'] * $room['total']['seats'])}} seats)
+                                                                @else
+                                                                    ({{$room['room_total']['total_bench']}} benches, {{($room['room_total']['total_seats'])}} seats)                                                                    
+                                                                @endif
+                                                            </span>
+                                                        </div>
+                                                    @endforeach
 
-                                    <div class="card" data-building="building2">
-                                        <div class="card-header">
-                                            <input type="checkbox" class="checkbox building-checkbox" id="building2">
-                                            <label for="building2" class="card-title">Arts Block</label>
-                                        </div>
-                                        <div class="card-content">
-                                            <div class="room-item">
-                                                <input type="checkbox" class="checkbox room-checkbox" id="room2_1" data-building="building2">
-                                                <label for="room2_1">Room A201</label>
-                                                <span class="room-info">(18 benches, 36 seats)</span>
+                                                </div>
                                             </div>
-                                            <div class="room-item">
-                                                <input type="checkbox" class="checkbox room-checkbox" id="room2_2" data-building="building2">
-                                                <label for="room2_2">Room A202</label>
-                                                <span class="room-info">(25 benches, 50 seats)</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="card" data-building="building3">
-                                        <div class="card-header">
-                                            <input type="checkbox" class="checkbox building-checkbox" id="building3">
-                                            <label for="building3" class="card-title">Main Hall</label>
-                                        </div>
-                                        <div class="card-content">
-                                            <div class="room-item">
-                                                <input type="checkbox" class="checkbox room-checkbox" id="room3_1" data-building="building3">
-                                                <label for="room3_1">Auditorium</label>
-                                                <span class="room-info">(50 benches, 100 seats)</span>
-                                            </div>
-                                            <div class="room-item">
-                                                <input type="checkbox" class="checkbox room-checkbox" id="room3_2" data-building="building3">
-                                                <label for="room3_2">Conference Hall</label>
-                                                <span class="room-info">(30 benches, 60 seats)</span>
-                                            </div>
-                                        </div>
-                                    </div>
+                                        @endforeach
+                                    @else
+                                        <p>You have not added any buildings. Please add building and rooms data first.</p>
+                                    @endif
                                 </div>
 
                                 <div class="button-group">
@@ -128,64 +102,26 @@ Seat Plan Config
                                 </div>
                                 
                                 <div class="grid" id="classesGrid">
-                                    <div class="card" data-class="class1">
-                                        <div class="card-header">
-                                            <input type="checkbox" class="checkbox class-checkbox" id="class1">
-                                            <label for="class1" class="card-title">Computer Science</label>
-                                        </div>
-                                        <div class="card-content">
-                                            <div class="section-item">
-                                                <input type="checkbox" class="checkbox section-checkbox" id="section1_1" data-class="class1">
-                                                <label for="section1_1">Section A (35 students)</label>
+                                    @if (isset($data['classes']) && !empty($data['classes']))
+                                        @foreach ($data['classes'] as $class)
+                                            <div class="card" data-class="{{$class['id']}}">
+                                                <div class="card-header">
+                                                    <input type="checkbox" class="checkbox class-checkbox" id="class{{$class['id']}}" data-server-id="{{$class['id']}}">
+                                                    <label for="class{{$class['id']}}" class="card-title">{{$class['name']}}</label>
+                                                </div>
+                                                <div class="card-content">
+                                                    @foreach ($class['sections'] as $section)
+                                                        <div class="section-item">
+                                                            <input type="checkbox" class="checkbox section-checkbox" id="section{{$section['id']}}_{{$class['id']}}" data-class="{{$class['id']}}" data-server-id="{{$section['id']}}">
+                                                            <label for="section{{$section['id']}}_{{$class['id']}}">{{$section['title']}}</label>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
                                             </div>
-                                            <div class="section-item">
-                                                <input type="checkbox" class="checkbox section-checkbox" id="section1_2" data-class="class1">
-                                                <label for="section1_2">Section B (32 students)</label>
-                                            </div>
-                                            <div class="section-item">
-                                                <input type="checkbox" class="checkbox section-checkbox" id="section1_3" data-class="class1">
-                                                <label for="section1_3">Section C (28 students)</label>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="card" data-class="class2">
-                                        <div class="card-header">
-                                            <input type="checkbox" class="checkbox class-checkbox" id="class2">
-                                            <label for="class2" class="card-title">Mathematics</label>
-                                        </div>
-                                        <div class="card-content">
-                                            <div class="section-item">
-                                                <input type="checkbox" class="checkbox section-checkbox" id="section2_1" data-class="class2">
-                                                <label for="section2_1">Section A (40 students)</label>
-                                            </div>
-                                            <div class="section-item">
-                                                <input type="checkbox" class="checkbox section-checkbox" id="section2_2" data-class="class2">
-                                                <label for="section2_2">Section B (38 students)</label>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="card" data-class="class3">
-                                        <div class="card-header">
-                                            <input type="checkbox" class="checkbox class-checkbox" id="class3">
-                                            <label for="class3" class="card-title">Physics</label>
-                                        </div>
-                                        <div class="card-content">
-                                            <div class="section-item">
-                                                <input type="checkbox" class="checkbox section-checkbox" id="section3_1" data-class="class3">
-                                                <label for="section3_1">Section A (30 students)</label>
-                                            </div>
-                                            <div class="section-item">
-                                                <input type="checkbox" class="checkbox section-checkbox" id="section3_2" data-class="class3">
-                                                <label for="section3_2">Section B (25 students)</label>
-                                            </div>
-                                            <div class="section-item">
-                                                <input type="checkbox" class="checkbox section-checkbox" id="section3_3" data-class="class3">
-                                                <label for="section3_3">Section C (33 students)</label>
-                                            </div>
-                                        </div>
-                                    </div>
+                                        @endforeach
+                                    @else
+                                        <p>You have not added any classes. Please add class data first.</p>
+                                    @endif
                                 </div>
 
                                 <div class="button-group">
@@ -193,76 +129,45 @@ Seat Plan Config
                                     <button class="btn" id="nextStep2" disabled>Next</button>
                                 </div>
                             </div>
-
+                            
                             <!-- Step 3: Staff Selection -->
                             <div class="step collapsed" id="step3">
                                 <div class="step-header">
                                     <div class="step-number">3</div>
                                     <div class="step-title">Invigilator Selection</div>
                                 </div>
-                                
-                                <div class="grid" id="staffGrid">
-                                    <div class="card">
-                                        <div class="card-content">
-                                            <div class="staff-item">
-                                                <input type="checkbox" class="checkbox staff-checkbox" id="staff1" checked>
-                                                <label for="staff1">Dr. John Smith</label>
-                                                <span class="staff-info">(Computer Science)</span>
-                                            </div>
-                                            <div class="staff-item">
-                                                <input type="checkbox" class="checkbox staff-checkbox" id="staff2" checked>
-                                                <label for="staff2">Prof. Sarah Johnson</label>
-                                                <span class="staff-info">(Mathematics)</span>
-                                            </div>
-                                            <div class="staff-item">
-                                                <input type="checkbox" class="checkbox staff-checkbox" id="staff3" checked>
-                                                <label for="staff3">Dr. Michael Brown</label>
-                                                <span class="staff-info">(Physics)</span>
-                                            </div>
-                                        </div>
+                                @if (isset($data['staffs']) && !empty($data['staffs']))                              
+                                    @php                            
+                                        // Split the staff array into three parts
+                                        $staffChunks = array_chunk($data['staffs'], ceil(count($data['staffs']) / 3)); // Splits into 3 parts    
+                                    @endphp    
+                                    <div class="grid" id="staffGrid">
+                                        @foreach ($staffChunks as $index => $staffGroup)
+                                            <div class="card">
+                                                <div class="card-content">
+                                                    @foreach ($staffGroup as $staffItem)
+                                                    {{-- @php
+                                                        dd($staffChunks);
+                                                    @endphp --}}
+                                                        <div class="staff-item">
+                                                            <input type="checkbox" class="checkbox staff-checkbox" id="staff{{$staffItem['id']}}" data-server-id="{{$staffItem['id']}}" checked>
+                                                            <label for="staff1">{{$staffItem['name']}}</label>
+                                                            <span class="staff-info">{{isset($staffItem['staff']['department']['title']) ? '('.$staffItem['staff']['department']['title'].')' : ''}}</span>
+                                                        </div>                                         
+                                                    @endforeach
+                                                </div>
+                                            </div>                                            
+                                        @endforeach
                                     </div>
-
-                                    <div class="card">
-                                        <div class="card-content">
-                                            <div class="staff-item">
-                                                <input type="checkbox" class="checkbox staff-checkbox" id="staff4" checked>
-                                                <label for="staff4">Ms. Emily Davis</label>
-                                                <span class="staff-info">(Chemistry)</span>
-                                            </div>
-                                            <div class="staff-item">
-                                                <input type="checkbox" class="checkbox staff-checkbox" id="staff5" checked>
-                                                <label for="staff5">Dr. Robert Wilson</label>
-                                                <span class="staff-info">(Biology)</span>
-                                            </div>
-                                            <div class="staff-item">
-                                                <input type="checkbox" class="checkbox staff-checkbox" id="staff6" checked>
-                                                <label for="staff6">Prof. Lisa Anderson</label>
-                                                <span class="staff-info">(English)</span>
-                                            </div>
-                                        </div>
+                                    <div class="button-group">
+                                        <button class="btn" id="backStep3">Back</button>
+                                        <button class="btn" id="nextStep3">Next</button>
                                     </div>
-
-                                    <div class="card">
-                                        <div class="card-content">
-                                            <div class="staff-item">
-                                                <input type="checkbox" class="checkbox staff-checkbox" id="staff7" checked>
-                                                <label for="staff7">Dr. David Miller</label>
-                                                <span class="staff-info">(History)</span>
-                                            </div>
-                                            <div class="staff-item">
-                                                <input type="checkbox" class="checkbox staff-checkbox" id="staff8" checked>
-                                                <label for="staff8">Ms. Jennifer Garcia</label>
-                                                <span class="staff-info">(Geography)</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="button-group">
-                                    <button class="btn" id="backStep3">Back</button>
-                                    <button class="btn" id="nextStep3" disabled>Next</button>
-                                </div>
+                                @else
+                                    <p>You have not added any staffs. Please add staff data.</p>                                    
+                                @endif
                             </div>
+
 
                             <!-- Step 4: Seating Pattern Selection -->
                             <div class="step collapsed" id="step4">
@@ -275,24 +180,26 @@ Seat Plan Config
                                     <!-- Sequential Class Assignment -->
                                     <div class="pattern-card" data-pattern="sequential">
                                         <div class="pattern-header">
-                                            <input type="radio" name="seatingPattern" id="sequential" class="pattern-radio">
+                                            <input type="radio" name="seatingPattern" id="sequential" class="pattern-radio" value="sequential">
                                             <label for="sequential" class="pattern-title">Sequential Class Assignment</label>
                                         </div>
                                         <div class="pattern-description">
                                             Assign students from the same class in consecutive order
                                         </div>
                                         <div class="pattern-visual">
-                                            <div class="seat-row">
-                                                <div class="seat cs">CS1</div>
-                                                <div class="seat cs">CS2</div>
-                                                <div class="seat cs">CS3</div>
-                                                <div class="seat cs">CS4</div>
-                                            </div>
-                                            <div class="seat-row">
-                                                <div class="seat math">M1</div>
-                                                <div class="seat math">M2</div>
-                                                <div class="seat math">M3</div>
-                                                <div class="seat math">M4</div>
+                                            <div class="bench-row">
+                                                <div class="seat-row">
+                                                    <div class="seat cs">CS1</div>
+                                                    <div class="seat cs">CS3</div>
+                                                    <div class="seat math">M1</div>
+                                                    <div class="seat math">M3</div>
+                                                </div>
+                                                <div class="seat-row">
+                                                    <div class="seat cs">CS2</div>
+                                                    <div class="seat cs">CS4</div>
+                                                    <div class="seat math">M2</div>
+                                                    <div class="seat math">M4</div>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="pattern-config" id="sequentialConfig" style="display: none;">
@@ -315,24 +222,26 @@ Seat Plan Config
                                     <!-- Alternate Class Assignment -->
                                     <div class="pattern-card" data-pattern="alternate">
                                         <div class="pattern-header">
-                                            <input type="radio" name="seatingPattern" id="alternate" class="pattern-radio">
+                                            <input type="radio" name="seatingPattern" id="alternate" class="pattern-radio" value="alternate">
                                             <label for="alternate" class="pattern-title">Alternate Class Assignment</label>
                                         </div>
                                         <div class="pattern-description">
                                             Assign students from different classes alternately
                                         </div>
                                         <div class="pattern-visual">
-                                            <div class="seat-row">
-                                                <div class="seat cs">CS1</div>
-                                                <div class="seat math">M1</div>
-                                                <div class="seat physics">P1</div>
-                                                <div class="seat cs">CS2</div>
-                                            </div>
-                                            <div class="seat-row">
-                                                <div class="seat math">M2</div>
-                                                <div class="seat physics">P2</div>
-                                                <div class="seat cs">CS3</div>
-                                                <div class="seat math">M3</div>
+                                            <div class="bench-row">
+                                                <div class="seat-row">
+                                                    <div class="seat cs">CS1</div>
+                                                    <div class="seat math">M1</div>
+                                                    <div class="seat cs">CS2</div>
+                                                    <div class="seat math">M2</div>
+                                                </div>
+                                                <div class="seat-row">
+                                                    <div class="seat math">M3</div>
+                                                    <div class="seat cs">CS3</div>
+                                                    <div class="seat math">M4</div>
+                                                    <div class="seat cs">CS4</div>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="pattern-config" id="alternateConfig" style="display: none;">
@@ -353,7 +262,7 @@ Seat Plan Config
                                     </div>
 
                                     <!-- Class Assignment in Stages -->
-                                    <div class="pattern-card" data-pattern="stages">
+                                    {{-- <div class="pattern-card" data-pattern="stages">
                                         <div class="pattern-header">
                                             <input type="radio" name="seatingPattern" id="stages" class="pattern-radio">
                                             <label for="stages" class="pattern-title">Class Assignment in Stages</label>
@@ -385,29 +294,31 @@ Seat Plan Config
                                                 </select>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> --}}
 
                                     <!-- Random Student Assignment -->
                                     <div class="pattern-card" data-pattern="random">
                                         <div class="pattern-header">
-                                            <input type="radio" name="seatingPattern" id="random" class="pattern-radio">
+                                            <input type="radio" name="seatingPattern" id="random" class="pattern-radio" value="random">
                                             <label for="random" class="pattern-title">Random Student Assignment</label>
                                         </div>
                                         <div class="pattern-description">
                                             Seats are filled randomly with students from all classes
                                         </div>
                                         <div class="pattern-visual">
-                                            <div class="seat-row">
-                                                <div class="seat physics">P3</div>
-                                                <div class="seat cs">CS7</div>
-                                                <div class="seat math">M5</div>
-                                                <div class="seat physics">P1</div>
-                                            </div>
-                                            <div class="seat-row">
-                                                <div class="seat math">M2</div>
-                                                <div class="seat cs">CS3</div>
-                                                <div class="seat physics">P8</div>
-                                                <div class="seat math">M9</div>
+                                            <div class="bench-row">
+                                                <div class="seat-row">
+                                                    <div class="seat physics">P3</div>
+                                                    <div class="seat cs">CS7</div>
+                                                    <div class="seat math">M5</div>
+                                                    <div class="seat physics">P1</div>
+                                                </div>
+                                                <div class="seat-row">
+                                                    <div class="seat math">M2</div>
+                                                    <div class="seat cs">CS3</div>
+                                                    <div class="seat physics">P8</div>
+                                                    <div class="seat math">M9</div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -415,31 +326,33 @@ Seat Plan Config
                                     <!-- Class-Based Row Assignment -->
                                     <div class="pattern-card" data-pattern="rowbased">
                                         <div class="pattern-header">
-                                            <input type="radio" name="seatingPattern" id="rowbased" class="pattern-radio">
+                                            <input type="radio" name="seatingPattern" id="rowbased" class="pattern-radio" value="rowbased">
                                             <label for="rowbased" class="pattern-title">Class-Based Row Assignment</label>
                                         </div>
                                         <div class="pattern-description">
                                             Assign entire rows to specific classes
                                         </div>
                                         <div class="pattern-visual">
-                                            <div class="seat-row">
-                                                <div class="seat cs">CS1</div>
-                                                <div class="seat cs">CS2</div>
-                                                <div class="seat cs">CS3</div>
-                                                <div class="seat cs">CS4</div>
+                                            <div class="bench-row">
+                                                <div class="seat-row">
+                                                    <div class="seat cs">CS1</div>
+                                                    <div class="seat cs">CS2</div>
+                                                    <div class="seat cs">CS3</div>
+                                                    <div class="seat cs">CS4</div>
+                                                </div>
+                                                <div class="seat-row">
+                                                    <div class="seat math">M1</div>
+                                                    <div class="seat math">M2</div>
+                                                    <div class="seat math">M3</div>
+                                                    <div class="seat math">M4</div>
+                                                </div>
                                             </div>
-                                            <div class="seat-row">
-                                                <div class="seat math">M1</div>
-                                                <div class="seat math">M2</div>
-                                                <div class="seat math">M3</div>
-                                                <div class="seat math">M4</div>
-                                            </div>
-                                            <div class="seat-row">
+                                            {{-- <div class="seat-row">
                                                 <div class="seat physics">P1</div>
                                                 <div class="seat physics">P2</div>
                                                 <div class="seat physics">P3</div>
                                                 <div class="seat physics">P4</div>
-                                            </div>
+                                            </div> --}}
                                         </div>
                                     </div>
                                 </div>
@@ -452,20 +365,12 @@ Seat Plan Config
                                             <label for="specialNeeds" class="special-needs-title">Special Needs Seating</label>
                                         </div>
                                         <div class="special-needs-description">
-                                            Handicapped students will be seated at bench edges (rightmost in Row 1, leftmost in Row 2, alternating pattern)
+                                            Differently abled students will be seated at bench edges (rightmost in Row 1, leftmost in Row 2, alternating pattern)
                                         </div>
                                         <div class="special-needs-visual">
-                                            <div class="seat-row">
+                                            <div class="seat-row d-flex">
                                                 <div class="seat">S1</div>
-                                                <div class="seat">S2</div>
-                                                <div class="seat">S3</div>
                                                 <div class="seat special">H1</div>
-                                            </div>
-                                            <div class="seat-row">
-                                                <div class="seat special">H2</div>
-                                                <div class="seat">S4</div>
-                                                <div class="seat">S5</div>
-                                                <div class="seat">S6</div>
                                             </div>
                                         </div>
                                     </div>
@@ -507,7 +412,7 @@ Seat Plan Config
             
             // Building checkbox logic
             $('.building-checkbox').on('change', function() {
-                const buildingId = $(this).attr('id');
+                const buildingId = $(this).attr('data-server-id');
                 const isChecked = $(this).is(':checked');
                 const card = $(this).closest('.card');
                 
@@ -545,7 +450,7 @@ Seat Plan Config
 
             // Class checkbox logic
             $('.class-checkbox').on('change', function() {
-                const classId = $(this).attr('id');
+                const classId = $(this).attr('data-server-id');
                 const isChecked = $(this).is(':checked');
                 const card = $(this).closest('.card');
                 
@@ -628,13 +533,13 @@ Seat Plan Config
                 $('.pattern-config').hide();
                 
                 // Show relevant config section
-                if (selectedPattern === 'sequential') {
-                    $('#sequentialConfig').show();
-                } else if (selectedPattern === 'alternate') {
-                    $('#alternateConfig').show();
-                } else if (selectedPattern === 'stages') {
-                    $('#stagesConfig').show();
-                }
+                // if (selectedPattern === 'sequential') {
+                //     $('#sequentialConfig').show();
+                // } else if (selectedPattern === 'alternate') {
+                //     $('#alternateConfig').show();
+                // } else if (selectedPattern === 'stages') {
+                //     $('#stagesConfig').show();
+                // }
                 
                 validateStep4();
             });
@@ -664,7 +569,7 @@ Seat Plan Config
             function validateStep3() {
                 const selectedStaff = $('.staff-checkbox:checked').length;
                 const isValid = selectedStaff > 0;
-                console.log(isValid)
+                // console.log(isValid)
                 $('#nextStep3').prop('disabled', !isValid);
                 return isValid;
             }
@@ -698,7 +603,7 @@ Seat Plan Config
                     buildings: [],
                     rooms: {},
                     classes: [],
-                    sections: [],
+                    sections: {},
                     staff: [],
                     seatingPattern: {
                         type: $('input[name="seatingPattern"]:checked').val(),
@@ -706,10 +611,12 @@ Seat Plan Config
                         specialNeeds: $('#specialNeeds').is(':checked')
                     }
                 };
+                // console.log(formData)
 
                 // Collect selected buildings
                 $('.building-checkbox:checked').each(function() {
-                    formData.buildings.push($(this).attr('id'));
+                    // formData.buildings.push($(this).attr('id'));
+                    formData.buildings.push($(this).attr('data-server-id'));
                 });
 
                 // Collect selected rooms
@@ -738,36 +645,53 @@ Seat Plan Config
 
                 // Collect selected classes
                 $('.class-checkbox:checked').each(function() {
-                    formData.classes.push($(this).attr('id'));
+                    // formData.classes.push($(this).attr('id'));
+                    formData.classes.push($(this).attr('data-server-id'));
                 });
 
-                // Collect selected sections
                 $('.section-checkbox:checked').each(function() {
-                    formData.sections.push($(this).attr('id'));
+                    var class_id = $(this).data('class');  // Get the building from data-building attribute
+                    var section_id = $(this).data('server-id');  // Get the room index from data-room-index attribute
+
+                    console.log(class_id)
+                    console.log(section_id)
+                    console.log('here')
+
+                    if (!formData.sections[class_id]) {
+                        formData.sections[class_id] = [];
+                    }
+
+                    formData.sections[class_id].push(section_id);
+                    // console.log(formData)
                 });
+                // Collect selected sections
+                // $('.section-checkbox:checked').each(function() {
+                //     // formData.sections.push($(this).attr('id'));
+                //     formData.sections.push($(this).attr('data-server-id'));
+                // });
 
                 // Collect selected staff
                 $('.staff-checkbox:checked').each(function() {
-                    formData.staff.push($(this).attr('id'));
+                    formData.staff.push($(this).attr('data-server-id'));
                 });
 
                 // Collect pattern-specific configuration
-                const patternType = formData.seatingPattern.type;
-                if (patternType === 'sequential') {
-                    formData.seatingPattern.config = {
-                        startingClass: $('#sequentialClass').val(),
-                        startingRoll: $('#sequentialRoll').val()
-                    };
-                } else if (patternType === 'alternate') {
-                    formData.seatingPattern.config = {
-                        startingClass: $('#alternateClass').val(),
-                        startingRoll: $('#alternateRoll').val()
-                    };
-                } else if (patternType === 'stages') {
-                    formData.seatingPattern.config = {
-                        stageType: $('#stageType').val()
-                    };
-                }
+                // const patternType = formData.seatingPattern.type;
+                // if (patternType === 'sequential') {
+                //     formData.seatingPattern.config = {
+                //         startingClass: $('#sequentialClass').val(),
+                //         startingRoll: $('#sequentialRoll').val()
+                //     };
+                // } else if (patternType === 'alternate') {
+                //     formData.seatingPattern.config = {
+                //         startingClass: $('#alternateClass').val(),
+                //         startingRoll: $('#alternateRoll').val()
+                //     };
+                // } else if (patternType === 'stages') {
+                //     formData.seatingPattern.config = {
+                //         stageType: $('#stageType').val()
+                //     };
+                // }
 
                 // Show loading overlay
                 $('#loadingOverlay').show();
@@ -784,71 +708,48 @@ Seat Plan Config
 
                 let messageIndex = 0;
                 let progress = 0;
-                console.log(formData)
-                $.ajax({
-                    url: '/generate-seat-plan', // Replace with your actual endpoint
-                    method: 'POST',
-                    data: JSON.stringify(formData),
-                    headers: {  
-                        'X-CSRF-TOKEN': "{{ csrf_token() }}"
-                    },
-                    contentType: 'application/json',
-                    success: function(response) {
-                        $('#loadingOverlay').hide();
-                        $('#successMessage').show();
-                        
-                        // Simulate redirect to loadSeatPlan function
-                        // setTimeout(function() {
-                        //     loadSeatPlan(response);
-                        // }, 2000);
-                    },
-                    error: function(xhr, status, error) {
-                        $('#loadingOverlay').hide();
-                        // alert('Error generating seat plan: ' + error);
-                    }
-                });
+                // console.log(formData)
 
-                // const loadingInterval = setInterval(function() {
-                //     if (messageIndex < loadingMessages.length) {
-                //         $('#loadingMessage').text(loadingMessages[messageIndex]);
-                //         progress += 20;
-                //         $('#loadingProgressBar').css('width', progress + '%');
-                //         messageIndex++;
-                //     } else {
-                //         // return;
-                //         clearInterval(loadingInterval);
-                //         // setTimeout(function() {
-                //         //     console.log('here')
-                //         //     loadSeatPlan('response');
-                //         // }, 2000);
+                const loadingInterval = setInterval(function() {
+                    if (messageIndex < loadingMessages.length) {
+                        $('#loadingMessage').text(loadingMessages[messageIndex]);
+                        progress += 20;
+                        $('#loadingProgressBar').css('width', progress + '%');
+                        messageIndex++;
+                    } else {
+                        // return;
+                        clearInterval(loadingInterval);
+                        // setTimeout(function() {
+                        //     loadSeatPlan('response');
+                        // }, 2000);
                         
-                //         // Simulate AJAX request (replace with actual endpoint)
-                //         // setTimeout(function() {
-                //             $.ajax({
-                //                 url: '/generate-seat-plan', // Replace with your actual endpoint
-                //                 method: 'POST',
-                //                 data: JSON.stringify(formData),
-                //                 headers: {  
-                //                     'X-CSRF-TOKEN': "{{ csrf_token() }}"
-                //                 },
-                //                 contentType: 'application/json',
-                //                 success: function(response) {
-                //                     $('#loadingOverlay').hide();
-                //                     $('#successMessage').show();
+                        // Simulate AJAX request (replace with actual endpoint)
+                        setTimeout(function() {
+                            $.ajax({
+                                url: '/generate-seat-plan', // Replace with your actual endpoint
+                                method: 'POST',
+                                data: JSON.stringify(formData),
+                                headers: {  
+                                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                                },
+                                contentType: 'application/json',
+                                success: function(response) {
+                                    $('#loadingOverlay').hide();
+                                    $('#successMessage').show();
                                     
-                //                     // Simulate redirect to loadSeatPlan function
-                //                     setTimeout(function() {
-                //                         loadSeatPlan(response);
-                //                     }, 2000);
-                //                 },
-                //                 error: function(xhr, status, error) {
-                //                     $('#loadingOverlay').hide();
-                //                     alert('Error generating seat plan: ' + error);
-                //                 }
-                //             });
-                //         // }, 1000);
-                //     }
-                // }, 1000);
+                                    // Simulate redirect to loadSeatPlan function
+                                    // setTimeout(function() {
+                                    //     loadSeatPlan(response);
+                                    // }, 2000);
+                                },
+                                error: function(xhr, status, error) {
+                                    $('#loadingOverlay').hide();
+                                    // alert('Error generating seat plan: ' + error);
+                                }
+                            });
+                        }, 100);
+                    }
+                }, 1000);
             }
 
             function loadSeatPlan(data) {

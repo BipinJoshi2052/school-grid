@@ -2,102 +2,249 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>SeatPlan-Pro - @yield('title')</title>
-  <meta name="description" content="">
-  <meta name="keywords" content="">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SeatPlan-Pro - @yield('title')</title>
+    <meta name="description" content="Generate optimal exam seat plans in seconds with our intelligent system. Drag-and-drop customization, automated notifications, and complete student management.">
+    <meta name="author" content="SeatPlan Pro">
+    
+    <meta property="og:title" content="SeatPlan Pro - Automated Exam Seat Planning Made Simple">
+    <meta property="og:description" content="Generate optimal exam seat plans in seconds with our intelligent system. Drag-and-drop customization, automated notifications, and complete student management.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="{{ asset('images/favicon.ico') }}">
 
-  <!-- Favicons -->
-  <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon.ico') }}">
-  <link href="{{ asset('images/apple-touch-icon.png')}}" rel="apple-touch-icon">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@seatplanpro">
+    <meta name="twitter:image" content="{{ asset('images/favicon.ico') }}">
 
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com" rel="preconnect">
-  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
-
-  <!-- Vendor CSS Files -->
-  <link href="{{ asset('vendor/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
-  <link href="{{ asset('vendor/bootstrap-icons/bootstrap-icons.css')}}" rel="stylesheet">
-  <link href="{{ asset('vendor/aos/aos.css')}}" rel="stylesheet">
-  <link href="{{ asset('vendor/glightbox/css/glightbox.min.css')}}" rel="stylesheet">
-  <link href="{{ asset('vendor/swiper/swiper-bundle.min.css')}}" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <!-- Main CSS File -->
-  <link href="{{ asset('css/main.css')}}" rel="stylesheet">
-
-  <!-- =======================================================
-  * Template Name: eNno
-  * Template URL: https://bootstrapmade.com/enno-free-simple-bootstrap-template/
-  * Updated: Aug 07 2024 with Bootstrap v5.3.3
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== -->
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon.ico') }}">
+    <link href="{{ asset('images/apple-touch-icon.png')}}" rel="apple-touch-icon">
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ asset('website/css/styles.css')}}">
 </head>
 
 <body class="index-page">
 
-  <header id="header" class="header d-flex align-items-center sticky-top">
-    <div class="container-fluid container-xl position-relative d-flex align-items-center">
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="nav-content">
+                <a href="#" class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <span class="logo-text">SeatPlan Pro</span>
+                </a>
+                
+                {{-- <nav class="nav-menu" id="navMenu">
+                    <a href="#features" class="nav-link">Features</a>
+                    <a href="#revenue" class="nav-link">Solutions</a>
+                    <a href="pricing.html" class="nav-link">Pricing</a>
+                    <a href="student-search.html" class="nav-link">Find Seat</a>
+                    <a href="#contact" class="nav-link">Contact</a>
+                </nav> --}}
+                
+                <div class="nav-actions">
+                  @guest
+                    <a class="btn-getstarted btn btn-outline" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                      Login
+                    </a>
+                    <a href="{{ route('register') }}" class="btn btn-hero">Register</a>
+                  @endguest
 
-      <a href="{{route('home')}}" class="logo d-flex align-items-center me-auto">
-        <!-- Uncomment the line below if you also wish to use an image logo -->
-        <img src="{{ asset('admin/assets/images/edusched.png') }}" alt="">
-        {{-- <h1 class="sitename">eNno</h1> --}}
-      </a>
+                  @auth
+                    <a href="{{ route('dashboard') }}" class="btn btn-hero">Dashboard</a>
+                  @endauth
+                </div>
+                
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+     <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-bg"></div>
+        <div class="floating-element floating-1"></div>
+        <div class="floating-element floating-2"></div>
+        <div class="floating-element floating-3"></div>
+        
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="far fa-check-circle"></i>
+                    <span>Trusted by 500+ Educational Institutions</span>
+                </div>
+                
+                <h1 class="hero-title">
+                    <span class="gradient-text">Automated Exam</span><br>
+                    <span class="normal-text">Seat Planning</span><br>
+                    <span class="gradient-secondary">Made Simple</span>
+                </h1>
+                
+                <p class="hero-subtitle">
+                    Generate optimal exam seat plans in seconds with our intelligent system. 
+                    Drag-and-drop customization, automated notifications, and complete student management.
+                </p>
+                
+                <div class="hero-features">
+                    <div class="hero-feature">
+                        <i class="far fa-check-circle"></i>
+                        <span>Instant Seat Plan Generation</span>
+                    </div>
+                    <div class="hero-feature">
+                        <i class="far fa-check-circle"></i>
+                        <span>Drag & Drop Customization</span>
+                    </div>
+                    <div class="hero-feature">
+                        <i class="far fa-check-circle"></i>
+                        <span>Notifications</span>
+                    </div>
+                    <div class="hero-feature">
+                        <i class="far fa-check-circle"></i>
+                        <span>Complete CRUD Management</span>
+                    </div>
+                </div>
+                
+                <div class="hero-buttons">
+                    <a class="btn btn-hero btn-large" href="{{ route('register') }}">
+                      Start Free Trial
+                      <i class="fas fa-arrow-right"></i>                    
+                    </a>
 
-      <nav id="navmenu" class="navmenu">
-        <ul>
-          <li><a href="{{route('home')}}" class="active">Home</a></li>
+                     {{-- <button class="btn btn-demo btn-large">
+                        Watch Demo                        
+                    </button> --}}
+                </div>
+                
+                <p class="hero-trust">
+                    No credit card required • 14-day free trial • Cancel anytime
+                </p>
+            </div>
+        </div>
+    </section>
 
-          @if(request()->is('/') || request()->routeIs('home'))
-            <li><a href="#about">About</a></li>
-            <li><a href="#services">Services</a></li>
-            <li><a href="#portfolio">Portfolio</a></li>
-            <li><a href="#team">Team</a></li>
-            <li><a href="#contact">Contact</a></li>
-          @endif
-        </ul>
-        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-      </nav>
+    <!-- Features Section -->
+    <section id="features" class="features-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="gradient-text">Powerful Features</span>
+                </h2>
+                <p class="section-subtitle">
+                    Everything you need to streamline your exam seat planning process and improve efficiency across your educational institution.
+                </p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3 class="feature-title">Automated Seat Plan Generation</h3>
+                    <p class="feature-description">
+                        Generate optimal exam seat arrangements instantly with our intelligent algorithm that considers room capacity, student requirements, and examination rules.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mouse-pointer"></i>
+                    </div>
+                    <h3 class="feature-title">Drag-and-Drop Customization</h3>
+                    <p class="feature-description">
+                        Easily customize seat arrangements with intuitive drag-and-drop interface. Perfect for accommodating special needs students and last-minute changes.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h3 class="feature-title">Complete CRUD Management</h3>
+                    <p class="feature-description">
+                        Manage classes, sections, students, and staff data with our comprehensive system. Import from Excel, update in bulk, and maintain accurate records.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-comment"></i>
+                    </div>
+                    <h3 class="feature-title">Smart Notifications & SMS</h3>
+                    <p class="feature-description">
+                        Automatically notify students about their seat assignments via SMS or email. Customizable templates and delivery scheduling included.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Secure & Compliant</h3>
+                    <p class="feature-description">
+                        Enterprise-grade security with role-based access control. GDPR compliant with data encryption and secure backup systems.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3 class="feature-title">Real-time Updates</h3>
+                    <p class="feature-description">
+                        Make changes on the fly with real-time synchronization. All stakeholders see updates instantly across all devices.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="feature-title">Multi-user Collaboration</h3>
+                    <p class="feature-description">
+                        Allow multiple staff members to work simultaneously with role-based permissions and audit trails for accountability.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <h3 class="feature-title">Flexible Configuration</h3>
+                    <p class="feature-description">
+                        Customize the system to match your institution's specific requirements with flexible rules, templates, and workflow settings.
+                    </p>
+                </div>
+            </div>
+            
+            {{-- <div class="features-cta">
+                <button class="btn btn-secondary">
+                    <i class="fas fa-bolt"></i>
+                    See All Features in Action
+                </button>
+            </div> --}}
+        </div>
+    </section>
 
-      @guest
-        <a class="btn-getstarted" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#exampleModal">
-          Login
-        </a>
-      @endguest
-
-      @auth
-        <a class="btn-getstarted" href="{{route('dashboard')}}">
-          Dashboard
-        </a>
-        {{-- <a class="" href="{{route('dashboard')}}">
-          <i class="fa fa-sign-out"></i>
-        </a> --}}
-      @endauth
-
-
-    </div>
-  </header>
-
-  <main class="main">
+  {{-- <main class="main">
     @yield('content')
-  </main>
-
+  </main> --}}
+  <style>
+    .modal-header{
+      background: var(--gradient-hero);
+      color: white;
+    }
+  </style>
   <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <!-- Tabs for Login and Register -->
-          <ul class="nav nav-tabs w-100" id="modalTab" role="tablist">
-            <li class="nav-item w-50">
-              <a class="nav-link active" id="login-tab" data-bs-toggle="tab" href="#login" role="tab" aria-controls="login" aria-selected="true">Login</a>
-            </li>
-            {{-- <li class="nav-item w-50">
-              <a class="nav-link" id="register-tab" data-bs-toggle="tab" href="#register" role="tab" aria-controls="register" aria-selected="false">Register</a>
-            </li> --}}
-          </ul>
+          <h3>Login</h3>
         </div>
         <div class="modal-body">
           <!-- Tab content -->
@@ -154,111 +301,21 @@
 </div>
 
   <footer id="footer" class="footer">
-{{-- 
-    <div class="footer-newsletter">
-      <div class="container">
-        <div class="row justify-content-center text-center">
-          <div class="col-lg-6">
-            <h4>Join Our Newsletter</h4>
-            <p>Subscribe to our newsletter and receive the latest news about our products and services!</p>
-            <form action="forms/newsletter.php" method="post" class="php-email-form">
-              <div class="newsletter-form"><input type="email" name="email"><input type="submit" value="Subscribe"></div>
-              <div class="loading">Loading</div>
-              <div class="error-message"></div>
-              <div class="sent-message">Your subscription request has been sent. Thank you!</div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div> --}}
-
-    <div class="container footer-top">
-      <div class="row gy-4">
-        <div class="col-lg-4 col-md-6 footer-about">
-          <a href="index.html" class="d-flex align-items-center">
-            <span class="sitename"><b>Edu</b>Sched</span>
-          </a>
-          <div class="footer-contact pt-3">
-            <p>A108 Adam Street</p>
-            <p>New York, NY 535022</p>
-            <p class="mt-3"><strong>Phone:</strong> <span>+1 5589 55488 55</span></p>
-            <p><strong>Email:</strong> <span>info@example.com</span></p>
-          </div>
-        </div>
-
-        <div class="col-lg-2 col-md-3 footer-links">
-          <h4>Useful Links</h4>
-          <ul>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Home</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">About us</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Services</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Terms of service</a></li>
-          </ul>
-        </div>
-
-        <div class="col-lg-2 col-md-3 footer-links">
-          <h4>Our Services</h4>
-          <ul>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Web Design</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Web Development</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Product Management</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Marketing</a></li>
-          </ul>
-        </div>
-
-        <div class="col-lg-4 col-md-12">
-          <h4>Follow Us</h4>
-          <p>Cras fermentum odio eu feugiat lide par naso tierra videa magna derita valies</p>
-          <div class="social-links d-flex">
-            <a href=""><i class="bi bi-twitter-x"></i></a>
-            <a href=""><i class="bi bi-facebook"></i></a>
-            <a href=""><i class="bi bi-instagram"></i></a>
-            <a href=""><i class="bi bi-linkedin"></i></a>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
     <div class="container copyright text-center mt-4">
-      <p>© <span>Copyright</span> <b>Edu</b>Sched <span>All Rights Reserved</span></p>
+      <p>© <span>Copyright</span> <b>Seat Plan Pro</b> <span>All Rights Reserved</span></p>
       <div class="credits">
-        <!-- All the links in the footer should remain intact. -->
-        <!-- You can delete the links only if you've purchased the pro version. -->
-        <!-- Licensing information: https://bootstrapmade.com/license/ -->
-        <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
-        Designed by EduSched
+        Designed by Seat Plan Pro
       </div>
     </div>
-
   </footer>
 
   <!-- Scroll Top -->
   <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
-  <!-- Preloader -->
-  <div id="preloader"></div>
-
-  <!-- Vendor JS Files -->
   <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
-  <script src="{{ asset('vendor/php-email-form/validate.js')}}"></script>
-  <script src="{{ asset('vendor/aos/aos.js')}}"></script>
-  <script src="{{ asset('vendor/glightbox/js/glightbox.min.js')}}"></script>
-  <script src="{{ asset('vendor/purecounter/purecounter_vanilla.js')}}"></script>
-  <script src="{{ asset('vendor/imagesloaded/imagesloaded.pkgd.min.js')}}"></script>
-  <script src="{{ asset('vendor/isotope-layout/isotope.pkgd.min.js')}}"></script>
-  <script src="{{ asset('vendor/swiper/swiper-bundle.min.js')}}"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-  <!-- Main JS File -->
-  <script src="{{ asset('js/main.js')}}"></script>
-
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="{{ asset('website/js/script.js')}}"></script>
   <script>
-    // jQuery to handle tab change background color
-    $('#modalTab a').on('click', function() {
-      $('.nav-link').removeClass('active');
-      $(this).addClass('active');
-    });
 
     $("#loginForm").on("submit", function(event) {
       event.preventDefault();
@@ -287,41 +344,6 @@
             $("#loginError").html(errors.email || errors.password || "An error occurred.").show();  
             setTimeout(() => {
               $("#loginError").hide();
-            }, 2000);
-          }
-        }
-      });
-    });
-
-    // Handle register form submission
-    $("#registerForm").on("submit", function(event) {
-      event.preventDefault();
-      var name = $("#register-name").val();
-      var email = $("#register-email").val();
-      var password = $("#register-password").val();
-      var confirm_password = $("#register-confirmation").val();
-
-      $.ajax({
-        url: "{{ route('register') }}", // Replace with your actual register route
-        method: "POST",
-        data: {
-          name: name,
-          email: email,
-          password: password,
-          password_confirmation: confirm_password,
-          _token: "{{ csrf_token() }}", // Include CSRF token
-        },
-        success: function(response) {
-          // Handle success (e.g., redirect to login page or show success message)
-          window.location.href = "/otp/verify"; // Replace with your redirect URL
-        },
-        error: function(xhr) {
-          // Handle error (show error message)
-          var errors = xhr.responseJSON.errors;
-          if (errors) {
-            $("#registerError").html(errors.name || errors.email || errors.password || "An error occurred.").show();
-            setTimeout(() => {
-              $("#registerError").hide();
             }, 2000);
           }
         }

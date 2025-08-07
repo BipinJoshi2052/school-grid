@@ -33,7 +33,7 @@ Home
                         <div class="d-flex align-items-center">
                             <div>
                                 <div class="d-inline-flex align-items-center">
-                                    <h2 class="text-dark mb-1 font-weight-medium">5</h2>
+                                    <h2 class="text-dark mb-1 font-weight-medium">{{$data['faculty']}}</h2>
                                     {{-- <span class="badge bg-primary font-12 text-white font-weight-medium rounded-pill ms-2 d-lg-block d-md-none">+18.33%</span> --}}
                                 </div>
                                 <h6 class="text-muted font-weight-normal mb-0 w-100 text-truncate">Faculties
@@ -51,7 +51,7 @@ Home
                     <div class="card-body">
                         <div class="d-flex align-items-center">
                             <div>
-                                <h2 class="text-dark mb-1 font-weight-medium">10</h2>
+                                <h2 class="text-dark mb-1 font-weight-medium">{{$data['batch']}}</h2>
                                 <h6 class="text-muted font-weight-normal mb-0 w-100 text-truncate">
                                     Batches
                                 </h6>
@@ -69,7 +69,7 @@ Home
                         <div class="d-flex align-items-center">
                             <div>
                                 <div class="d-inline-flex align-items-center">
-                                    <h2 class="text-dark mb-1 font-weight-medium">20</h2>
+                                    <h2 class="text-dark mb-1 font-weight-medium">{{$data['class']}}</h2>
                                     {{-- <span class="badge bg-danger font-12 text-white font-weight-medium rounded-pill ms-2 d-md-none d-lg-block">-18.33%</span> --}}
                                 </div>
                                 <h6 class="text-muted font-weight-normal mb-0 w-100 text-truncate">Classes 
@@ -87,7 +87,7 @@ Home
                     <div class="card-body">
                         <div class="d-flex align-items-center">
                             <div>
-                                <h2 class="text-dark mb-1 font-weight-medium">43</h2>
+                                <h2 class="text-dark mb-1 font-weight-medium">{{$data['section']}}</h2>
                                 <h6 class="text-muted font-weight-normal mb-0 w-100 text-truncate">Sections</h6>
                             </div>
                             <div class="ms-auto mt-md-3 mt-lg-0">
@@ -97,7 +97,7 @@ Home
                     </div>
                 </div>
             </div>
-            <div class="col-lg-12 col-md-12">
+            {{-- <div class="col-lg-12 col-md-12">
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Student Ratio</h4>
@@ -107,7 +107,7 @@ Home
                         </ul>
                     </div>
                 </div>
-            </div>
+            </div> --}}
         </div>
     </div>
 @endsection
@@ -150,7 +150,7 @@ Home
                 }
             }]
         ];
-        new Chartist.Bar('.net-income', data, options, responsiveOptions);
+        // new Chartist.Bar('.net-income', data, options, responsiveOptions);
 
         });
 </script>

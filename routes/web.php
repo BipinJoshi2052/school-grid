@@ -40,7 +40,10 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    Route::get('/seat-plan-config-v3', [SeatPlanController::class, 'seatPlanConfigV3'])->name('seat-plan.configV3');
+    Route::post('/generate-seat-plan', [SeatPlanController::class, 'generateSeatPlan'])->name('seat-plan.generate');
     Route::get('/seat-plan-config', [SeatPlanController::class, 'config'])->name('seat-plan.config');
+    Route::get('/seat-plan/{id}', [SeatPlanController::class, 'seatPlanLayout'])->name('seatPlanLayout');
     Route::get('/seat-plan', [SeatPlanController::class, 'index'])->name('seat-plan');
 
     Route::get('/faculty', [AcademicController::class, 'facultyBatch'])->name('academics.faculty');
@@ -84,12 +87,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/buildings/add-element', [BuildingsController::class, 'addElement'])->name('buildings.addElement');
     Route::delete('/buildings/delete-element', [BuildingsController::class, 'deleteElement']);
     Route::get('/buildings/visualize', [BuildingsController::class, 'visualize'])->name('buildings.visualize');
+    Route::get('/buildings/visualize-v2', [BuildingsController::class, 'visualize2'])->name('buildings.visualizev2');
     Route::get('/buildings', [BuildingsController::class, 'index'])->name('buildings.index');
     
-    Route::get('/seat-plan', [HomeController::class, 'seatPlan'])->name('seat-plan');
-    Route::get('/seat-plan-config', [HomeController::class, 'seatPlanConfig'])->name('seat-plan-config');
-    Route::get('/seat-plan-config-v3', [HomeController::class, 'seatPlanConfigV3'])->name('seat-plan-configV3');
-    // Route::get('/students', [StudentController::class, 'partial'])->name('positions.partial');
+    // Route::get('/seat-plan', [HomeController::class, 'seatPlan'])->name('seat-plan');
+    // Route::get('/seat-plan-config', [HomeController::class, 'seatPlanConfig'])->name('seat-plan-config');
 
     Route::post('/erase-data', [AcademicController::class, 'eraseData'])->name('erase-data');
     Route::post('/populate-data', [AcademicController::class, 'populateData'])->name('populate-data');

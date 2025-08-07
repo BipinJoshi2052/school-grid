@@ -11,7 +11,6 @@ class BuildingsController extends Controller
     public function index(){
         $data = [];
         $data = Building::where('user_id', session('school_id'))
-                ->orderBy('id','desc')
                 ->get()
                 ->toArray();
                 // dd($data);
@@ -24,14 +23,6 @@ class BuildingsController extends Controller
                 ->toArray();
                 // dd($data);
         return view('admin.buildings.show', compact('data'));
-    }
-    public function visualize2(){
-        $data = [];
-        $data = Building::where('user_id', session('school_id'))
-                ->get()
-                ->toArray();
-                // dd($data);
-        return view('admin.buildings.showV2', compact('data'));
     }
 
     public function addElement(Request $request)
@@ -360,15 +351,30 @@ class BuildingsController extends Controller
                     'seats' => 0
                 ];
 
+                // dd($row);
+                // foreach ($roomDataReference['individual'] as &$row) {
+                //     if ($row['name'] === $data['row_name'] && $row['id'] === $data['row_id']) {
+                //         $rowFound = true;
+                //         // Add the bench to the row
+                //         $row['bench'][] = [
+                //             'name' => $data['title'],
+                //             'seats' => $data['seats']
+                //         ];
+                //         break;
+                //     }
+                // }
+
+                // if (!$rowFound) {
+                //     return response()->json([
+                //         'status' => 'error',
+                //         'message' => 'Row not found in the room.'
+                //     ], 400);
+                // }
+
                 // Get the index of the bench added
                 $benchIndex = count($row['bench']) - 1;
 
-                // Increment the total room bench count
-                $roomDataReference['room_total']['total_bench'] += 1;
-                $roomDataReference['room_total']['total_seats'] += 0; 
-
                 // Update the rooms data in the building
-                // $building->total_bench += 1;
                 $building->rooms = json_encode($roomsData);
                 $building->save();
 
@@ -382,14 +388,8 @@ class BuildingsController extends Controller
                 $roomDataReference['total']['benches'] += $data['total_benches'];  // Increment total benches
                 $roomDataReference['total']['seats'] += $data['total_seats']; // Add seats
 
-                // Increment the total room bench count
-                // $roomDataReference['room_total']['total_bench'] += $data['total_benches'];
-                // $roomDataReference['room_total']['total_seats'] += ($data['total_benches'] * $data['total_seats']);
-
                 // Update the rooms data in the building
                 $building->rooms = json_encode($roomsData);
-                // $building->total_bench += $data['total_benches'];
-                // $building->total_seats += ($data['total_benches'] * $data['total_seats']);
                 $building->save();
 
                 return response()->json([
@@ -449,7 +449,6 @@ class BuildingsController extends Controller
                 }
 
                 $bench = &$row['bench'][$data['bench_id']];
-                $current_bench_seat = $bench['seats'];
                 $bench['seats'] = $data['seats_value'];
                 // $row['bench'][] = [
                 //     'name' => $data['title'],
@@ -459,12 +458,8 @@ class BuildingsController extends Controller
                 // Get the index of the bench added
                 $benchIndex = count($row['bench']) - 1;
 
-                $roomDataReference['room_total']['total_seats'] -= $current_bench_seat;
-                $roomDataReference['room_total']['total_seats'] += $data['seats_value']; 
-
                 // Update the rooms data in the building
                 $building->rooms = json_encode($roomsData);
-                $building->total_seats += $data['seats_value'];
                 $building->save();
 
                 return response()->json([
@@ -473,15 +468,12 @@ class BuildingsController extends Controller
                     'id' => $benchIndex // Send the index of the added bench
                 ]);
             } else {
-                $current_total_seats = $roomDataReference['total']['seats'];
                 // If selected_type is 'total', we add benches to the 'total' section
                 $roomDataReference['total']['benches'] += $data['total_benches'];  // Increment total benches
                 $roomDataReference['total']['seats'] += $data['total_seats']; // Add seats
 
                 // Update the rooms data in the building
                 $building->rooms = json_encode($roomsData);
-                $building->total_seats -= $current_total_seats;
-                $building->total_seats += ($data['total_benches'] * $data['seats_value']);
                 $building->save();
 
                 return response()->json([
@@ -552,40 +544,14 @@ class BuildingsController extends Controller
             ], 400);
         }
 
-        // Get the room data before deletion
-        // $roomData = $roomsData[$room_index];
-
-        // // Check selected_type to determine which key to use
-        // if ($roomData['selected_type'] == 'total') {
-        //     // For 'total' type, use the 'total' key to get benches and seats
-        //     $benches = $roomData['total']['benches'];
-        //     $seats = $roomData['total']['seats'];
-
-        //     // Subtract from the building's total_bench and total_seats
-        //     $building->total_bench -= $benches;
-        //     $building->total_seats -= ($benches * $seats);
-        // } else {
-        //     // For 'individual' type, use the 'room_total' key to get benches and seats
-        //     $benches = $roomData['room_total']['total_bench'];
-        //     $seats = $roomData['room_total']['total_seats'];
-
-        //     // Subtract from the building's total_bench and total_seats
-        //     $building->total_bench -= $benches;
-        //     $building->total_seats -= ($benches * $seats);
-        // }
-
-        // Remove the room from roomsData
+        // Remove the room
         unset($roomsData[$room_index]);
 
-        // Reindex the rooms array after removal
+        // Reindex rooms after removal
         $roomsData = array_values($roomsData);
 
         // Save the updated rooms data back to the building
-        $building->total_room -= 1;
         $building->rooms = json_encode($roomsData);
-        $building->save();
-
-        // Save the updated total values to the building
         $building->save();
 
         return response()->json([
@@ -593,7 +559,6 @@ class BuildingsController extends Controller
             'message' => "Room at index {$room_index} deleted from building."
         ]);
     }
-
 
     // Private function to delete row
     private function deleteRow($building_id, $room_index, $row_index)
@@ -658,10 +623,6 @@ class BuildingsController extends Controller
             ], 400);
         }
 
-        $roomDataReference = &$roomsData[$room_index];
-        $total_seats_in_deleted_bench = $roomsData[$room_index]['individual'][$row_index]['bench'][$bench_index]['seats'];
-        $roomDataReference['room_total']['total_bench'] -= 1;  // Increment total benches
-        $roomDataReference['room_total']['total_seats'] -= $total_seats_in_deleted_bench; // Add seats
         // Remove the bench
         unset($roomsData[$room_index]['individual'][$row_index]['bench'][$bench_index]);
 
