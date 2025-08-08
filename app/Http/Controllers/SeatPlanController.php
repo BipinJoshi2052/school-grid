@@ -37,6 +37,40 @@ class SeatPlanController extends Controller
         return view('admin.seat-plan.index', compact('data'));
     }
 
+    public function listPartial(Request $request) 
+    {
+        // Get the search term from the request
+        $searchTerm = $request->get('search')['value'] ?? '';  // DataTables sends the search term in search[value]
+
+        // Pagination parameters
+        $page = $request->get('page', 1);  // Default page is 1
+        $perPage = $request->get('pageLength', 10);  // Use the pageLength parameter to get the number of items per page
+
+        // Build the query to filter data
+        $query = SeatPlan::where('user_id', session('school_id'))
+                        ->orderBy('id', 'desc');
+
+        // Apply the search filter if a search term is provided
+        if ($searchTerm) {
+            $query->where(function ($q) use ($searchTerm) {
+                $q->whereHas('user', function ($query) use ($searchTerm) {
+                    $query->where('title', 'like', '%' . $searchTerm . '%');
+                });
+            });
+        }
+
+        // Paginate the results
+        $seat_plans = $query->paginate($perPage);
+
+        // Return the response in JSON format for DataTables
+        return response()->json([
+            'draw' => $request->get('draw'),
+            'recordsTotal' => $seat_plans->total(),
+            'recordsFiltered' => $seat_plans->total(), // Since we're not using a separate filtered count, this is the same as recordsTotal
+            'data' => $seat_plans->items()  // Return the paginated data
+        ]);
+    }
+
     public function config()
     {
         //Buildings
@@ -827,10 +861,113 @@ class SeatPlanController extends Controller
         return ['seat_plan_details' => $seat_plan_details, 'unassigned_students' => $unassigned_students];
     }
 
-    public function seatPlanLayout($id)
+    public function seatPlanLayout1($id)
     {
-        dd('here');
-        // Return the seat plan layout view
-        return view('seatPlanLayout', ['id' => $id]);
+        // Step 1: Get seat plan data
+        $data['seat_plan'] = SeatPlan::select('id','title','unassigned_students')
+            ->where('id', $id)
+            ->first()
+            ->toArray();
+
+        // Step 2: Get distinct building IDs from seat_plan_details
+        $buildingIds = SeatPlanDetail::where('seat_plan_id', $id)
+            ->distinct()
+            ->pluck('building_id');
+
+        // Step 3: Get building information from the buildings table
+        $buildings = Building::whereIn('id', $buildingIds)
+            ->get();
+
+        // Step 4: Group seat_plan_details by building_id and count students
+        // $studentCounts = SeatPlanDetail::where('seat_plan_id', $id)
+        //     ->groupBy('building_id')
+        //     ->selectRaw('building_id, COUNT(student_id) as student_count')
+        //     ->pluck('student_count', 'building_id'); // This will give a map of building_id => student_count
+
+        // Step 5: Add the student count to each building in the buildings array
+        // $buildingData = $buildings->map(function ($building) use ($studentCounts) {
+        //     $building->student_count = $studentCounts->get($building->id, 0); // Default to 0 if no students found
+        //     return $building;
+        // });
+
+        // Combine seat plan data with building data
+        // $data['buildings'] = $buildingData->toArray();
+        $data['buildings'] = $buildings->toArray();
+
+        // Debugging: Dump the seat plan data
+        // dd($data);
+
+        // Step 6: Return view with data
+        return view('admin.seat-plan.show', compact('data'));
     }
+
+    public function seatPlanLayout($id)
+{
+    // Step 1: Get seat plan data
+    $data['seat_plan'] = SeatPlan::select('id', 'title', 'unassigned_students')
+        ->where('id', $id)
+        ->first()
+        ->toArray();
+
+    // Step 2: Get distinct building IDs from seat_plan_details
+    $buildingIds = SeatPlanDetail::where('seat_plan_id', $id)
+        ->distinct()
+        ->pluck('building_id');
+
+    // Step 3: Get building information from the buildings table
+    $buildings = Building::whereIn('id', $buildingIds)
+        ->get();
+    $data['buildings'] = $buildings->toArray();
+    
+    // Step 4: Get all seat plan details with student relationship loaded
+    $seatPlanDetails = SeatPlanDetail::with(['student', 'student.class', 'student.section']) // Eager load relationships
+        ->where('seat_plan_id', $id)
+        ->get();
+
+    // Step 5: Organize the data into the required structure
+    $arrangedData = [];
+
+    foreach ($seatPlanDetails as $detail) {
+        $buildingId = $detail->building_id;
+        $room = $detail->room; // Room number or identifier (this can be modified if needed)
+        $bench = $detail->bench;
+        $seat = $detail->seat;
+
+        // Initialize building and room if not already created
+        if (!isset($arrangedData[$buildingId])) {
+            $arrangedData[$buildingId] = [];
+        }
+
+        if (!isset($arrangedData[$buildingId][$room])) {
+            $arrangedData[$buildingId][$room] = [];
+        }
+
+        if (!isset($arrangedData[$buildingId][$room][$bench])) {
+            $arrangedData[$buildingId][$room][$bench] = [];
+        }
+
+        // Fetch the student details
+        $student = $detail->student; // Eager-loaded student
+        $studentData = [
+            'id' => $student->id,
+            'name' => $student->name,
+            'class' => $student->class ? $student->class->title : 'N/A', // Check if class exists before accessing
+            'section' => $student->section ? $student->section->title : 'N/A', // Check if section exists before accessing
+            'gender' => $student->gender,
+            'handicapped' => $student->handicapped,
+            'roll_no' => $student->roll_no,
+        ];
+
+        // Add the student data to the seat
+        $arrangedData[$buildingId][$room][$bench][$seat] = $studentData;
+    }
+    $data['arrangedData'] = $arrangedData;
+        // dd($data);
+
+    // Step 6: Return view with arranged data
+    return view('admin.seat-plan.show', compact('data'));
+}
+
+
+
 }

@@ -385,17 +385,17 @@
                             </a>
                         </li> 
 
-                        <li class="sidebar-item"> 
+                        {{-- <li class="sidebar-item"> 
                             <a class="sidebar-link" href="{{route('seat-plan.configV3')}}" aria-expanded="false">
                                 <i data-feather="file-plus" class="feather-icon"></i>
                                 <span
                                     class="hide-menu">Seat Plan V2
                                 </span>
                             </a>
-                        </li> 
+                        </li>  --}}
 
                         <li class="sidebar-item"> 
-                            <a class="sidebar-link" href="{{route('seat-plan.config')}}" aria-expanded="false">
+                            <a class="sidebar-link" href="{{route('seat-plan.create')}}" aria-expanded="false">
                                 <i data-feather="file-plus" class="feather-icon"></i>
                                 <span
                                     class="hide-menu">Generate Seat Plan

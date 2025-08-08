@@ -52,7 +52,8 @@
                     <a class="btn-getstarted btn btn-outline" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#exampleModal">
                       Login
                     </a>
-                    <a href="{{ route('register') }}" class="btn btn-hero">Register</a>
+                    <a href="#" class="btn btn-hero">Register</a>
+                    {{-- <a href="{{ route('register') }}" class="btn btn-hero">Register</a> --}}
                   @endguest
 
                   @auth
@@ -111,7 +112,11 @@
                 </div>
                 
                 <div class="hero-buttons">
-                    <a class="btn btn-hero btn-large" href="{{ route('register') }}">
+                    {{-- <a class="btn btn-hero btn-large" href="{{ route('register') }}">
+                      Start Free Trial
+                      <i class="fas fa-arrow-right"></i>                    
+                    </a> --}}
+                    <a class="btn btn-hero btn-large" href="#">
                       Start Free Trial
                       <i class="fas fa-arrow-right"></i>                    
                     </a>

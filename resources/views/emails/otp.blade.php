@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verify Your Account - EduShed</title>
+    <title>Verify Your Account - Seat Plan Pro</title>
     <style>
         * {
 margin: 0;
@@ -169,10 +169,10 @@ transform: translateY(-2px);
 
         <!-- Content -->
         <div style="padding: 40px 30px;text-align: center;" class="content">
-<div style="font-size: 20px;color: #333;margin-bottom: 20px;font-weight: 600;" class="greeting">Welcome to EduSched!</div>
+<div style="font-size: 20px;color: #333;margin-bottom: 20px;font-weight: 600;" class="greeting">Welcome to Seat Plan Pro!</div>
 
 <div style="font-size: 16px;color: #666;margin-bottom: 30px;line-height: 1.7;" class="message">
-    Thank you for registering with <strong>EduShed</strong> - your smart exam seating solution. 
+    Thank you for registering with <strong>Seat Plan Pro</strong> - your smart exam seating solution. 
     To complete your account setup and ensure security, please verify your email address using the OTP code below.
 </div>
 
@@ -189,7 +189,7 @@ transform: translateY(-2px);
 <div style="background-color: #f8fafc;border-left: 4px solid #667eea;padding: 20px;margin: 30px 0;text-align: left;border-radius: 0 8px 8px 0;" class="instructions">
     <h3 style="color: #333;margin-bottom: 12px;font-size: 16px;">📝 How to verify your account:</h3>
     <ol style="margin-left: 20px;color: #666;">
-        <li style="margin-bottom: 8px;font-size: 14px;">Go back to the EduShed registration page</li>
+        <li style="margin-bottom: 8px;font-size: 14px;">Go back to the Seat Plan Pro registration page</li>
         <li style="margin-bottom: 8px;font-size: 14px;">Enter the 6-digit OTP code shown above</li>
         <li style="margin-bottom: 8px;font-size: 14px;">Click "Verify Account" to complete your registration</li>
         <li style="margin-bottom: 8px;font-size: 14px;">Start managing your exam seating arrangements!</li>
@@ -205,7 +205,7 @@ transform: translateY(-2px);
         Security Notice
     </h4>
     <p style="color: #2d3436;font-size: 14px;line-height: 1.5;">
-        Never share this OTP code with anyone. EduShed staff will never ask for your verification code. 
+        Never share this OTP code with anyone. Seat Plan Pro staff will never ask for your verification code. 
         If you didn't request this verification, please ignore this email or contact our support team.
     </p>
 </div>
@@ -220,7 +220,7 @@ transform: translateY(-2px);
 
         <!-- Footer -->
         <div style="background-color: #f8fafc;padding: 30px;text-align: center;border-top: 1px solid #e1e8ed;" class="footer">
-            <div style="color: #333;font-weight: 600;margin-bottom: 15px;" class="company-info"><b>Edu</b>Shed - Smart Exam Seating Solutions</div>
+            <div style="color: #333;font-weight: 600;margin-bottom: 15px;" class="company-info">Seat Plan Pro - Automated Exam Seat Planning Made Simple</div>
 
             <div style="margin: 20px 0;" class="social-links">
                 <a style="display: inline-block;width: 36px;height: 36px;background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);color: white;text-decoration: none;border-radius: 50%;margin: 0 8px;line-height: 36px;font-size: 16px;transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'" href="#" title="Facebook">📘</a>
@@ -229,12 +229,13 @@ transform: translateY(-2px);
                 <a style="display: inline-block;width: 36px;height: 36px;background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);color: white;text-decoration: none;border-radius: 50%;margin: 0 8px;line-height: 36px;font-size: 16px;transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'" href="#" title="Email">✉️</a>
             </div>
 
-            <p style="color: #666;font-size: 14px;margin-bottom: 8px;">Questions? Contact our support team at <strong>support@edushed.com</strong></p>
-            <p style="color: #666;font-size: 14px;margin-bottom: 8px;">📞 +977-1-XXXXXXX | 🌐 www.edushed.com</p>
+            <p style="color: #666;font-size: 14px;margin-bottom: 8px;">Questions? Contact our support team at <strong>seatplanpro@gmail.com</strong></p>
+            <p style="color: #666;font-size: 14px;margin-bottom: 8px;">🌐 www.seatplanpro.com</p>
+            {{-- 📞 +977-1-XXXXXXX |  --}}
 
             <div style="margin-top: 20px; font-size: 12px; color: #999;">
                 <p>This is an automated message. Please do not reply to this email.</p>
-                <p>© 2025 EduShed. All rights reserved.</p>
+                <p>© 2025 Seat Plan Pro. All rights reserved.</p>
             </div>
         </div>
     </div>

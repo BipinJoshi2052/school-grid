@@ -170,7 +170,8 @@
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
         } */
-        .bench-type-selector label:has(input[type="radio"]:checked) {
+         .bench-type-selector label.checked {
+        /* .bench-type-selector label:has(input[type="radio"]:checked) { */
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
         }
@@ -317,6 +318,9 @@
         .add-row-btn{
             margin-bottom: 10px;
         }
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #28a745, #20c997);
+        }
     </style>
 @endsection
 
@@ -392,21 +396,33 @@
 
 @section('scripts')
 <script>
+    // Check if the radio button is checked and add class to label
+$(document).ready(function() {
+    $('input[type="radio"]:checked').each(function() {
+        console.log('object');  // This will log if the radio button is checked
+        $(this).closest('label').addClass('checked');
+    });
+});
+
         let buildingCounter = 0;
         // let roomCounter = 0;
         // let rowCounter = 0;
         // let benchCounter = 0;
         const existingData = JSON.parse('<?php echo addslashes($data); ?>');
 
-        console.log(existingData);
+        // console.log(existingData);
         // Function to populate existing data
         function populateExistingData() {
+            var building_loop_debug = 0;
+
             if (existingData.length === 0) return;
 
             $('#buildingsContainer .empty-state').remove();
-
+            // console.log(existingData)
             existingData.forEach(buildingData => {
+                (building_loop_debug == 1) ?? console.log('start loop');
                 const rooms = JSON.parse(buildingData.rooms);
+                // console.log(rooms)
                 const buildingId = `building_${buildingData.id}`;
                 
                 // Create building HTML
@@ -429,11 +445,15 @@
 
                 $('#buildingsContainer').append(buildingHtml);
                 const buildingEl = $(`[data-id="${buildingId}"]`);
+                (building_loop_debug == 1) ?? console.log('buildingData.name - '+buildingData.name);
 
                 // Populate rooms
                 rooms.forEach((roomData, roomIndex) => {
+                    (building_loop_debug == 1) ?? console.log('room start loop');
                     var roomCounter = roomIndex;
                     const roomId = `room_${roomIndex}`;
+                    (building_loop_debug == 1) ?? console.log(roomData);
+                    (building_loop_debug == 1) ?? console.log('roomIndex - ' + roomIndex);
                     
                     // Calculate total stats
                     let totalBenches = 0;
@@ -454,7 +474,7 @@
                     }
                     // console.log(roomData.selected_type)
                     const roomHtml = `
-                        <div class="room collapsed" data-id="${roomId}" data-server-id="${roomId}">
+                        <div class="room collapsed" data-id="${roomId}" data-server-id="${roomIndex}">
                             <div class="room-header">
                                 <div class="room-title">
                                     <input type="text" placeholder="Enter room title" class="room-title-input" style="background: transparent; border: none; color: white; font-size: 1.2em; font-weight: 500; outline: none;" value="${roomData.name}">
@@ -466,12 +486,12 @@
                             </div>
                             <div class="room-content">
                                 <div class="bench-type-selector">
-                                    <label>
-                                        <input type="radio" name="bench_type_${roomCounter}" value="total" ${roomData.selected_type === 'total' ? 'checked' : ''}>
+                                    <label class="${roomData.selected_type === 'total' ? 'checked' : ''}">
+                                        <input type="radio" name="bench_type_${roomCounter}" value="total" >
                                         <span>Total Bench Data</span>
                                     </label>
-                                    <label>
-                                        <input type="radio" name="bench_type_${roomCounter}" value="individual" ${roomData.selected_type === 'individual' ? 'checked' : ''}>
+                                    <label class="${roomData.selected_type === 'individual' ? 'checked' : ''}">
+                                        <input type="radio" name="bench_type_${roomCounter}" value="individual" >
                                         <span>Individual Bench Data</span>
                                     </label>
                                     <label>
@@ -493,11 +513,11 @@
                                     <div class="form-row">
                                         <div class="form-group">
                                             <label>Total Benches</label>
-                                            <input type="number" class="total-benches-input" min="0" value="${roomData.total.benches || 0}">
+                                            <input type="number" class="total-benches-input" min="1" value="${roomData.total.benches || 0}">
                                         </div>
                                         <div class="form-group">
                                             <label>Seats per Bench</label>
-                                            <input type="number" class="seats-per-bench-input" min="0" value="${roomData.total.seats || 0}">
+                                            <input type="number" class="seats-per-bench-input" min="1" value="${roomData.total.seats || 0}">
                                         </div>
                                     </div>
                                     <button class="btn submit-total-bench-btn">Submit Bench Data</button>
@@ -514,18 +534,24 @@
                             </div>
                         </div>
                     `;
-
+                        // console.log(roomHtml)
+                    // console.log(buildingEl.find('.rooms-container'))
                     buildingEl.find('.rooms-container').append(roomHtml);
-                    const roomEl = $(`[data-id="${roomId}"]`);
+                    const roomEl = buildingEl.find(`[data-id="${roomId}"]`);
+                    // const roomEl = $(`[data-id="${roomId}"]`);
+                    (building_loop_debug == 1) ?? console.log(roomEl);
+                    (building_loop_debug == 1) ?? console.log('roomData.selected_type - '+roomData.selected_type);
 
                     // Populate individual bench data if selected
                     if (roomData.selected_type === 'individual' && roomData.individual) {
                         roomData.individual.forEach((rowData, rowIndex) => {
+                            (building_loop_debug == 1) ?? console.log('row start loop');
                             var rowCounter = rowIndex;
                             const rowId = `row_${buildingData.id}_${rowIndex}`;
+                            (building_loop_debug == 1) ?? console.log('rowId - ' +rowId);
                             
                             const rowHtml = `
-                                <div class="row-section" data-id="${rowId}" data-server-id="${rowId}">
+                                <div class="row-section" data-id="${rowId}" data-server-id="${rowIndex}">
                                     <div class="row-header">
                                         <div class="row-title">${rowData.name}</div>
                                         <button class="btn btn-secondary add-bench-btn">+ Add Bench</button>
@@ -535,7 +561,8 @@
                             `;
 
                             roomEl.find('.rows-container').append(rowHtml);
-                            const rowEl = $(`[data-id="${rowId}"]`);
+                            const rowEl = roomEl.find(`[data-id="${rowId}"]`);
+                            // const rowEl = $(`[data-id="${rowId}"]`);
 
                             // Populate benches in this row
                             if (rowData.bench) {
@@ -544,14 +571,14 @@
                                     const benchId = `bench_${benchIndex}`;
                                     
                                     const benchHtml = `
-                                        <div class="bench-item" data-id="${benchId}" data-server-id="${benchId}">
+                                        <div class="bench-item" data-id="${benchId}" data-server-id="${benchIndex}">
                                             <div class="bench-header">
                                                 <strong>${benchData.name}</strong>
-                                                <button class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;" onclick="$(this).closest('.bench-item').remove(); updateRoomStats($(this).closest('.room'));">Delete</button>
+                                                <button class="btn btn-danger delete-bench-btn" style="padding: 5px 10px; font-size: 12px;">Delete</button>
                                             </div>
                                             <div class="form-group">
                                                 <label>Number of Seats</label>
-                                                <input type="number" class="seats-input" min="0" value="${benchData.seats || 0}">
+                                                <input type="number" class="seats-input" min="1" value="${benchData.seats || 0}">
                                             </div>
                                             <button class="btn submit-bench-btn">Submit Bench</button>
                                         </div>
@@ -560,12 +587,15 @@
                                     rowEl.find('.benches-container').append(benchHtml);
                                 });
                             }
+                            (building_loop_debug == 1) ?? console.log('row end loop');
                         });
                     }
+                    (building_loop_debug == 1) ?? console.log('room end loop');
                 });
-
+                // onclick="$(this).closest('.bench-item').remove(); updateRoomStats($(this).closest('.room'));"
                 // Update counters to avoid conflicts
                 buildingCounter = Math.max(buildingCounter, buildingData.id);
+                (building_loop_debug == 1) ?? console.log('end loop');
             });
         }
 
@@ -609,12 +639,9 @@
                     showStatus(response.message,'success');
                 },
                 error: function(xhr, status, error) {
-                    console.log('error')
-
-                    callback(
-                        false, 
-                        null
-                    );
+                    // console.log('error')
+                    var errorMessage = xhr.responseText;
+                    callback(false,null);
 
                     showStatus(errorMessage,'error');
                 }
@@ -626,15 +653,18 @@
                 toastr.error(message);
             }
             else{
-                toastr.success(message);
+                // toastr.success(message);
             }
         }
 
         function updateRoomStats(roomEl) {
-            const benchType = roomEl.find('input[name^="bench_type_"]:checked').val();
+            const label = roomEl.find('label.checked');  // Find the label with the 'checked' class
+            const benchType = label.find('input[type="radio"]').val();  // Get the value of the radio input inside that label
+
+            // const benchType = roomEl.find('input[name^="bench_type_"]:checked').val();
             let totalBenches = 0;
             let totalSeats = 0;
-
+            console.log(benchType)
             if (benchType === 'total') {
                 const benchesInput = roomEl.find('.total-benches-input');
                 const seatsInput = roomEl.find('.seats-per-bench-input');
@@ -645,9 +675,11 @@
                 roomEl.find('.row-section').each(function() {
                     const rowBenches = $(this).find('.bench-item').length;
                     totalBenches += rowBenches;
+                    console.log(totalBenches)
                     $(this).find('.seats-input').each(function() {
                         totalSeats += parseInt($(this).val()) || 0;
                     });
+                    console.log(totalSeats)
                 });
             }
 
@@ -853,11 +885,11 @@
                                     <div class="form-row">
                                         <div class="form-group">
                                             <label>Total Benches</label>
-                                            <input type="number" class="total-benches-input" min="0" value="0">
+                                            <input type="number" class="total-benches-input" min="1" value="0">
                                         </div>
                                         <div class="form-group">
                                             <label>Seats per Bench</label>
-                                            <input type="number" class="seats-per-bench-input" min="0" value="0">
+                                            <input type="number" class="seats-per-bench-input" min="1" value="0">
                                         </div>
                                     </div>
                                     <button class="btn submit-total-bench-btn">Submit Bench Data</button>
@@ -1117,7 +1149,35 @@
         $(document).on('change', 'input[name^="bench_type_"]', function() {
             const roomEl = $(this).closest('.room');
             const value = $(this).val();
-            
+            const label = $(this).closest('label');
+
+            console.log('roomEl - ' + roomEl)
+
+            // const benchTypeData = {
+            //     title: benchName,
+            //     type: 'bench-edit',
+            //     row_id: rowId,
+            //     row_name: rowName,
+            //     room_id: roomId,
+            //     room_name: roomName,
+            //     bench_id: benchId,
+            //     building_id:buildingId,
+            //     building_name: buildingName,
+            //     selected_type: 'individual',
+            //     seats_value: parseInt(seatsValue),
+            // };
+
+            // sendAjaxAddRequest(benchData, (success) => {
+            //     if (success) {
+            //         showStatus('Bench seats submitted successfully!', 'success');
+            //         updateRoomStats(roomEl);
+            //     } else {
+            //         showStatus('Error submitting bench seats', 'error');
+            //     }
+            // });
+
+            roomEl.find('label').removeClass('checked');
+            label.addClass('checked');            
             if (value === 'total') {
                 roomEl.find('.total-bench-section').show();
                 roomEl.find('.individual-bench-section').hide();
@@ -1240,7 +1300,7 @@
                     </div>
                     <div class="form-group">
                         <label>Number of Seats</label>
-                        <input type="number" class="seats-input" min="0" value="0">
+                        <input type="number" class="seats-input" min="1" value="0">
                     </div>
                     <button class="btn submit-bench-btn">Submit Bench</button>
                 </div>

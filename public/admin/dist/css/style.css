@@ -17853,7 +17853,7 @@ strong {
 }
 
 .btn-secondary:hover {
-    /* background: #e9ecef; */
+    background: #e9ecef;
     transform: translateY(-2px);
 }
 

@@ -317,6 +317,7 @@ class BuildingsController extends Controller
     // Add bench method
     private function addBench($data)
     {
+        // dd($data);
         try {
             // Find the building by building_id from the passed data
             $building = Building::findOrFail($data['building_id']);
@@ -362,6 +363,7 @@ class BuildingsController extends Controller
 
                 // Get the index of the bench added
                 $benchIndex = count($row['bench']) - 1;
+                $roomDataReference['selected_type'] = 'individual';
 
                 // Increment the total room bench count
                 $roomDataReference['room_total']['total_bench'] += 1;
@@ -379,8 +381,9 @@ class BuildingsController extends Controller
                 ]);
             } else {
                 // If selected_type is 'total', we add benches to the 'total' section
-                $roomDataReference['total']['benches'] += $data['total_benches'];  // Increment total benches
-                $roomDataReference['total']['seats'] += $data['total_seats']; // Add seats
+                $roomDataReference['selected_type'] = 'total';
+                $roomDataReference['total']['benches'] = $data['total_benches'];  // Increment total benches
+                $roomDataReference['total']['seats'] = $data['total_seats']; // Add seats
 
                 // Increment the total room bench count
                 // $roomDataReference['room_total']['total_bench'] += $data['total_benches'];

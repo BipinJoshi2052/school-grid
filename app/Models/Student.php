@@ -33,12 +33,12 @@ class Student extends Model
 
     public function class()
     {
-        return $this->belongsTo(ClassModel::class, 'user_id');
+        return $this->belongsTo(ClassModel::class, 'class_id');
     }
 
     public function section()
     {
-        return $this->belongsTo(Section::class, 'user_id');
+        return $this->belongsTo(Section::class, 'section_id');
     }
     
     public function addedBy()
