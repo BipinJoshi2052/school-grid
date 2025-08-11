@@ -752,50 +752,9 @@
                 document.body.innerHTML = printContents;
                 // Open a new window to handle printing (similar to other sections)
                 const printWindow = window.open('', '_blank');
-                printWindow.document.write(`
-                    <html>
-                        <head>
-                            <title>seatplanpro.com</title>
-                            <style>
-                                body { 
-                                    font-family: Arial, sans-serif; 
-                                    font-size: 12px; 
-                                    margin: 0;
-                                }
-                                h2, h3 { 
-                                    text-align: center; 
-                                    margin: 0;
-                                }
-                                .class-section { 
-                                    margin-bottom: 15px; 
-                                }
-                                @page { 
-                                    size: A4; 
-                                    margin: 0mm; 
-                                }
-                                .seating-layout {
-                                    display: flex !important;
-                                    gap: 75px;
-                                    flex-wrap: wrap;
-                                }
-                                .hide-when-printing {
-                                    display: none;
-                                }
-                            </style>
-                        </head>
-                        <body>
-                            <!-- Building and Room Name -->
-                            <h2>Building Name: ${currentBuildingName}</h2>
-                            <h3>Room Name: ${currentRoomName}</h3>
-
-                            <!-- Insert the layout content -->
-                            ${printContents}
-
-                        </body>
-                    </html>
-                `);                
-                // printWindow.document.write(printContents); // Insert the layout content
-                //printWindow.document.write('</body></html>');
+                printWindow.document.write('<html><head><title>seatplanpro.com</title><style>body { font-family: Arial, sans-serif; font-size: 12px; } h2, h3 { text-align: center; } .class-section { margin-bottom: 15px; } @page { size: A4; margin: 0mm; }.seating-layout{display: flex !important;    gap: 75px;flex-wrap: wrap;}.hide-when-printing {display: none;}</style></head><body>');
+                printWindow.document.write(printContents); // Insert the layout content
+                printWindow.document.write('</body></html>');
                 printWindow.document.close();
 
                 // Add an event listener to close the window after printing or canceling
@@ -847,15 +806,6 @@
 
             for (let className in roomData) {
                 html += `<h4>Class - ${className}</h4>`;
-                // html += `<ul style="list-style-type: none;">`;
-                
-                // let counter = 1;
-
-                // roomData[className].forEach(rollNo => {
-                //     html += `<li style="margin-bottom:5px;">${counter}. Roll No: ${rollNo}</li>`;
-                //     counter++; // Increment the counter
-                // });
-
                 html += `<p>Roll Numbers = `;
                 roomData[className].forEach(rollNo => {
                     html += `${rollNo}, `;

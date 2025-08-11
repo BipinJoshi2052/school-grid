@@ -17,6 +17,9 @@
             text-align: center;
             margin-top: 40px;
         }
+        .seat-plan-create-btn:hover{
+            color: white;
+        }
         /* Styling for table cells */
     </style>
 @endsection
@@ -41,7 +44,7 @@
             </div>
             <div class="col-5 align-self-center">
                 <div class="customize-input float-end">
-                    <a class="btn btn-primary btn-sm" href="{{route('seat-plan.create')}}">+ Seat Plan</a>
+                    <a class="btn btn-primary btn-sm seat-plan-create-btn" href="{{route('seat-plan.create')}}">+ Seat Plan</a>
                 </div>
             </div>
         </div>

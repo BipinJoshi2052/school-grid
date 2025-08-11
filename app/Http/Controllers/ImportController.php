@@ -366,6 +366,7 @@ class ImportController extends Controller
 
     public function validateStudentImport(Request $request)
     {
+        //need to add validation to check for faculty batch class section row, ie if has batch then should have faculty and viceversa,
         // Get the incoming data
         $data = $request->input('data');
         $mappings = $request->input('mappings');
@@ -451,7 +452,7 @@ class ImportController extends Controller
         $imported = 0;
         $errors = [];
 
-        foreach ($data as $row) {
+        foreach ($data as $key => $row) {
             try {
                 // Start with required fields, these will always be present
                 $userData = [
@@ -503,53 +504,149 @@ class ImportController extends Controller
 
 
                 // Faculty: check if Faculty exists, create if not
-                $faculty = (isset($mappings['Faculty']) && $row['Faculty']) ? Faculty::firstOrCreate(
+                $faculty = (isset($mappings['Faculty']) && $row['Faculty'] && ($row['Faculty'] != '' && $row['Faculty'] != null)) ? Faculty::firstOrCreate(
                     [
-                        'title' => $row['Faculty'] ?? null
+                        'title' => (string) $row['Faculty'] ?? null,
+                        'user_id' => session('school_id')
                     ],
                     [
-                        'title' => $row['Faculty'] ?? null,'user_id' => session('school_id'),'added_by' => auth()->id()
+                        'title' => (string) $row['Faculty'] ?? null, 'user_id' => session('school_id'), 'added_by' => auth()->id()
                     ]
                 ) : null;
 
-                // Batch: check if Batch exists, create if not
-                $batch = (isset($mappings['Batch']) && $row['Batch']) ? Batch::firstOrCreate(
+                // Batch: check if Batch exists with faculty_id
+                $batch = (isset($mappings['Batch']) && $row['Batch'] && ($row['Batch'] != '' && $row['Batch'] != null)) ? Batch::firstOrCreate(
                     [
-                        'title' => $row['Batch'] ?? null
+                        'title' => (string) $row['Batch'] ?? null,
+                        'user_id' => session('school_id'),
+                        'faculty_id' => $faculty ? $faculty->id : null // Only if faculty exists, check faculty_id as well
                     ],
                     [
-                        'title' => $row['Batch'] ?? null,
+                        'title' => (string) $row['Batch'] ?? null,
                         'user_id' => session('school_id'),
-                        'faculty_id' => $faculty->id,
+                        'faculty_id' => $faculty ? $faculty->id : null,
                         'added_by' => auth()->id()
                     ]
                 ) : null;
 
-                // Faculty: check if Faculty exists, create if not
-                $class = (isset($mappings['Class']) && $row['Class']) ? ClassModel::firstOrCreate(
+                // if($key == 13){
+                //     dd($row);
+                // }
+                // Class: check if Class exists, considering if $batch exists
+                // if($key == 13){
+                //     //  dd($userAlreadyExists);
+                //     echo '<pre>';
+                //     print_r($batch);
+                //     echo '</pre>';
+
+                //     echo '<pre>';
+                //     print_r($row['Class']);
+                //     echo '</pre>';
+                // }
+                if($batch){
+                    // if($key == 13){
+                    //     echo 'has batch';
+                    //     echo '<pre>';
+                    //     print_r([
+                    //         'title' => $row['Class'] ?? null, 
+                    //         'batch_id' => $batch->id,
+                    //         'user_id' => session('school_id')
+                    //     ]);
+                    //     echo '</pre>';
+                    // }
+                    $class = (isset($mappings['Class']) && $row['Class'] && ($row['Class'] != '')) ? ClassModel::firstOrCreate(
+                        [
+                            'title' => (string) $row['Class'] ?? null, 
+                            'batch_id' => $batch->id,
+                            'user_id' => session('school_id')
+                        ],
+                        [
+                            'title' => (string) $row['Class'] ?? null,
+                            'user_id' => session('school_id'),
+                            'batch_id' => $batch->id,
+                            'added_by' => auth()->id()
+                        ]
+                    ) : null;    
+                }else{
+                    // if($key == 13){
+                    //     echo 'no batch';
+
+                    //     echo '<pre>';
+                    //     print_r([
+                    //             'title' => $row['Class'] ?? null,
+                    //             'user_id' => session('school_id')
+                    //         ]);
+                    //     echo '</pre>';
+                    //     echo '$row Class - '.$row['Class']; 
+
+                    // }
+                    $class = (isset($mappings['Class']) && $row['Class'] && ($row['Class'] != '')) ? ClassModel::firstOrCreate(
+                        [
+                            'title' => (string) $row['Class'] ?? null,
+                            'user_id' => session('school_id')
+                        ],
+                        [
+                            'title' => (string) $row['Class'] ?? null,
+                            'user_id' => session('school_id'),
+                            'added_by' => auth()->id()
+                        ]
+                    ) : null;                        
+                }
+                // if($key == 13){
+                //     //  dd($userAlreadyExists);
+                //     echo '<pre>';
+                //     print_r($class);
+                //     echo '</pre>';
+                // }
+                // $class = (isset($mappings['Class']) && $row['Class'] && ($row['Faculty'] != '')) ? ClassModel::firstOrCreate(
+                //     // Search based on batch if batch exists, otherwise just search by class title
+                //     $batch ? 
+                //         ['title' => $row['Class'] ?? null, 'batch_id' => $batch->id] :
+                //         ['title' => $row['Class'] ?? null],
+                //     [
+                //         'title' => $row['Class'] ?? null,
+                //         'user_id' => session('school_id'),
+                //         'added_by' => auth()->id()
+                //     ]
+                // ) : null;
+
+                // Section: check if Section exists based on class_id
+                $section = (isset($mappings['Section']) && $row['Section'] && ($row['Section'] != '')) ? Section::firstOrCreate(
                     [
-                        'title' => $row['Class'] ?? null
+                        'title' => (string) $row['Section'] ?? null,
+                        'class_id' => $class ? $class->id : null,
+                        'user_id' => session('school_id') // Ensure class_id is considered if class exists
                     ],
                     [
-                        'title' => $row['Class'] ?? null,'user_id' => session('school_id'),'added_by' => auth()->id()
+                        'title' => (string) $row['Section'] ?? null,
+                        'user_id' => session('school_id'),
+                        'class_id' => $class ? $class->id : null,
+                        'added_by' => auth()->id()
                     ]
                 ) : null;
-
-                // Position: check if position exists, create if not
-                $section = (isset($mappings['Section']) && $row['Section']) ? Section::firstOrCreate(
-                    [
-                        'title' => $row['Section'] ?? null
-                    ],
-                    [
-                        'title' => $row['Section'] ?? null,
-                        'user_id' => session('school_id'),
-                        'class_id' => $class->id,
-                        'added_by' => auth()->id()
-                    ]   
-                ) : null;
-
+                // if($key == 13){
+                //     //  dd($userAlreadyExists);
+                //     echo '<pre>';
+                //     print_r($userAlreadyExists);
+                //     echo '</pre>';
+                // }
                 if(!$userAlreadyExists){
                     // If the staff doesn't exist, create a new record and set 'added_by'
+                    // if($key == 13){
+                    //     dd([
+                    //         'school_id' => session('school_id'),
+                    //         'user_id' => $user->id,
+                    //         'name' => $row['Name'] ?? null,
+                    //         'faculty_id' => $faculty->id ?? null,
+                    //         'batch_id' => $batch->id ?? null,
+                    //         'class_id' => $class->id ?? null,
+                    //         'section_id' => $section->id ?? null,
+                    //         'handicapped' => $handicapped,
+                    //         'gender' => $gender, // Map gender, if present
+                    //         'address' => isset($mappings['Address']) ? $row[$mappings['Address']] : null, // Map address, if present
+                    //         'added_by' => auth()->id()
+                    //     ]);
+                    // }
                     $staff = Student::create([
                         'school_id' => session('school_id'),
                         'user_id' => $user->id,
@@ -567,7 +664,11 @@ class ImportController extends Controller
                     $existingStudent = Student::where('school_id', session('school_id'))
                                     ->where('user_id', $user->id)
                                     ->first();                    
-                                    
+                    // if($row == 13){
+                    //     echo '<pre>';
+                    //     print_r($existingStudent);
+                    //     echo '</pre>';
+                    // }            
                     $existingStudent->update([
                         'school_id' => session('school_id'),
                         'user_id' => $user->id,

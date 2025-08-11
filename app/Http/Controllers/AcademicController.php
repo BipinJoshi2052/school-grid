@@ -10,7 +10,11 @@ use App\Models\Building;
 use App\Models\ClassModel;
 use App\Models\Department;
 use App\Models\Faculty;
+use App\Models\InstitutionDetail;
+use App\Models\InvigilatorPlanDetail;
 use App\Models\Position;
+use App\Models\SeatPlan;
+use App\Models\SeatPlanDetail;
 use App\Models\Section;
 use App\Models\Staff;
 use App\Models\Student;
@@ -18,6 +22,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Faker\Factory as Faker;
+use Illuminate\Support\Facades\DB;
 
 class AcademicController extends Controller
 {
@@ -216,37 +221,55 @@ class AcademicController extends Controller
         }
     }
     
-    public function eraseData()
-    {
-        // Get the currently authenticated user's ID
-        $userId = auth()->id();
-        $schoolId = session('school_id');
-        // dd($schoolId);
-        // dd(User::where('parent_id', $schoolId)->get());
-        if (!$userId) {
-            return response()->json(['error' => 'User ID is not authenticated.']);
-        }
-        if (!$schoolId) {
-            // Handle the case where school_id is not set or is null
-            // For example, you can throw an exception or return an error message
-            return response()->json(['error' => 'School ID is not set.']);
-        }
-
-        // Delete related data for the authenticated user
-        Staff::where('school_id', $schoolId)->delete();
-        Student::where('school_id', $schoolId)->delete();
-        User::where('parent_id', $schoolId)->delete();
-        Building::where('user_id', $schoolId)->delete();
-        Faculty::where('user_id', $schoolId)->delete();
-        Batch::where('user_id', $schoolId)->delete();
-        ClassModel::where('user_id', $schoolId)->delete();
-        Section::where('user_id', $schoolId)->delete();
-        Department::where('user_id', $schoolId)->delete();
-        Position::where('user_id', $schoolId)->delete();
-
-        // Optionally, you can add a success message or redirect
-        return redirect()->back()->with('success', 'Your data has been erased successfully.');
+   public function eraseData()
+{
+    // Get the currently authenticated user's ID
+    $userId = auth()->id();
+    $schoolId = session('school_id');
+    // dd($schoolId);
+    
+    if (!$userId) {
+        return response()->json(['error' => 'User ID is not authenticated.']);
     }
+    if (!$schoolId) {
+        return response()->json(['error' => 'School ID is not set.']);
+    }
+
+    // Disable foreign key checks temporarily
+    DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+
+    // Delete related data for the authenticated user
+    Staff::where('school_id', $schoolId)->delete();
+    Student::where('school_id', $schoolId)->delete();
+    User::where('parent_id', $schoolId)->delete();
+    Building::where('user_id', $schoolId)->delete();
+    Faculty::where('user_id', $schoolId)->delete();
+    Batch::where('user_id', $schoolId)->delete();
+    ClassModel::where('user_id', $schoolId)->delete();
+    Section::where('user_id', $schoolId)->delete();
+    Department::where('user_id', $schoolId)->delete();
+    Position::where('user_id', $schoolId)->delete();
+    Building::where('user_id', $schoolId)->delete();
+    InstitutionDetail::where('user_id', $schoolId)->delete();
+
+    // Delete from SeatPlanDetail and InvigilatorPlanDetail where seat_plan_id = seat_plan.id
+    $seatPlans = SeatPlan::where('user_id', $schoolId)->get();
+
+    foreach ($seatPlans as $seatPlan) {
+        SeatPlanDetail::where('seat_plan_id', $seatPlan->id)->delete();
+        InvigilatorPlanDetail::where('seat_plan_id', $seatPlan->id)->delete();
+    }
+
+    // Delete related data from SeatPlan
+    SeatPlan::where('user_id', $schoolId)->delete();
+
+    // Re-enable foreign key checks
+    DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+    // Optionally, you can add a success message or redirect
+    return redirect()->back()->with('success', 'Your data has been erased successfully.');
+}
+
 
     public function populateData()
     {
@@ -468,6 +491,62 @@ class AcademicController extends Controller
         return redirect()->back()->with('success', 'Your data has been populated successfully.');
     }
 
+    public function populateStudentData()
+    {
+        // Get the currently authenticated user's ID
+        $userId = auth()->id();
+        $schoolId = session('school_id');
+
+        $faker = Faker::create('ne_NP'); // Nepali locale for names
+        // Fetch the first class and section for the students (you can modify this as per your logic)
+        // $class = ClassModel::where('user_id', $userId)->first();
+        $class = ClassModel::inRandomOrder()->first();
+        $section = Section::where('class_id', $class->id)->first();
+        // $section = Section::where('class_id', $class->id)->inRandomOrder()->first();
+        // Populate student table (5 students as an example)
+        $users = [];
+        foreach (range(1, 70) as $index) {
+            // Create student user
+            echo $faker->unique()->safeEmail.'<br>';
+            $users[] = [
+                // 'name' => $faker->name, 
+                // 'email' => $faker->unique()->safeEmail,
+                // 'phone' => $faker->phoneNumber, 
+
+            ];
+            // $studentUser = User::create([
+            //     'name' => $faker->name,  // Generate Nepali name
+            //     'email' => $faker->unique()->safeEmail,  // Generate unique email
+            //     'password' => bcrypt('secret'),  // Set password as 'secret'
+            //     'avatar' => null,  // Avatar can be null
+            //     'user_type_id' => 4,  // Student user type
+            //     'phone' => $faker->phoneNumber,  // Generate phone number
+            //     'parent_id' => $schoolId,  // Set parent_id as the authenticated school ID
+            //     'roll_no' => 1,
+            //     'added_by' => $userId,
+            //     'created_at' => now(),
+            //     'updated_at' => now()
+            // ]);
+
+            // // Create student record
+            // Student::create([
+            //     'school_id' => $schoolId,  // Set school_id as the authenticated school ID
+            //     'user_id' => $studentUser->id,  // Link user_id with the student user
+            //     'name' => $studentUser->name,  // Student name
+            //     'gender' => $faker->randomElement([0, 1, 2]),  // Randomly assign gender
+            //     'address' => $faker->address,  // Generate address
+            //     'class_id' => $class->id,  // Assign class_id from the first class
+            //     'section_id' => $section->id,  // Assign section_id
+            //     'roll_no' => 1,
+            //     'added_by' => $userId,
+            //     'created_at' => now(),
+            //     'updated_at' => now()
+            // ]);
+        }
+        dd($users);
+        // Optionally, you can add a success message or redirect
+        return redirect()->back()->with('success', 'Your data has been populated successfully.');
+    }
     // public function departments(){
     //     $data = [];
     //     return view('admin.academic.departments', compact('data'));

@@ -77,6 +77,7 @@
                                 <label for="class-select">Select Class:</label>
                                 <select id="class-select" class="form-control">
                                     <option value="">Select Class</option>
+                                    <option value="all">All</option>
                                     @foreach($classesWithNoBatch as $class)
                                         <option value="{{ $class->id }}">{{ $class->title }}</option>
                                     @endforeach
@@ -88,6 +89,7 @@
                                 <label for="section-select">Select Section:</label>
                                 <select id="section-select" class="form-control" disabled>
                                     <option value="">Select Section</option>
+                                    <option value="all">All</option>
                                 </select>
                             </div>
                         </div>
@@ -229,14 +231,14 @@
                             url: '/get-sections/' + classId,  // Route to get sections by class
                             type: 'GET',
                             success: function(data) {
-                                $('#section-select').empty().append('<option value="">Select Section</option>');
+                                $('#section-select').empty().append('<option value="">Select Section</option><option value="all">All</option>');
                                 $.each(data, function(key, value) {
                                     $('#section-select').append('<option value="' + value.id + '">' + value.title + '</option>');
                                 });
                             }
                         });
                     } else {
-                        $('#section-select').empty().append('<option value="">Select Section</option>');
+                        $('#section-select').empty().append('<option value="">Select Section</option><option value="all">All</option>');
                     }
                 });
 

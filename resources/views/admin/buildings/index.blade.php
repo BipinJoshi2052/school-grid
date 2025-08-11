@@ -397,12 +397,12 @@
 @section('scripts')
 <script>
     // Check if the radio button is checked and add class to label
-$(document).ready(function() {
-    $('input[type="radio"]:checked').each(function() {
-        console.log('object');  // This will log if the radio button is checked
-        $(this).closest('label').addClass('checked');
-    });
-});
+        $(document).ready(function() {
+            $('input[type="radio"]:checked').each(function() {
+                console.log('object');  // This will log if the radio button is checked
+                $(this).closest('label').addClass('checked');
+            });
+        });
 
         let buildingCounter = 0;
         // let roomCounter = 0;
@@ -461,7 +461,7 @@ $(document).ready(function() {
                     
                     if (roomData.selected_type === 'total') {
                         totalBenches = roomData.total.benches || 0;
-                        totalSeats = roomData.total.seats || 0;
+                        totalSeats = (roomData.total.benches * roomData.total.seats) || 0;
                     } else if (roomData.selected_type === 'individual') {
                         roomData.individual.forEach(row => {
                             if (row.bench) {
@@ -469,6 +469,8 @@ $(document).ready(function() {
                                 row.bench.forEach(bench => {
                                     totalSeats += bench.seats || 0;
                                 });
+                                console.log(totalBenches)
+                                console.log(totalSeats)
                             }
                         });
                     }
@@ -1282,7 +1284,7 @@ $(document).ready(function() {
 
             const roomEl = $(this).closest('.room');
             const roomId = roomEl.attr('data-server-id');
-            const roomName = buildingEl.find('.room-title-input').val();
+            const roomName = roomEl.find('.room-title-input').val();
 
             const rowEl = $(this).closest('.row-section');
             const rowId = rowEl.attr('data-server-id');

@@ -98,6 +98,7 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/erase-data', [AcademicController::class, 'eraseData'])->name('erase-data');
     Route::post('/populate-data', [AcademicController::class, 'populateData'])->name('populate-data');
+    Route::post('/populate-student-data', [AcademicController::class, 'populateStudentData'])->name('populate-student-data');
     
 
     // Route::resource('staff', StaffController::class);

@@ -118,10 +118,13 @@ class RegisterController extends Controller
             'last_access_from' => json_encode($data), // store IP of the user
         ]);
 
+        $count = User::where('user_type_id', 2)->count(); // Get the count of users where user_type_id = 2
+        $clientId = 'SPP-' . ($count + 1); // Create the client_id as 'SPP-' followed by the incremented count
+
         // Create the institution details record
         InstitutionDetail::create([
             'user_id' => $user->id,
-            'client_id' => 'some-client-id', // Adjust as needed
+            'client_id' => $clientId,
             'institution_name' => $request->institution,
             'registration_id' => $registration->id, // Link registration to institution details
             'expiration_date' => Carbon::now()->addDays(15), // 15 days expiration

@@ -103,21 +103,22 @@ class StudentController extends Controller
         }
 
         // Apply the additional filters if they are provided
-        // if ($facultyId) {
-        //     $query->where('faculty_id', $facultyId);
-        // }
+        if ($facultyId) {
+            $query->where('faculty_id', $facultyId);
+        }
 
-        // if ($batchId) {
-        //     $query->where('batch_id', $batchId);
-        // }
+        if ($batchId) {
+            $query->where('batch_id', $batchId);
+        }
 
-        if ($classId) {
+        if ($classId != 'all') {
             $query->where('class_id', $classId);
         }
 
-        if ($sectionId) {
+        if ($sectionId != 'all') {
             $query->where('section_id', $sectionId);
         }
+
         // Paginate the results
         $users = $query->paginate($perPage);
         // dd($users->items());

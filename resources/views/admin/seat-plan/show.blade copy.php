@@ -71,11 +71,7 @@
             height: 4px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
-/* @page {
-    size: A4;
-    margin: 0;
-} */
-@page { size: auto;  margin: 0mm; }
+
         .main-content .card:hover {
             transform: translateY(-8px);
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
@@ -121,21 +117,21 @@
             text-transform: uppercase;
         }
 
-        /* .seating-layout {
+        .seating-layout {
             margin-top: 30px;
             display: flex;
             justify-content: center;
             gap: 75px;
             flex-wrap: wrap;
-        } */
+        }
 
-        /* .layout-content .row-container {
+        .layout-content .row-container {
             display: flex;
             flex-direction: column;
             align-items: center;
             min-width: 300px;
             position: relative;
-        } */
+        }
 
         .layout-content .row-container::after {
             content: '';
@@ -163,14 +159,14 @@
             white-space: nowrap;
         }
 
-        /* .layout-content .row {
+        .layout-content .row {
             display: flex;
             flex-direction: column;
             gap: 15px;
             align-items: center;
-        } */
+        }
 
-        /* .layout-content .row-label {
+        .layout-content .row-label {
             font-weight: bold;
             color: #495057;
             margin-bottom: 15px;
@@ -180,9 +176,9 @@
             border-radius: 20px;
             font-size: 14px;
             border: 2px solid #e9ecef;
-        } */
+        }
 
-        /* .bench {
+        .bench {
             background: linear-gradient(to right, #8971ea, #7f72ea, #7574ea, #6a75e9, #5f76e8);
             border-radius: 8px;
             padding: 12px 8px;
@@ -194,9 +190,9 @@
             min-width: 200px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             position: relative;
-        } */
+        }
 
-        /* .bench::after {
+        .bench::after {
             content: '';
             position: absolute;
             bottom: -3px;
@@ -206,15 +202,15 @@
             height: 3px;
             background: rgba(0, 0, 0, 0.3);
             border-radius: 2px;
-        } */
+        }
 
-        /* .seats {
+        .seats {
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
             gap: 30px;
             margin-top: 5px;
-        } */
+        }
 
         .seat {
             width: 12px;
@@ -277,14 +273,13 @@
                 padding: 20px;
             }
         }
-        @media print {.hide-when-printing {display: none;}}
 
-        /* .student-info {
+        .student-info {
             background: #f9fbfd;
             color: black;
             padding: 2px;
             width: 110px;
-        } */
+        }
     </style>
 @endsection
 
@@ -339,10 +334,8 @@
         </div>
     </div>
     <?php
-        $buildingsDataJson = json_encode($data['buildings'], JSON_HEX_TAG);
-        $groupedByBuildingRoomClass = json_encode($data['groupedByBuildingRoomClass'], JSON_HEX_TAG);
-        $groupedByBuildingRoomClassSection = json_encode($data['groupedByBuildingRoomClassSection'], JSON_HEX_TAG);
-        // dd($buildingsDataJson);
+    $buildingsDataJson = json_encode($data['buildings'], JSON_HEX_TAG);
+    // dd($buildingsDataJson);
     ?>
 @endsection
 
@@ -496,19 +489,12 @@
                 currentRoom = rooms[roomIndex];
                 updateBreadcrumb();
 
-                // console.log(`${JSON.stringify(groupedByBuildingRoomClass)}`)
-                // console.log(groupedByBuildingRoomClass)
-                // console.log(groupedByBuildingRoomClassSection)
                 let html = `
-                    <button class="back-btn hide-when-printing" onclick="showRooms(${currentBuilding.id})">← Back to Rooms</button>
-                    <h2 class="hide-when-printing" style="margin-bottom: 20px; color: #2c3e50;">🪑 ${currentRoom.name} - Seating Layout</h2>
-                    <button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('layout', ${currentBuilding.id}, '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Print Seating Layout</button>
-                    <button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('class', ${currentBuilding.id},  '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Print by Class</button>
-                    <button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('class-section', ${currentBuilding.id},  '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Print by Class & Section</button>
+                    <button class="back-btn" onclick="showRooms(${currentBuilding.id})">← Back to Rooms</button>
+                    <h2 style="margin-bottom: 20px; color: #2c3e50;">🪑 ${currentRoom.name} - Seating Layout</h2>
+                    <button class="btn btn-primary" onclick="printSeatingLayout()"><i class="fa fa-print"></i>Print Seating Layout</button>
                 `;
 
-                    // <button class="btn btn-primary" onclick="printSeatingLayout('class', ${currentBuilding.id}, ${roomIndex}, '${JSON.stringify(groupedByBuildingRoomClass)}')"><i class="fa fa-print"></i>Print by Class</button>
-                    // <button class="btn btn-primary" onclick="printSeatingLayout('class-section', ${currentBuilding.id}, ${roomIndex}, '${JSON.stringify(groupedByBuildingRoomClassSection)}')"><i class="fa fa-print"></i>Print by Class & Section</button>
                 if (currentRoom.selected_type === 'total') {
                     html += generateTotalLayout(currentRoom, roomIndex);
                 } else {
@@ -516,6 +502,60 @@
                 }
 
                 $('#main-content').html(html);
+            }
+
+            function generateTotalLayout1(room) {
+                // console.log(room)
+                const totalBenches = room.total.benches;
+                const totalSeats = room.total.seats;
+
+                if (totalBenches === 0) {
+                    return '<div class="empty-state"><div style="font-size: 4rem; margin-bottom: 20px;">🪑</div><h3>No seating arrangement</h3><p>This room has no benches or seats configured.</p></div>';
+                }
+
+                let html = '<div class="seating-layout">';
+
+                // Determine number of rows (2 or 3 based on total benches)
+                let numRows = 2;
+
+                const benchesPerRow = Math.ceil(totalBenches / numRows);
+                const seatsPerBench = Math.floor(totalSeats / totalBenches);
+                const extraSeats = totalSeats % totalBenches;
+
+                for (let rowIndex = 0; rowIndex < numRows; rowIndex++) {
+                    const startBench = rowIndex * benchesPerRow;
+                    const endBench = Math.min(startBench + benchesPerRow, totalBenches);
+
+                    if (startBench >= totalBenches) break;
+
+                    html += '<div class="row-container">';
+                    html += `<div class="row-label">Row ${rowIndex + 1}</div>`;
+                    html += '<div class="row">';
+
+                    for (let i = startBench; i < endBench; i++) {
+                        const benchSeats = totalSeats;
+                        html += `
+                            <div class="bench">
+                                Bench ${i + 1}
+                                <div class="seats">
+                                    ${'<div class="seat"></div>'.repeat(benchSeats)}
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    html += '</div>';
+
+                    // Add aisle label except for last row
+                    if (rowIndex < numRows - 1 && endBench < totalBenches) {
+                        html += '<div class="aisle-label">Aisle</div>';
+                    }
+
+                    html += '</div>';
+                }
+
+                html += '</div>';
+                return html;
             }
 
             function generateTotalLayout(room, roomIndex) {
@@ -536,7 +576,7 @@
                     return '<div class="empty-state"><div style="font-size: 4rem; margin-bottom: 20px;">🪑</div><h3>No seating arrangement</h3><p>This room has no benches or seats configured.</p></div>';
                 }
 
-                let html = '<div class="seating-layout" style="margin-top: 30px;display: flex!important;justify-content: center;gap: 75px;flex-wrap: wrap;border: 1px solid black;padding: 15px;">';
+                let html = '<div class="seating-layout">';
 
                 // Determine number of rows (2 or 3 based on total benches)
                 let numRows = 2;
@@ -553,9 +593,9 @@
 
                     if (startBench >= totalBenches) break;
 
-                    html += '<div class="row-container" style="display: flex;flex-direction: column;align-items: center;min-width: 300px;position: relative;">';
-                    html += `<div class="row-label" style="font-weight: bold;color: #495057;margin-bottom: 15px;text-align: center;padding: 8px 16px;font-size: 14px;border: 2px solid #000000;">Row ${rowIndex + 1}</div>`;
-                    html += '<div class="row" style="display: flex;flex-direction: column;gap: 15px;align-items: center;">';
+                    html += '<div class="row-container">';
+                    html += `<div class="row-label">Row ${rowIndex + 1}</div>`;
+                    html += '<div class="row">';
 
                     for (let i = startBench; i < endBench; i++) {
                         let benchSeats = seatsPerBench;
@@ -565,19 +605,20 @@
                         }
 
                         html += `
-                            <div class="bench" style="color: #000000; text-align: center; font-size: 15px; position: relative; border: 1px solid black;max-width: 285px;padding: 10px;">
+                            <div class="bench">
                                 Bench ${i + 1}
-                                <div class="seats" style="display: flex;justify-content: center;flex-wrap: wrap;gap: 30px;margin-top: 5px;">
+                                <div class="seats">
                         `;
 
                         for (let j = 0; j < benchSeats; j++) {
                             if (studentIndex < students.length) {
                                 const student = students[studentIndex];
                                 html += `
-                                    <div class="seat-student" style="border: 1px solid black;background: none;">
-                                        <div class="student-info" style="color: black;padding: 2px;width: 110px;">
+                                    <div class="seat-student">
+                                        <div class="student-info">
                                             <div class="student-name">${student.name}</div>
-                                            <div class="student-class">${student.class} / ${student.section}</div>
+                                            <div class="student-class">${student.class}</div>
+                                            <div class="student-section">${student.section}</div>
                                         </div>
                                     </div>
                                 `;
@@ -590,14 +631,12 @@
                         html += '</div>'; // Close .seats
                         html += '</div>'; // Close .bench
                     }
-                    // <div class="student-class">Class - ${student.class}</div>
-                    // <div class="student-section">Section- ${student.section}</div>
 
                     html += '</div>'; // Close .row
 
                     // Add aisle label except for last row
                     if (rowIndex < numRows - 1 && endBench < totalBenches) {
-                        html += '<div class="aisle-label hide-when-printing">Aisle</div>';
+                        html += '<div class="aisle-label">Aisle</div>';
                     }
 
                     html += '</div>'; // Close .row-container
@@ -644,6 +683,44 @@
                 }
 
                 return []; // Return an empty array if buildingId or roomId is not found
+            }
+
+
+            function generateIndividualLayout1(room, roomIndex) {
+                if (!room.individual || room.individual.length === 0) {
+                    return '<div class="empty-state"><div style="font-size: 4rem; margin-bottom: 20px;">🪑</div><h3>No individual layout</h3><p>This room has no individual seating arrangement configured.</p></div>';
+                }
+
+                let html = '<div class="seating-layout">';
+
+                room.individual.forEach((row, rowIndex) => {
+                    html += '<div class="row-container">';
+                    html += `<div class="row-label">${row.name}</div>`;
+                    html += '<div class="row">';
+
+                    row.bench.forEach(bench => {
+                        html += `
+                            <div class="bench">
+                                ${bench.name}
+                                <div class="seats">
+                                    ${'<div class="seat"></div>'.repeat(bench.seats)}
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    html += '</div>';
+
+                    // Add aisle label except for last row
+                    if (rowIndex < room.individual.length - 1) {
+                        html += '<div class="aisle-label">Aisle</div>';
+                    }
+
+                    html += '</div>';
+                });
+
+                html += '</div>';
+                return html;
             }
 
             function generateIndividualLayout(room, roomIndex) {
@@ -737,151 +814,16 @@
 
 
         });
-        function printSeatingLayout(type,buildingId, currentBuildingName,roomIndex, currentRoomName) {
-            var groupedByBuildingRoomClass = JSON.parse(`<?php echo addslashes($groupedByBuildingRoomClass); ?>`);
-            var groupedByBuildingRoomClassSection = JSON.parse(`<?php echo addslashes($groupedByBuildingRoomClassSection); ?>`);
-
-            // console.log(groupedByBuildingRoomClass)
-            // console.log(groupedByBuildingRoomClassSection)
-            if (type === 'layout') {
-                // Get the HTML content of the seating layout
-                var printContents = document.querySelector('.main-content').innerHTML;
+            function printSeatingLayout() {
+                var printContents = document.querySelector('.seating-layout').innerHTML;
                 var originalContents = document.body.innerHTML;
 
-                // Temporarily replace the body content with the layout content for printing
                 document.body.innerHTML = printContents;
-                // Open a new window to handle printing (similar to other sections)
-                const printWindow = window.open('', '_blank');
-                printWindow.document.write(`
-                    <html>
-                        <head>
-                            <title>seatplanpro.com</title>
-                            <style>
-                                body { 
-                                    font-family: Arial, sans-serif; 
-                                    font-size: 12px; 
-                                    margin: 0;
-                                }
-                                h2, h3 { 
-                                    text-align: center; 
-                                    margin: 0;
-                                }
-                                .class-section { 
-                                    margin-bottom: 15px; 
-                                }
-                                @page { 
-                                    size: A4; 
-                                    margin: 0mm; 
-                                }
-                                .seating-layout {
-                                    display: flex !important;
-                                    gap: 75px;
-                                    flex-wrap: wrap;
-                                }
-                                .hide-when-printing {
-                                    display: none;
-                                }
-                            </style>
-                        </head>
-                        <body>
-                            <!-- Building and Room Name -->
-                            <h2>Building Name: ${currentBuildingName}</h2>
-                            <h3>Room Name: ${currentRoomName}</h3>
 
-                            <!-- Insert the layout content -->
-                            ${printContents}
+                window.print();
 
-                        </body>
-                    </html>
-                `);                
-                // printWindow.document.write(printContents); // Insert the layout content
-                //printWindow.document.write('</body></html>');
-                printWindow.document.close();
-
-                // Add an event listener to close the window after printing or canceling
-                printWindow.onafterprint = function() {
-                    printWindow.close();  // Close the print window after printing or canceling
-                };
-                printWindow.print(); // Trigger print dialog
-
-                // Restore the original content after printing
+                // Restore original content after printing
                 document.body.innerHTML = originalContents;
-
-            }else {
-                const roomId = roomIndex;
-
-                // Fetch the corresponding data from the grouped arrays
-                let dataToPrint = '';
-                if (type === 'class') {
-                    // Get the roll numbers grouped by class for the building and room
-                    if (groupedByBuildingRoomClass[buildingId] && groupedByBuildingRoomClass[buildingId][roomId]) {
-                        const roomData = groupedByBuildingRoomClass[buildingId][roomId];
-                        console.log(groupedByBuildingRoomClass)
-                        dataToPrint = generatePrintHTMLByClass(currentBuildingName,roomData, currentRoomName);
-                    }
-                }else if (type === 'class-section') {
-                    // Get the roll numbers grouped by class & section for the building and room
-                    if (groupedByBuildingRoomClassSection[buildingId] && groupedByBuildingRoomClassSection[buildingId][roomId]) {
-                        const roomData = groupedByBuildingRoomClassSection[buildingId][roomId];
-                        dataToPrint = generatePrintHTMLByClassSection(currentBuildingName,roomData, currentRoomName);
-                    }
-                }
-                // Open a new window and print the content
-                const printWindow = window.open('', '_blank');
-                printWindow.document.write('<html><head><title>seatplanpro.com</title><style>body { font-family: Arial, sans-serif; font-size: 12px; } h2, h3 { text-align: center; } .class-section { margin-bottom: 15px; }@page { size: A4;  margin: 0mm; }.hide-when-printing {display: none;}</style></head><body>');
-                printWindow.document.write(dataToPrint);
-                printWindow.document.write('</body></html>');
-                printWindow.document.close();
-
-                // Add an event listener to handle after printing is done or canceled
-                printWindow.onafterprint = function() {
-                    printWindow.close();  // Close the print window after printing or canceling
-                };
-                printWindow.print();
             }
-        }
-            
-        function generatePrintHTMLByClass(currentBuildingName, roomData, roomName) {
-            let html = `<h2>Building Name: ${currentBuildingName}</h2>`;
-            html += `<h3>Room Name: ${roomName}</h3>`;
-
-            for (let className in roomData) {
-                html += `<h4>Class - ${className}</h4>`;
-                // html += `<ul style="list-style-type: none;">`;
-                
-                // let counter = 1;
-
-                // roomData[className].forEach(rollNo => {
-                //     html += `<li style="margin-bottom:5px;">${counter}. Roll No: ${rollNo}</li>`;
-                //     counter++; // Increment the counter
-                // });
-
-                html += `<p>Roll Numbers = `;
-                roomData[className].forEach(rollNo => {
-                    html += `${rollNo}, `;
-                });
-                html += `</p>`;
-                
-                html += `</ul>`;
-            }
-
-            return html;
-        }
-        function generatePrintHTMLByClassSection(currentBuildingName, roomData, roomName) {
-            let html = `<h2>Building Name: ${currentBuildingName}</h2>`;
-            html += `<h3>Room Name: ${roomName}</h3>`;
-
-            for (let classSection in roomData) {
-                html += `<h4>${classSection}</h4>`;
-                html += `<p>Roll Numbers = `;
-                roomData[classSection].forEach(rollNo => {
-                    html += `${rollNo}, `;
-                });
-                html += `</p>`;
-            }
-
-            return html;
-        }
-
     </script>
 @endsection

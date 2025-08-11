@@ -311,14 +311,14 @@
                             </a>
                         </li>
 
-                        <li class="sidebar-item"> 
+                        {{-- <li class="sidebar-item"> 
                             <a class="sidebar-link" href="{{route('staffs.v2')}}" aria-expanded="false">
                                 <i data-feather="users" class="feather-icon"></i>
                                 <span
                                     class="hide-menu">Users V2
                                 </span>
                             </a>
-                        </li>
+                        </li> --}}
 
                         {{-- <li class="sidebar-item"> 
                             <a class="sidebar-link" href="{{route('import')}}" aria-expanded="false">
@@ -352,6 +352,39 @@
                         </li>
 
                         <li class="sidebar-item"> 
+                            <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
+                                <i data-feather="home" class="feather-icon"></i>
+                                <span class="hide-menu">Building </span>
+                            </a>
+                            <ul aria-expanded="false" class="collapse first-level base-level-line">
+                                <li class="sidebar-item"><a href="{{route('buildings.index')}}" class="sidebar-link"><span
+                                            class="hide-menu"> Plan
+                                        </span></a>
+                                </li>
+                                <li class="sidebar-item"><a href="{{route('buildings.visualize')}}" class="sidebar-link"><span
+                                            class="hide-menu"> Layout
+                                        </span></a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="sidebar-item"> 
+                            <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
+                                <i data-feather="home" class="feather-icon"></i>
+                                <span class="hide-menu">Seat Plan </span>
+                            </a>
+                            <ul aria-expanded="false" class="collapse first-level base-level-line">
+                                <li class="sidebar-item"><a href="{{route('seat-plan')}}" class="sidebar-link"><span
+                                            class="hide-menu"> List
+                                        </span></a>
+                                </li>
+                                <li class="sidebar-item"><a href="{{route('seat-plan.create')}}" class="sidebar-link"><span
+                                            class="hide-menu"> Generate
+                                        </span></a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        {{-- <li class="sidebar-item"> 
                             <a class="sidebar-link" href="{{route('buildings.index')}}" aria-expanded="false">
                                 <i data-feather="home" class="feather-icon"></i>
                                 <span
@@ -366,24 +399,24 @@
                                     class="hide-menu">Layout
                                 </span>
                             </a>
-                        </li>
-                        <li class="sidebar-item"> 
+                        </li> --}}
+                        {{-- <li class="sidebar-item"> 
                             <a class="sidebar-link" href="{{route('buildings.visualizev2')}}" aria-expanded="false">
                                 <i data-feather="home" class="feather-icon"></i>
                                 <span
                                     class="hide-menu">Layout V2
                                 </span>
                             </a>
-                        </li>
+                        </li> --}}
 
-                        <li class="sidebar-item"> 
+                        {{-- <li class="sidebar-item"> 
                             <a class="sidebar-link" href="{{route('seat-plan')}}" aria-expanded="false">
                                 <i data-feather="file-plus" class="feather-icon"></i>
                                 <span
                                     class="hide-menu">Seat Plan
                                 </span>
                             </a>
-                        </li> 
+                        </li>  --}}
 
                         {{-- <li class="sidebar-item"> 
                             <a class="sidebar-link" href="{{route('seat-plan.configV3')}}" aria-expanded="false">
@@ -394,41 +427,53 @@
                             </a>
                         </li>  --}}
 
-                        <li class="sidebar-item"> 
+                        {{-- <li class="sidebar-item"> 
                             <a class="sidebar-link" href="{{route('seat-plan.create')}}" aria-expanded="false">
                                 <i data-feather="file-plus" class="feather-icon"></i>
                                 <span
                                     class="hide-menu">Generate Seat Plan
                                 </span>
                             </a>
-                        </li> 
-
+                        </li>  --}}
                         <li class="list-divider"></li>
-
-                        <li class="nav-small-cap">
-                            <span class="hide-menu">Data</span>
-                        </li>
-
-                        <li class="sidebar-item"> 
-                            <form action="{{ route('erase-data') }}" method="POST" style="display: inline;">
-                                @csrf
-                                <a class="sidebar-link" href="javascript:void(0)" onclick="this.closest('form').submit()" aria-expanded="false">
-                                    <i data-feather="trash" class="feather-icon"></i>
-                                    <span class="hide-menu">Erase Data</span>
-                                </a>
-                            </form>
-                        </li>
-
-                        <li class="sidebar-item"> 
-                            <form action="{{ route('populate-data') }}" method="POST" style="display: inline;">
-                                @csrf
-                                <a class="sidebar-link" href="javascript:void(0)" onclick="this.closest('form').submit()" aria-expanded="false">
-                                    <i data-feather="plus" class="feather-icon"></i>
-                                    <span class="hide-menu">Populate Data</span>                                    
-                                </a>
-                            </form>
-                        </li>
                         
+                        @if (App::environment('local'))
+
+                            <li class="nav-small-cap">
+                                <span class="hide-menu">Data</span>
+                            </li>
+
+                            <li class="sidebar-item"> 
+                                <form id="eraseDataForm" action="{{ route('erase-data') }}" method="POST" style="display: inline;">
+                                    @csrf
+                                    {{-- onclick="this.closest('form').submit()" --}}
+                                    <a class="sidebar-link" href="javascript:void(0)" onclick="confirmEraseData()"  aria-expanded="false">
+                                        <i data-feather="trash" class="feather-icon"></i>
+                                        <span class="hide-menu">Erase Data</span>
+                                    </a>
+                                </form>
+                            </li>
+
+                            <li class="sidebar-item"> 
+                                <form action="{{ route('populate-data') }}" method="POST" style="display: inline;">
+                                    @csrf
+                                    <a class="sidebar-link" href="javascript:void(0)" onclick="this.closest('form').submit()" aria-expanded="false">
+                                        <i data-feather="plus" class="feather-icon"></i>
+                                        <span class="hide-menu">Populate Data</span>                                    
+                                    </a>
+                                </form>
+                            </li>
+                            
+                            <li class="sidebar-item"> 
+                                <form action="{{ route('populate-student-data') }}" method="POST" style="display: inline;">
+                                    @csrf
+                                    <a class="sidebar-link" href="javascript:void(0)" onclick="this.closest('form').submit()" aria-expanded="false">
+                                        <i data-feather="plus" class="feather-icon"></i>
+                                        <span class="hide-menu">Populate Students</span>                                    
+                                    </a>
+                                </form>
+                            </li>
+                          @endif
                         {{-- <li class="sidebar-item"> 
                             <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
                                 <i data-feather="file-text" class="feather-icon"></i>
@@ -518,6 +563,25 @@
 
     {{-- <script src="{{ asset('admin/dist/js/pages/dashboards/dashboard1.min.js') }}"></script> --}}
     <script>
+        function confirmEraseData() {
+            // Use SweetAlert to ask for confirmation
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'This will permanently erase all your data!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, erase it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // If confirmed, submit the form
+                    document.getElementById('eraseDataForm').submit();
+                }
+            });
+        }
+
     </script>
     {{-- <script type="text/javascript">
         function googleTranslateElementInit() {
