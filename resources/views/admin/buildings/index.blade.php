@@ -638,14 +638,14 @@
                         success ? { id: response.id } : null
                     );
 
-                    showStatus(response.message,'success');
+                    // showStatus(response.message,'success');
                 },
                 error: function(xhr, status, error) {
                     // console.log('error')
                     var errorMessage = xhr.responseText;
                     callback(false,null);
 
-                    showStatus(errorMessage,'error');
+                    // showStatus(errorMessage,'error');
                 }
             });
         }
@@ -655,7 +655,7 @@
                 toastr.error(message);
             }
             else{
-                // toastr.success(message);
+                toastr.success(message);
             }
         }
 
@@ -809,10 +809,11 @@
                                 `);
                             } else {
                                 // Re-index remaining buildings
-                                $('.building').each(function(index) {
+                                // $('.building').each(function(index) {
                                     // Update the data-server-id based on the new index
-                                    $(this).attr('data-server-id', index + 1); // Assuming the new server ID should be 1-based index
-                                });
+                                    // $(this).attr('data-server-id', index + 1); 
+                                    // Assuming the new server ID should be 1-based index
+                                // });
                             }
 
                             // Optionally, show a success message
