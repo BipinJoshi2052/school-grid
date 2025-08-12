@@ -435,7 +435,7 @@
                                 </span>
                             </a>
                         </li>  --}}
-                        <li class="list-divider"></li>
+                        {{-- <li class="list-divider"></li>
                         
                             <li class="nav-small-cap">
                                 <span class="hide-menu">Data</span>
@@ -444,7 +444,6 @@
                             <li class="sidebar-item"> 
                                 <form id="eraseDataForm" action="{{ route('erase-class-data') }}" method="POST" style="display: inline;">
                                     @csrf
-                                    {{-- onclick="this.closest('form').submit()" --}}
                                     <a class="sidebar-link" href="javascript:void(0)" onclick="this.closest('form').submit()"  aria-expanded="false">
                                         <i data-feather="trash" class="feather-icon"></i>
                                         <span class="hide-menu">Erase Classes</span>
@@ -454,7 +453,6 @@
                             <li class="sidebar-item"> 
                                 <form id="eraseDataForm" action="{{ route('erase-seat-plan-data') }}" method="POST" style="display: inline;">
                                     @csrf
-                                    {{-- onclick="this.closest('form').submit()" --}}
                                     <a class="sidebar-link" href="javascript:void(0)" onclick="this.closest('form').submit()"  aria-expanded="false">
                                         <i data-feather="trash" class="feather-icon"></i>
                                         <span class="hide-menu">Erase Seat Plans</span>
@@ -465,13 +463,12 @@
                             <li class="sidebar-item"> 
                                 <form id="eraseDataForm" action="{{ route('erase-student-data') }}" method="POST" style="display: inline;">
                                     @csrf
-                                    {{-- onclick="this.closest('form').submit()" --}}
                                     <a class="sidebar-link" href="javascript:void(0)" onclick="this.closest('form').submit()"  aria-expanded="false">
                                         <i data-feather="trash" class="feather-icon"></i>
                                         <span class="hide-menu">Erase Students</span>
                                     </a>
                                 </form>
-                            </li>
+                            </li> --}}
                         <li class="list-divider"></li>
                         @if (App::environment('local'))
 
