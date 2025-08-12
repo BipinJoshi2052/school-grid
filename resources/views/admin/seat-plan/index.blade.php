@@ -62,8 +62,8 @@
                                             <th>#</th>
                                             <th>Title</th>
                                             <th>Seat Plan</th>
-                                            <th>Invigilator Plan</th>
-                                            <th>Action</th>
+                                            {{-- <th>Invigilator Plan</th>
+                                            <th>Action</th> --}}
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -124,19 +124,19 @@
                         "render": function(data, type, row) {
                             return `<button class="btn btn-primary btn-sm editSeatplanBtn" data-id="${row.id}">View</button>`;
                         }
-                    },
-                    {
-                        "data": null,
-                        "render": function(data, type, row) {
-                            return `<button class="btn btn-secondary btn-sm editInvigplanBtn" data-id="${row.id}">View</button>`;
-                        }
-                    },
-                    {
-                        "data": null,
-                        "render": function(data, type, row) {
-                            return `<button class="btn btn-danger btn-sm deleteSeatplanBtn" data-id="${row.id}">Delete</button>`;
-                        }
                     }
+                    // {
+                    //     "data": null,
+                    //     "render": function(data, type, row) {
+                    //         return `<button class="btn btn-secondary btn-sm editInvigplanBtn" data-id="${row.id}">View</button>`;
+                    //     }
+                    // },
+                    // {
+                    //     "data": null,
+                    //     "render": function(data, type, row) {
+                    //         return `<button class="btn btn-danger btn-sm deleteSeatplanBtn" data-id="${row.id}">Delete</button>`;
+                    //     }
+                    // }
                 ]
             });
 
