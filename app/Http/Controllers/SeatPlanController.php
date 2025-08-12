@@ -200,17 +200,34 @@ class SeatPlanController extends Controller
 
         // 3. Get the list of students based on class_id & section_id combinations
         $students = [];
+        $studentData = [];
+        $studentDetails = []; // New array to store student details: [student_id => [name, class_name, section_name, roll_no]]
+
         foreach ($request->input('sections') as $class_id => $sections) {
             foreach ($sections as $section_id) {
                 $sectionStudents = Student::where('school_id', session('school_id'))
                     ->where('class_id', $class_id)
                     ->where('section_id', $section_id)
+                    ->with(['class', 'section']) // Eager-load class and section relationships
                     ->orderBy('roll_no', 'asc')
-                    ->pluck('id')
-                    ->toArray();
+                    ->select('id', 'name','class_id','section_id', 'roll_no') // Select only needed fields from students
+                    ->get();
+                // dd($sectionStudents);
+                // Extract student IDs for existing logic
+                $studentIds = $sectionStudents->pluck('id')->toArray();
 
                 // Store students grouped by class_id
-                $studentData[$class_id][] = $sectionStudents;
+                $studentData[$class_id][] = $studentIds;
+
+                // Build studentDetails array
+                foreach ($sectionStudents as $student) {
+                    $studentDetails[$student->id] = [
+                        'name' => $student->name,
+                        'class_name' => $student->class ? $student->class->title : 'N/A', // Handle null class
+                        'section_name' => $student->section ? $student->section->title : 'N/A', // Handle null section
+                        'roll_no' => $student->roll_no,
+                    ];
+                }
             }
         }
 
@@ -222,7 +239,6 @@ class SeatPlanController extends Controller
                 $reorderedStudentData[$class_id] = $studentData[$class_id];
             }
         }
-        // dd($studentData);
 
         // Now reorder the student IDs according to the selected class order
         $students = [];
@@ -234,7 +250,11 @@ class SeatPlanController extends Controller
                 }
             }
         }
-        // dd($students);
+        // dd([
+        //     $studentDetails,
+        //     $reorderedStudentData,
+        //     $students
+        // ]);
 
         // echo '<pre>';
         // print_r($reorderedStudentData);
@@ -269,13 +289,13 @@ class SeatPlanController extends Controller
         $seatingData = [];
 
         if ($seatingPattern['type'] == 'sequential') {
-            $seatingData = $this->assignSeatsSequentially($buildings, $students, $seat_plan_id, $seat_plan_details, $unassigned_students, $request->input('rooms'));
+            $seatingData = $this->assignSeatsSequentially($buildings, $students,$studentDetails, $seat_plan_id, $seat_plan_details, $unassigned_students, $request->input('rooms'));
         } elseif ($seatingPattern['type'] == 'alternate') {
             $seatingData = $this->assignSeatsIndividually($buildings, $students, $seat_plan_id, $seat_plan_details, $unassigned_students, $request->input('rooms'));
         } elseif ($seatingPattern['type'] == 'random') {
             $seatingData = $this->assignSeatsIndividually($buildings, $students, $seat_plan_id, $seat_plan_details, $unassigned_students, $request->input('rooms'));
         } elseif ($seatingPattern['type'] == 'rowbased') {
-            $seatingData = $this->assignSeatsRowBased($buildings, $students, $reorderedStudentData, $seat_plan_id, $seat_plan_details, $unassigned_students, $request->input('rooms'));
+            $seatingData = $this->assignSeatsRowBased($buildings, $students,$studentDetails, $reorderedStudentData, $seat_plan_id, $seat_plan_details, $unassigned_students, $request->input('rooms'));
         } else {
             return response()->json([
                 'status' => 'error',
@@ -374,7 +394,7 @@ class SeatPlanController extends Controller
     }
 
 
-    private function assignSeatsSequentially($buildings, $students, $seat_plan_id, &$seat_plan_details, &$unassigned_students, $selectedRooms)
+    private function assignSeatsSequentially($buildings, $students, $studentDetails,$seat_plan_id, &$seat_plan_details, &$unassigned_students, $selectedRooms)
     {
         $studentIndex = 0;
         $now = Carbon::now()->format('Y-m-d H:i:s'); // Format the current timestamp for MySQL
@@ -456,7 +476,7 @@ class SeatPlanController extends Controller
         return ['seat_plan_details' => $seat_plan_details, 'unassigned_students' => $unassigned_students];
     }
 
-    private function assignSeatsRowBased($buildings, $students, $studentClassWiseData, $seat_plan_id, &$seat_plan_details, &$unassigned_students, $selectedRooms)
+    private function assignSeatsRowBased($buildings, $students, $studentDetails, $studentClassWiseData, $seat_plan_id, &$seat_plan_details, &$unassigned_students, $selectedRooms)
     {
         $studentIndex = 0;
         $now = Carbon::now()->format('Y-m-d H:i:s'); // Current timestamp
@@ -487,7 +507,7 @@ class SeatPlanController extends Controller
                             if ($studentIndex >= count($students) || empty($activeClasses)) {
                                 break 2; // Exit both loops if no students or classes remain
                             }
-                            $this->assignSeatsToRow($studentClassWiseData, $students, $studentIndex, $seat_plan_id, $seat_plan_details, $building->id, $roomIndex, $benchIndex + 1, $seatsPerBench, $now, $activeClasses);
+                            $this->assignSeatsToRow($studentClassWiseData,$studentDetails, $students, $studentIndex, $seat_plan_id, $seat_plan_details, $building->id, $roomIndex, $benchIndex + 1, $seatsPerBench, $now, $activeClasses);
                         }
 
                         // Assign students to Row 2 benches
@@ -495,7 +515,7 @@ class SeatPlanController extends Controller
                             if ($studentIndex >= count($students) || empty($activeClasses)) {
                                 break 2; // Exit both loops if no students or classes remain
                             }
-                            $this->assignSeatsToRow($studentClassWiseData, $students, $studentIndex, $seat_plan_id, $seat_plan_details, $building->id, $roomIndex, $row1Benches + $benchIndex + 1, $seatsPerBench, $now, $activeClasses);
+                            $this->assignSeatsToRow($studentClassWiseData,$studentDetails, $students, $studentIndex, $seat_plan_id, $seat_plan_details, $building->id, $roomIndex, $row1Benches + $benchIndex + 1, $seatsPerBench, $now, $activeClasses);
                         }
                     }
                 }
@@ -512,7 +532,7 @@ class SeatPlanController extends Controller
         return ['seat_plan_details' => $seat_plan_details, 'unassigned_students' => $unassigned_students];
     }
 
-    private function assignSeatsToRow(&$studentClassWiseData, &$students, &$studentIndex, $seat_plan_id, &$seat_plan_details, $buildingId, $roomIndex, $benchNumber, $seatsPerBench, $now, &$activeClasses)
+    private function assignSeatsToRow(&$studentClassWiseData, &$studentsDetailData, &$students, &$studentIndex, $seat_plan_id, &$seat_plan_details, $buildingId, $roomIndex, $benchNumber, $seatsPerBench, $now, &$activeClasses)
     {
         $totalActiveClasses = count($activeClasses); // Number of classes with remaining students
         $usedClasses = []; // Track classes used on this bench
@@ -535,7 +555,13 @@ class SeatPlanController extends Controller
                     unset($studentClassWiseData[$classId]);
                     $activeClasses = array_values(array_keys($studentClassWiseData));
                 }
-
+                // Assign the student to the first seat of the bench with details
+                $student = $studentsDetailData[$studentId] ?? [
+                    'name' => $studentsDetailData[$studentId]['name'],
+                    'class_name' => $studentsDetailData[$studentId]['class_name'] ?? 'N/A',
+                    'section_name' => $studentsDetailData[$studentId]['section_name'] ?? 'N/A',
+                    'roll_no' => $studentsDetailData[$studentId]['roll_no'] ?? 'N/A',
+                ];
                 // Assign the student to the first seat of the bench
                 $seat_plan_details[] = [
                     'seat_plan_id' => $seat_plan_id,
@@ -543,7 +569,12 @@ class SeatPlanController extends Controller
                     'room' => $roomIndex,
                     'bench' => "Bench " . $benchNumber,
                     'seat' => 1,
-                    'student_id' => $studentId,
+                    // 'student_id' => $studentId,
+                    'student_id' => null,
+                    'student_name' => $student['name'],
+                    'student_class' => $student['class_name'],
+                    'student_section' => $student['section_name'],
+                    'student_roll_no' => $student['roll_no'],
                     'created_at' => $now,
                     'updated_at' => $now
                 ];
@@ -588,6 +619,13 @@ class SeatPlanController extends Controller
                         }
                     }
 
+                    // Assign the student to the first seat of the bench with details
+                    $student = $studentsDetailData[$studentId] ?? [
+                        'name' => $studentsDetailData[$studentId]['name'],
+                        'class_name' => $studentsDetailData[$studentId]['class_name'] ?? 'N/A',
+                        'section_name' => $studentsDetailData[$studentId]['section_name'] ?? 'N/A',
+                        'roll_no' => $studentsDetailData[$studentId]['roll_no'] ?? 'N/A',
+                    ];
                     // Assign the seat to the student
                     $seat_plan_details[] = [
                         'seat_plan_id' => $seat_plan_id,
@@ -595,7 +633,12 @@ class SeatPlanController extends Controller
                         'room' => $roomIndex,
                         'bench' => "Bench " . $benchNumber,
                         'seat' => $seatIndex + 1,
-                        'student_id' => $studentId,
+                        // 'student_id' => $studentId,
+                        'student_id' => null,
+                        'student_name' => $student['name'],
+                        'student_class' => $student['class_name'],
+                        'student_section' => $student['section_name'],
+                        'student_roll_no' => $student['roll_no'],
                         'created_at' => $now,
                         'updated_at' => $now
                     ];
@@ -944,10 +987,12 @@ class SeatPlanController extends Controller
         $data['buildings'] = $buildings->toArray();
 
         // Step 4: Get all seat plan details with student relationship loaded
-        $seatPlanDetails = SeatPlanDetail::with(['student', 'student.class', 'student.section']) // Eager load relationships
-            ->where('seat_plan_id', $id)
-            ->get();
+        // $seatPlanDetails = SeatPlanDetail::with(['student', 'student.class', 'student.section']) // Eager load relationships
+        //     ->where('seat_plan_id', $id)
+        //     ->get();
 
+        $seatPlanDetails = SeatPlanDetail::where('seat_plan_id', $id)->get();
+        // dd($seatPlanDetails);
         // Group by class (class_id => [roll_no's])
         // $classGrouped = $seatPlanDetails->groupBy(function($item) {
         //     return $item->student->class->title; // Group by class title
@@ -991,13 +1036,13 @@ class SeatPlanController extends Controller
             // Fetch the student details
             $student = $detail->student; // Eager-loaded student
             $studentData = [
-                'id' => $student->id,
-                'name' => $student->name,
-                'class' => $student->class ? $student->class->title : 'N/A', // Check if class exists before accessing
-                'section' => $student->section ? $student->section->title : 'N/A', // Check if section exists before accessing
-                'gender' => $student->gender,
-                'handicapped' => $student->handicapped,
-                'roll_no' => $student->roll_no,
+                // 'id' => $student->id,
+                'name' => $detail->student_name,
+                'class' => $detail->student_class ?? 'N/A', // Check if class exists before accessing
+                'section' => $detail->student_section ?? 'N/A', // Check if section exists before accessing
+                // 'gender' => $student->gender,
+                // 'handicapped' => $student->handicapped,
+                'roll_no' => $detail->student_roll_no,
             ];
 
             // Add the student data to the seat

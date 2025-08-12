@@ -557,7 +557,7 @@
                         benchStudents.sort((a, b) => a.seat - b.seat);
 
                         html += `
-                            <div class="bench" style="color: #000000; text-align: center; font-size: 15px; position: relative; border: 1px solid black;max-width: 285px;padding: 10px;min-width: 285px;">
+                            <div class="bench" style="color: #000000; text-align: center; font-size: 15px; position: relative; border: 1px solid black;max-width: 315px;padding: 10px;min-width: 315px;">
                                 ${benchKey}
                                 <div class="seats" style="display: flex;flex-wrap: wrap;gap: 30px;margin-top: 5px;">
                         `;
