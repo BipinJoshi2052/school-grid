@@ -97,6 +97,9 @@ Route::middleware('auth')->group(function () {
     // Route::get('/seat-plan-config', [HomeController::class, 'seatPlanConfig'])->name('seat-plan-config');
 
     Route::post('/erase-data', [AcademicController::class, 'eraseData'])->name('erase-data');
+    Route::post('/erase-class-data', [AcademicController::class, 'eraseClassData'])->name('erase-class-data');
+    Route::post('/erase-student-data', [AcademicController::class, 'eraseStudentData'])->name('erase-student-data');
+    Route::post('/erase-seat-plan-data', [AcademicController::class, 'eraseSeatPlanData'])->name('erase-seat-plan-data');
     Route::post('/populate-data', [AcademicController::class, 'populateData'])->name('populate-data');
     Route::post('/populate-student-data', [AcademicController::class, 'populateStudentData'])->name('populate-student-data');
     

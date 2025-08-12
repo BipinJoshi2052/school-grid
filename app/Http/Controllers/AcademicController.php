@@ -221,6 +221,38 @@ class AcademicController extends Controller
         }
     }
     
+    public function eraseClassData()
+    {
+
+        $userId = auth()->id();
+        $schoolId = session('school_id');
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        ClassModel::where('user_id', $schoolId)->delete();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        return redirect()->back()->with('success', 'Your data has been erased successfully.');
+    }
+
+    public function eraseStudentData()
+    {
+
+        $userId = auth()->id();
+        $schoolId = session('school_id');
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        Student::where('school_id', $schoolId)->delete();
+        User::where('parent_id', $schoolId)->where('user_type_id',4)->delete();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+    return redirect()->back()->with('success', 'Your data has been erased successfully.');
+    }
+    public function eraseSeatPlanData()
+    {
+
+        $userId = auth()->id();
+        $schoolId = session('school_id');
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        SeatPlan::where('user_id', $schoolId)->delete();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+    return redirect()->back()->with('success', 'Your data has been erased successfully.');
+    }
    public function eraseData()
 {
     // Get the currently authenticated user's ID

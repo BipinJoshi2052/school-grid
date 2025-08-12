@@ -178,199 +178,172 @@ class SeatPlanController extends Controller
     public function generateSeatPlan(Request $request)
     {
         // dd($request->all());
-        // try {
-        // // 1. Create a seat plan record in seat_plans table
-        $seatPlan = SeatPlan::create([
-            'title' => $request->input('title'),
-            'user_id' => session('school_id'),
-            'added_by' => auth()->id(),
-        ]);
-        $seat_plan_id = $seatPlan->id; // Get the ID of the created seat plan
-        // $seat_plan_id = 1;
-        // 2. Get building data from the buildings table using room ids
-        $roomIds = array_keys($request->input('rooms')); // Get the room ids (145, 146, etc.)
-        $buildings = Building::whereIn('id', $roomIds)->get();
+        try {
+            // // 1. Create a seat plan record in seat_plans table
+            // $seatPlan = SeatPlan::create([
+            //     'title' => $request->input('title'),
+            //     'user_id' => session('school_id'),
+            //     'added_by' => auth()->id(),
+            // ]);
+            // $seat_plan_id = $seatPlan->id; // Get the ID of the created seat plan
+            $seat_plan_id = 1;
+            // 2. Get building data from the buildings table using room ids
+            $roomIds = array_keys($request->input('rooms')); // Get the room ids (145, 146, etc.)
+            $buildings = Building::whereIn('id', $roomIds)->get();
 
-        if ($buildings->isEmpty()) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'No buildings found for the given room IDs.'
-            ], 404);
-        }
-
-        // 3. Get the list of students based on class_id & section_id combinations
-        $students = [];
-        foreach ($request->input('sections') as $class_id => $sections) {
-            foreach ($sections as $section_id) {
-                $sectionStudents = Student::where('school_id', session('school_id'))
-                    ->where('class_id', $class_id)
-                    ->where('section_id', $section_id)
-                    ->orderBy('roll_no', 'asc')
-                    ->pluck('id')
-                    ->toArray();
-
-                // Store students grouped by class_id
-                $studentData[$class_id][] = $sectionStudents;
+            if ($buildings->isEmpty()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'No buildings found for the given room IDs.'
+                ], 404);
             }
-        }
 
-        // Reorder the studentData array based on the classes input order
-        $reorderedStudentData = [];
-        foreach ($request->input('classes') as $class_id) {
-            if (isset($studentData[$class_id])) {
-                // Move the class's section students to the reordered array
-                $reorderedStudentData[$class_id] = $studentData[$class_id];
-            }
-        }
-        // dd($studentData);
+            // 3. Get the list of students based on class_id & section_id combinations
+            $students = [];
+            foreach ($request->input('sections') as $class_id => $sections) {
+                foreach ($sections as $section_id) {
+                    $sectionStudents = Student::where('school_id', session('school_id'))
+                        ->where('class_id', $class_id)
+                        ->where('section_id', $section_id)
+                        ->orderBy('roll_no', 'asc')
+                        ->pluck('id')
+                        ->toArray();
 
-        // Now reorder the student IDs according to the selected class order
-        $students = [];
-        foreach ($request->input('classes') as $class_id) {
-            if (isset($studentData[$class_id])) {
-                // Merge the section students for the current class
-                foreach ($studentData[$class_id] as $sectionStudents) {
-                    $students = array_merge($students, $sectionStudents);
+                    // Store students grouped by class_id
+                    $studentData[$class_id][] = $sectionStudents;
                 }
             }
-        }
-        // dd($students);
 
-        // echo '<pre>';
-        // print_r($reorderedStudentData);
-        // echo '</pre>';
-        // 4. Shuffle the staff array and get staff data
-        $staffIds = $request->input('staff');
-        shuffle($staffIds); // Shuffle the staff array
+            // Reorder the studentData array based on the classes input order
+            $reorderedStudentData = [];
+            foreach ($request->input('classes') as $class_id) {
+                if (isset($studentData[$class_id])) {
+                    // Move the class's section students to the reordered array
+                    $reorderedStudentData[$class_id] = $studentData[$class_id];
+                }
+            }
+            // dd($studentData);
 
-        $user_type_id_of_staff = UserType::where('name', 'staff')->first();
-        $staffs = User::where([
-            'parent_id' => session('school_id'),
-            'user_type_id' => $user_type_id_of_staff->id,
-        ])->whereIn('id', $staffIds)->get();
-
-        if ($staffs->isEmpty()) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'No staff found for the given staff IDs.'
-            ], 404);
-        }
-
-        // Initialize arrays to store unassigned students and staff
-        $unassigned_students = [];
-        $unassigned_staffs = [];
-
-        // 5. Initialize response arrays
-        $seat_plan_details = [];
-        $invigilator_plan_details = [];
-
-        // 6. Determine seating pattern and call corresponding function
-        $seatingPattern = $request->input('seatingPattern');
-        $seatingData = [];
-
-        if ($seatingPattern['type'] == 'sequential') {
-            $seatingData = $this->assignSeatsSequentially($buildings, $students, $seat_plan_id, $seat_plan_details, $unassigned_students, $request->input('rooms'));
-        } elseif ($seatingPattern['type'] == 'alternate') {
-            $seatingData = $this->assignSeatsIndividually($buildings, $students, $seat_plan_id, $seat_plan_details, $unassigned_students, $request->input('rooms'));
-        } elseif ($seatingPattern['type'] == 'random') {
-            $seatingData = $this->assignSeatsIndividually($buildings, $students, $seat_plan_id, $seat_plan_details, $unassigned_students, $request->input('rooms'));
-        } elseif ($seatingPattern['type'] == 'rowbased') {
-            $seatingData = $this->assignSeatsRowBased($buildings, $students, $reorderedStudentData, $seat_plan_id, $seat_plan_details, $unassigned_students, $request->input('rooms'));
-        } else {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Invalid seating pattern type provided.'
-            ], 400);
-        }
-
-        // 7. Process the response data for seat plan details
-        $seat_plan_details = $seatingData['seat_plan_details'];
-        $unassigned_students = $seatingData['unassigned_students'];
-        $now = Carbon::now()->format('Y-m-d H:i:s');
-
-        // 8. Initialize staff index and loop through rooms to assign staff to each room
-        $staffIndex = 0; // Initialize staffIndex before looping
-        // foreach ($buildings as $building) {
-        //     // Decode the rooms JSON to an array
-        //     $rooms = json_decode($building->rooms, true); // Decode rooms data from JSON
-
-        //     // Process only the rooms selected by the user
-        //     foreach ($rooms as $roomIndex => $roomData) {
-        //         // Check if this room is selected by the user
-        //         if (isset($request->input('rooms')[$building->id]) && in_array($roomIndex, $request->input('rooms')[$building->id])) {
-        //             if ($staffIndex < count($staffs)) {
-        //                 echo count($staffs);
-        //                 // If there's still staff available for the room
-        //                 $invigilator_plan_details[] = [
-        //                     'seat_plan_id' => $seat_plan_id,
-        //                     'building_id' => $building->id,
-        //                     'room' => $roomIndex, // Room index (0, 1, 2, etc.)
-        //                     'staff_id' => $staffs[$staffIndex]->id,
-        //                     'created_at' => $now,
-        //                     'updated_at' => $now
-        //                 ];
-        //                 $staffIndex++; // Increment the staff index
-        //             } 
-        //             else {
-        //                 // Add remaining staff to unassigned_staffs
-        //                 $unassigned_staffs[] = $staffs[$staffIndex]->id;
-        //                 $staffIndex++; // Increment the staff index
-        //             }
-        //         }
-        //     }
-        // }
-        foreach ($buildings as $building) {
-            // Decode the rooms JSON to an array
-            $rooms = json_decode($building->rooms, true); // Decode rooms data from JSON
-
-            // Process only the rooms selected by the user
-            foreach ($rooms as $roomIndex => $roomData) {
-                // Check if this room is selected by the user
-                if (isset($request->input('rooms')[$building->id]) && in_array($roomIndex, $request->input('rooms')[$building->id])) {
-                    if ($staffIndex < count($staffs)) {
-                        // If there's still staff available for the room
-                        $invigilator_plan_details[] = [
-                            'seat_plan_id' => $seat_plan_id,
-                            'building_id' => $building->id,
-                            'room' => $roomIndex, // Room index (0, 1, 2, etc.)
-                            'staff_id' => $staffs[$staffIndex]->id,
-                            'created_at' => $now,
-                            'updated_at' => $now
-                        ];
-                        $staffIndex++; // Increment the staff index
+            // Now reorder the student IDs according to the selected class order
+            $students = [];
+            foreach ($request->input('classes') as $class_id) {
+                if (isset($studentData[$class_id])) {
+                    // Merge the section students for the current class
+                    foreach ($studentData[$class_id] as $sectionStudents) {
+                        $students = array_merge($students, $sectionStudents);
                     }
-                    // No else block needed; rooms without staff will simply not have an invigilator assigned
                 }
             }
+            // dd($students);
+
+            // echo '<pre>';
+            // print_r($reorderedStudentData);
+            // echo '</pre>';
+            // 4. Shuffle the staff array and get staff data
+            $staffIds = $request->input('staff');
+            shuffle($staffIds); // Shuffle the staff array
+
+            $user_type_id_of_staff = UserType::where('name', 'staff')->first();
+            $staffs = User::where([
+                'parent_id' => session('school_id'),
+                'user_type_id' => $user_type_id_of_staff->id,
+            ])->whereIn('id', $staffIds)->get();
+
+            if ($staffs->isEmpty()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'No staff found for the given staff IDs.'
+                ], 404);
+            }
+
+            // Initialize arrays to store unassigned students and staff
+            $unassigned_students = [];
+            $unassigned_staffs = [];
+
+            // 5. Initialize response arrays
+            $seat_plan_details = [];
+            $invigilator_plan_details = [];
+
+            // 6. Determine seating pattern and call corresponding function
+            $seatingPattern = $request->input('seatingPattern');
+            $seatingData = [];
+
+            if ($seatingPattern['type'] == 'sequential') {
+                $seatingData = $this->assignSeatsSequentially($buildings, $students, $seat_plan_id, $seat_plan_details, $unassigned_students, $request->input('rooms'));
+            } elseif ($seatingPattern['type'] == 'alternate') {
+                $seatingData = $this->assignSeatsIndividually($buildings, $students, $seat_plan_id, $seat_plan_details, $unassigned_students, $request->input('rooms'));
+            } elseif ($seatingPattern['type'] == 'random') {
+                $seatingData = $this->assignSeatsIndividually($buildings, $students, $seat_plan_id, $seat_plan_details, $unassigned_students, $request->input('rooms'));
+            } elseif ($seatingPattern['type'] == 'rowbased') {
+                $seatingData = $this->assignSeatsRowBased($buildings, $students, $reorderedStudentData, $seat_plan_id, $seat_plan_details, $unassigned_students, $request->input('rooms'));
+            } else {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Invalid seating pattern type provided.'
+                ], 400);
+            }
+
+            // 7. Process the response data for seat plan details
+            $seat_plan_details = $seatingData['seat_plan_details'];
+            $unassigned_students = $seatingData['unassigned_students'];
+            $now = Carbon::now()->format('Y-m-d H:i:s');
+
+            // 8. Initialize staff index and loop through rooms to assign staff to each room
+            $staffIndex = 0; // Initialize staffIndex before looping
+            foreach ($buildings as $building) {
+                // Decode the rooms JSON to an array
+                $rooms = json_decode($building->rooms, true); // Decode rooms data from JSON
+
+                // Process only the rooms selected by the user
+                foreach ($rooms as $roomIndex => $roomData) {
+                    // Check if this room is selected by the user
+                    if (isset($request->input('rooms')[$building->id]) && in_array($roomIndex, $request->input('rooms')[$building->id])) {
+                        if ($staffIndex < count($staffs)) {
+                            // If there's still staff available for the room
+                            $invigilator_plan_details[] = [
+                                'seat_plan_id' => $seat_plan_id,
+                                'building_id' => $building->id,
+                                'room' => $roomIndex, // Room index (0, 1, 2, etc.)
+                                'staff_id' => $staffs[$staffIndex]->id,
+                                'created_at' => $now,
+                                'updated_at' => $now
+                            ];
+                            $staffIndex++; // Increment the staff index
+                        } else {
+                            // Add remaining staff to unassigned_staffs
+                            $unassigned_staffs[] = $staffs[$staffIndex]->id;
+                            $staffIndex++; // Increment the staff index
+                        }
+                    }
+                }
+            }
+            dd($seat_plan_details);
+            // dd($seat_plan_details);
+            // 9. Insert seat plan details for students into the seat_plan_details table
+            SeatPlanDetail::Insert($seat_plan_details);
+
+            // 10. Insert invigilator plan details into the invigilator_plan_details table
+            InvigilatorPlanDetail::Insert($invigilator_plan_details);
+
+            // 11. Save unassigned students and staff as JSON in the seat_plans table
+            $seatPlan->update([
+                'unassigned_students' => json_encode($unassigned_students),
+                'unassigned_staffs' => json_encode($unassigned_staffs)
+            ]);
+            // dd('here123');
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Seat plan generated successfully.',
+                'seatPlanId' => $seat_plan_id
+            ], 200);
+        } catch (\Exception $e) {
+            // Catch any exceptions that occur and return a generic error message
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 500);
         }
-        // dd($seat_plan_details);
-        // dd($seat_plan_details);
-        // 9. Insert seat plan details for students into the seat_plan_details table
-        SeatPlanDetail::Insert($seat_plan_details);
-
-        // 10. Insert invigilator plan details into the invigilator_plan_details table
-        InvigilatorPlanDetail::Insert($invigilator_plan_details);
-
-        // 11. Save unassigned students and staff as JSON in the seat_plans table
-        $seatPlan->update([
-            'unassigned_students' => json_encode($unassigned_students),
-            'unassigned_staffs' => json_encode($unassigned_staffs)
-        ]);
-        // dd('here123');
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Seat plan generated successfully.',
-            'seatPlanId' => $seat_plan_id
-        ], 200);
-        // } 
-        // catch (\Exception $e) {
-        //     // Catch any exceptions that occur and return a generic error message
-        //     return response()->json([
-        //         'status' => 'error',
-        //         'message' => $e->getMessage()
-        //     ], 500);
-        // }
     }
 
 
@@ -461,9 +434,11 @@ class SeatPlanController extends Controller
         $studentIndex = 0;
         $now = Carbon::now()->format('Y-m-d H:i:s'); // Current timestamp
 
-        // Initialize class rotation data
-        $classIds = array_keys($studentClassWiseData); // Ordered list of class IDs
-        $activeClasses = $classIds; // Track classes with remaining students
+        // Initialize class rotation index
+        $classIndex = 0;
+
+        // Get the number of classes available in studentClassWiseData
+        $totalClasses = count($studentClassWiseData);
 
         // Iterate through all buildings
         foreach ($buildings as $building) {
@@ -475,34 +450,32 @@ class SeatPlanController extends Controller
                 if (isset($selectedRooms[$building->id]) && in_array($roomIndex, $selectedRooms[$building->id])) {
                     // Ensure we're working with 'total' seating
                     if ($roomData['selected_type'] == 'total') {
+                        // Get the total number of benches and seats per bench
                         $totalBenches = $roomData['total']['benches']; // Number of benches
                         $seatsPerBench = $roomData['total']['seats']; // Seats per bench
 
                         // Divide the benches equally into two rows
-                        $row1Benches = ceil($totalBenches / 2); // First row
-                        $row2Benches = $totalBenches - $row1Benches; // Second row
-
+                        $row1Benches = ceil($totalBenches / 2); // First row will have half or rounded up benches
+                        $row2Benches = $totalBenches - $row1Benches; // The second row will have the remaining benches
+                        echo 'row1Benches - '.$row1Benches.'<br>';
+                        echo 'row2Benches - '.$row2Benches.'<br>';
                         // Assign students to Row 1 benches
                         for ($benchIndex = 0; $benchIndex < $row1Benches; $benchIndex++) {
-                            if ($studentIndex >= count($students) || empty($activeClasses)) {
-                                break 2; // Exit both loops if no students or classes remain
-                            }
-                            $this->assignSeatsToRow($studentClassWiseData, $students, $studentIndex, $seat_plan_id, $seat_plan_details, $building->id, $roomIndex, $benchIndex + 1, $seatsPerBench, $now, $activeClasses);
+                            echo 'benchIndex - '.$benchIndex.'<br>';
+                            $this->assignSeatsToRow($studentClassWiseData, $students, $studentIndex, $seat_plan_id, $seat_plan_details, $building->id, $roomIndex, $benchIndex + 1, $seatsPerBench, $now, $classIndex, $totalClasses);
                         }
 
                         // Assign students to Row 2 benches
                         for ($benchIndex = 0; $benchIndex < $row2Benches; $benchIndex++) {
-                            if ($studentIndex >= count($students) || empty($activeClasses)) {
-                                break 2; // Exit both loops if no students or classes remain
-                            }
-                            $this->assignSeatsToRow($studentClassWiseData, $students, $studentIndex, $seat_plan_id, $seat_plan_details, $building->id, $roomIndex, $row1Benches + $benchIndex + 1, $seatsPerBench, $now, $activeClasses);
+                            echo 'benchIndex - '.$benchIndex.'<br>';
+                            $this->assignSeatsToRow($studentClassWiseData, $students, $studentIndex, $seat_plan_id, $seat_plan_details, $building->id, $roomIndex, $row1Benches + $benchIndex + 1, $seatsPerBench, $now, $classIndex, $totalClasses);
                         }
                     }
                 }
             }
         }
 
-        // Add remaining students to unassigned list
+        // If there are students left unassigned, add them to the unassigned list
         if ($studentIndex < count($students)) {
             for ($i = $studentIndex; $i < count($students); $i++) {
                 $unassigned_students[] = $students[$i];
@@ -512,157 +485,43 @@ class SeatPlanController extends Controller
         return ['seat_plan_details' => $seat_plan_details, 'unassigned_students' => $unassigned_students];
     }
 
-    private function assignSeatsToRow(&$studentClassWiseData, &$students, &$studentIndex, $seat_plan_id, &$seat_plan_details, $buildingId, $roomIndex, $benchNumber, $seatsPerBench, $now, &$activeClasses)
+    private function assignSeatsToRow(&$studentClassWiseData, &$students, &$studentIndex, $seat_plan_id, &$seat_plan_details, $buildingId, $roomIndex, $benchNumber, $seatsPerBench, $now, &$classIndex, $totalClasses)
     {
-        $totalActiveClasses = count($activeClasses); // Number of classes with remaining students
-        $usedClasses = []; // Track classes used on this bench
-        $classCounter = 0; // Track current class index for rotation
-
-        // If only one class remains, assign one student per bench to seat 1
-        if ($totalActiveClasses === 1) {
-            $classId = $activeClasses[0];
-            if ($studentIndex < count($students) && !empty($studentClassWiseData[$classId])) {
-                // Take one student from the current class
-                $studentId = array_shift($studentClassWiseData[$classId][0]);
-
-                // If the current section is empty, move to the next section
-                if (empty($studentClassWiseData[$classId][0])) {
-                    array_shift($studentClassWiseData[$classId]);
-                }
-
-                // If the class is now empty, remove it
-                if (empty($studentClassWiseData[$classId])) {
-                    unset($studentClassWiseData[$classId]);
-                    $activeClasses = array_values(array_keys($studentClassWiseData));
-                }
-
-                // Assign the student to the first seat of the bench
-                $seat_plan_details[] = [
-                    'seat_plan_id' => $seat_plan_id,
-                    'building_id' => $buildingId,
-                    'room' => $roomIndex,
-                    'bench' => "Bench " . $benchNumber,
-                    'seat' => 1,
-                    'student_id' => $studentId,
-                    'created_at' => $now,
-                    'updated_at' => $now
-                ];
-
-                $studentIndex++; // Move to the next student
-            }
-            return; // Exit to ensure one student per bench
-        }
-
-        // Assign students to each seat on the bench (multiple classes)
-        for ($seatIndex = 0; $seatIndex < $seatsPerBench; $seatIndex++) {
-            // Stop if no students or active classes are left
-            if ($studentIndex >= count($students) || empty($activeClasses)) {
-                break;
-            }
-
-            // Try to find a valid class for this seat
-            $startCounter = $classCounter;
-            $triedAllClasses = false;
-            $assigned = false;
-
-            while (!$triedAllClasses && !$assigned) {
-                $classId = $activeClasses[$classCounter % $totalActiveClasses];
-
-                // Check if the class has students and hasn't been used on this bench
-                if (isset($studentClassWiseData[$classId]) && !empty($studentClassWiseData[$classId]) && !in_array($classId, $usedClasses)) {
-                    // Assign student from the current class
-                    $studentId = array_shift($studentClassWiseData[$classId][0]);
-
-                    // If the current section is empty, move to the next section
-                    if (empty($studentClassWiseData[$classId][0])) {
-                        array_shift($studentClassWiseData[$classId]);
-                    }
-
-                    // If the class is now empty, remove it
-                    if (empty($studentClassWiseData[$classId])) {
-                        unset($studentClassWiseData[$classId]);
-                        $activeClasses = array_values(array_keys($studentClassWiseData));
-                        $totalActiveClasses = count($activeClasses);
-                        if ($totalActiveClasses > 0) {
-                            $classCounter = $classCounter % $totalActiveClasses;
-                        }
-                    }
-
-                    // Assign the seat to the student
-                    $seat_plan_details[] = [
-                        'seat_plan_id' => $seat_plan_id,
-                        'building_id' => $buildingId,
-                        'room' => $roomIndex,
-                        'bench' => "Bench " . $benchNumber,
-                        'seat' => $seatIndex + 1,
-                        'student_id' => $studentId,
-                        'created_at' => $now,
-                        'updated_at' => $now
-                    ];
-
-                    $usedClasses[] = $classId; // Mark class as used on this bench
-                    $studentIndex++; // Move to the next student
-                    $classCounter++; // Move to the next class
-                    $assigned = true; // Mark as assigned to exit the while loop
-                } else {
-                    // Move to the next class
-                    $classCounter++;
-                    if ($classCounter % $totalActiveClasses === $startCounter % $totalActiveClasses) {
-                        $triedAllClasses = true; // We've tried all available classes
-                    }
-                }
-            }
-
-            // If no valid class was found (all remaining classes are used on this bench), skip the seat
-            if (!$assigned) {
-                break; // Move to the next seat or end the loop
-            }
-        }
-    }
-
-
-    private function assignSeatsToRow3(&$studentClassWiseData, &$students, &$studentIndex, $seat_plan_id, &$seat_plan_details, $buildingId, $roomIndex, $benchNumber, $seatsPerBench, $now, &$classIds, $totalClasses)
-    {
+        // dd($studentClassWiseData);
         // For each seat on the bench, assign students from different classes and sections alternately
         $finishedAssigning = false; // Flag to control when to stop assigning students
-        $classCounter = 0; // Counter to rotate between classes
 
         // For each seat on the bench
         for ($seatIndex = 0; $seatIndex < $seatsPerBench; $seatIndex++) {
             // Check if there are students to assign
-            echo 'seatIndex -' . $seatIndex . '<br>';
-            echo 'studentIndex -' . $studentIndex . '<br>';
-
-            // Check if there are students to assign
+            echo 'studentIndex - '.$studentIndex.'<br>';
             if ($studentIndex < count($students)) {
                 // Get the class ID for the current seat (alternating between classes)
-                $classId = $classIds[$classCounter % $totalClasses];
-                echo 'classId -' . $classId . '<br>';
+                $classId = array_keys($studentClassWiseData)[$classIndex % $totalClasses];
+                echo 'classId - '.$classId.'<br>';
+                echo '$classIndex % $totalClasses - '.($classIndex % $totalClasses).'<br>';
+                // echo 'classId -' . $classId . '<br>';
 
                 // If the class has students
                 if (isset($studentClassWiseData[$classId]) && !empty($studentClassWiseData[$classId])) {
                     // Assign student from the current class and section
                     $studentId = array_shift($studentClassWiseData[$classId][0]); // Get the first student in the first section of the current class
-                    echo 'studentId -' . $studentId . '<br>';
+                    // echo 'studentId -' . $studentId . '<br>';
 
                     // If the current section is exhausted, move to the next section
                     if (empty($studentClassWiseData[$classId][0])) {
                         array_shift($studentClassWiseData[$classId]); // Move to the next section if the current section is empty
                     }
                 } else {
-                    $classId = $classIds[$classCounter % $totalClasses];
-                    echo 'no students left in class - ' . $classId . '<br>';
-                    // If no students are left in the current class, move to the next class
-                    $classCounter++;
-
-                    // If we have gone past the available classes, set the flag to stop
-                    if ($classCounter >= $totalClasses) {
+                    // If no students are left in this class, move to the next class
+                    $classIndex++;
+                    if ($classIndex >= $totalClasses) {
+                        // If we have gone past the available classes, set the flag to stop
                         $finishedAssigning = true;
                         break;
                     }
-
                     // Get the first student from the next class
-                    $classId = $classIds[$classCounter % $totalClasses];
+                    $classId = array_keys($studentClassWiseData)[$classIndex % $totalClasses];
                     $studentId = array_shift($studentClassWiseData[$classId][0]);
                 }
 
@@ -691,11 +550,9 @@ class SeatPlanController extends Controller
             }
 
             // Move to the next class (round-robin)
-            $classCounter++;
+            $classIndex++;
         }
     }
-
-
 
     private function assignSeatsToRow2(&$studentClassWiseData, &$studentIndex, $seat_plan_id, &$seat_plan_details, $buildingId, $roomIndex, $benchNumber, $seatsPerBench, $now)
     {

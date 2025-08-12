@@ -474,19 +474,6 @@
                             }
                         });
                     }
-                                    // <label>
-                                    //     <span>Door Placement</span>
-                                    //     <select name="door_placement_${roomCounter}" class="door-placement-input">
-                                    //         <option value="top-left" ${roomData.door_placement === 'top-left' ? 'selected' : ''}>Top Left</option>
-                                    //         <option value="top-right" ${roomData.door_placement === 'top-right' ? 'selected' : ''}>Top Right</option>
-                                    //         <option value="left-top" ${roomData.door_placement === 'left-top' ? 'selected' : ''}>Left Top</option>
-                                    //         <option value="left-bottom" ${roomData.door_placement === 'left-bottom' ? 'selected' : ''}>Left Bottom</option>
-                                    //         <option value="right-top" ${roomData.door_placement === 'right-top' ? 'selected' : ''}>Right Top</option>
-                                    //         <option value="right-bottom" ${roomData.door_placement === 'right-bottom' ? 'selected' : ''}>Right Bottom</option>
-                                    //         <option value="bottom-left" ${roomData.door_placement === 'bottom-left' ? 'selected' : ''}>Bottom Left</option>
-                                    //         <option value="bottom-right" ${roomData.door_placement === 'bottom-right' ? 'selected' : ''}>Bottom Right</option>
-                                    //     </select>
-                                    // </label>
                     // console.log(roomData.selected_type)
                     const roomHtml = `
                         <div class="room collapsed" data-id="${roomId}" data-server-id="${roomIndex}">
@@ -504,6 +491,23 @@
                                     <label class="${roomData.selected_type === 'total' ? 'checked' : ''}">
                                         <input type="radio" name="bench_type_${roomCounter}" value="total" >
                                         <span>Total Bench Data</span>
+                                    </label>
+                                    <label class="${roomData.selected_type === 'individual' ? 'checked' : ''}">
+                                        <input type="radio" name="bench_type_${roomCounter}" value="individual" >
+                                        <span>Individual Bench Data</span>
+                                    </label>
+                                    <label>
+                                        <span>Door Placement</span>
+                                        <select name="door_placement_${roomCounter}" class="door-placement-input">
+                                            <option value="top-left" ${roomData.door_placement === 'top-left' ? 'selected' : ''}>Top Left</option>
+                                            <option value="top-right" ${roomData.door_placement === 'top-right' ? 'selected' : ''}>Top Right</option>
+                                            <option value="left-top" ${roomData.door_placement === 'left-top' ? 'selected' : ''}>Left Top</option>
+                                            <option value="left-bottom" ${roomData.door_placement === 'left-bottom' ? 'selected' : ''}>Left Bottom</option>
+                                            <option value="right-top" ${roomData.door_placement === 'right-top' ? 'selected' : ''}>Right Top</option>
+                                            <option value="right-bottom" ${roomData.door_placement === 'right-bottom' ? 'selected' : ''}>Right Bottom</option>
+                                            <option value="bottom-left" ${roomData.door_placement === 'bottom-left' ? 'selected' : ''}>Bottom Left</option>
+                                            <option value="bottom-right" ${roomData.door_placement === 'bottom-right' ? 'selected' : ''}>Bottom Right</option>
+                                        </select>
                                     </label>
                                 </div>
                                 
@@ -870,9 +874,13 @@
                             </div>
                             <div class="room-content active">
                                 <div class="bench-type-selector">
-                                    <label class="checked">
+                                    <label>
                                         <input class="bench_type" type="radio" name="bench_type_${roomCounter}" value="total" checked>
                                         <span>Total Bench Data</span>
+                                    </label>
+                                    <label>
+                                        <input class="bench_type" type="radio" name="bench_type_${roomCounter}" value="individual">
+                                        <span>Individual Bench Data</span>
                                     </label>
                                 </div>
                                 

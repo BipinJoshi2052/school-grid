@@ -112,9 +112,9 @@ class StaffController extends Controller
             'address' => 'nullable|string',
             'joined_date' => 'nullable|date',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'department_id' => 'required|exists:departments,id',
-            'position_id' => 'required|exists:positions,id',
         ]);
+            // 'department_id' => 'required|exists:departments,id',
+            // 'position_id' => 'required|exists:positions,id',
         // dd('here');
         try{
             // Create the user first

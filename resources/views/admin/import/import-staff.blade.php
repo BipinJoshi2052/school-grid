@@ -1122,7 +1122,9 @@
 
         // Download sample CSV
         function downloadSample() {
-            window.location.href = '/download/sample';
+            const timestamp = new Date().getTime();  // Get the current timestamp
+            window.location.href = `/download/sample?timestamp=${timestamp}`;
+            // window.location.href = '/download/sample';
         }
 
         // Close help modal when clicking outside

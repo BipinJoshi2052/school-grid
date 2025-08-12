@@ -635,6 +635,7 @@
                                     <li class="optional"><strong>Batch</strong> - Student Batch (Optional - but required if faculty present)</li>
                                     <li class="required"><strong>Class</strong> - Student Class (Required)</li>
                                     <li class="required"><strong>Section</strong> - Student Section (Required)</li>
+                                    <li class="required"><strong>Roll</strong> - Roll Number (Required)</li>
                                     <li class="optional"><strong>Handicapped</strong> - Handicapped information (Optional)</li>
                                     <li class="optional"><strong>Gender</strong> - Gender information (Optional)</li>
                                     <li class="optional"><strong>Address</strong> - Physical address (Optional)</li>
@@ -690,8 +691,8 @@
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.5.3/papaparse.min.js"></script>
     <script>
         // System configuration
-        const requiredHeadings = ['Name', 'Email', 'Phone', 'Status', 'Faculty', 'Batch', 'Class', 'Section', 'Handicapped', 'Gender', 'Address'];
-        const mandatoryHeadings = ['Name', 'Email', 'Class', 'Section'];
+        const requiredHeadings = ['Name', 'Email', 'Phone', 'Status', 'Faculty', 'Batch', 'Class', 'Section','Roll', 'Handicapped', 'Gender', 'Address'];
+        const mandatoryHeadings = ['Name', 'Email', 'Class', 'Section','Roll'];
         let csvData = [];
         let csvHeadings = [];
         let mappings = {};
@@ -1122,7 +1123,8 @@
 
         // Download sample CSV
         function downloadSample() {
-            window.location.href = '/download/sample/student';
+            const timestamp = new Date().getTime();  // Get the current timestamp
+            window.location.href = `/download/sample/student?timestamp=${timestamp}`;
         }
 
         // Close help modal when clicking outside

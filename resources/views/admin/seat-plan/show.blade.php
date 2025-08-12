@@ -521,31 +521,23 @@
             function generateTotalLayout(room, roomIndex) {
                 // console.log(room);
                 const totalBenches = room.total.benches;
-                const totalSeats = room.total.seats;
+                const seatsPerBench = room.total.seats; // Assuming this is seats per bench
                 const currentBuildingId = currentBuilding.id; // Get building id from currentBuilding
                 const currentRoomId = roomIndex; // Get room id from currentRoom
 
-                // Fetch students for the current room (you can implement an AJAX call to your backend or use preloaded data)
-                // For now, we assume this function or data gives us the students in the room
-                const students = getStudentsForRoom(currentBuildingId,
-                currentRoomId); // This should return an array of students
-                // console.log([
-                //     currentBuildingId, currentRoomId
-                // ])
+                // Fetch students for the current room (structured by bench)
+                const structuredStudents = getStudentsForRoom(currentBuildingId, currentRoomId); // Returns { "Bench 1": [{seat:1, ...}, ...], ... }
+                console.log(structuredStudents);
+
                 if (totalBenches === 0) {
                     return '<div class="empty-state"><div style="font-size: 4rem; margin-bottom: 20px;">🪑</div><h3>No seating arrangement</h3><p>This room has no benches or seats configured.</p></div>';
                 }
 
-                let html = '<div class="seating-layout" style="margin-top: 30px;display: flex!important;justify-content: center;gap: 75px;flex-wrap: wrap;border: 1px solid black;padding: 15px;">';
+                let html = '<style>@media print {.seating-layout {gap:15px!important;}}</style><div class="seating-layout" style="margin-top: 30px;display: flex!important;justify-content: center;gap: 75px;flex-wrap: wrap;border: 1px solid black;padding: 15px;">';
 
-                // Determine number of rows (2 or 3 based on total benches)
+                // Determine number of rows (2 or 3 based on total benches) - currently fixed at 2
                 let numRows = 2;
                 const benchesPerRow = Math.ceil(totalBenches / numRows);
-                // const seatsPerBench = Math.floor(totalSeats / totalBenches);
-                const seatsPerBench = totalSeats;
-                const extraSeats = 0;
-
-                let studentIndex = 0; // To iterate through students and assign them to seats
 
                 for (let rowIndex = 0; rowIndex < numRows; rowIndex++) {
                     const startBench = rowIndex * benchesPerRow;
@@ -558,40 +550,41 @@
                     html += '<div class="row" style="display: flex;flex-direction: column;gap: 15px;align-items: center;">';
 
                     for (let i = startBench; i < endBench; i++) {
-                        let benchSeats = seatsPerBench;
-                        if (extraSeats > 0) {
-                            benchSeats++;
-                            extraSeats--;
-                        }
+                        const benchKey = `Bench ${i + 1}`;
+                        const benchStudents = structuredStudents[benchKey] || []; // Get students for this bench
+
+                        // Sort benchStudents by seat number to ensure correct order
+                        benchStudents.sort((a, b) => a.seat - b.seat);
 
                         html += `
-                            <div class="bench" style="color: #000000; text-align: center; font-size: 15px; position: relative; border: 1px solid black;max-width: 285px;padding: 10px;">
-                                Bench ${i + 1}
-                                <div class="seats" style="display: flex;justify-content: center;flex-wrap: wrap;gap: 30px;margin-top: 5px;">
+                            <div class="bench" style="color: #000000; text-align: center; font-size: 15px; position: relative; border: 1px solid black;max-width: 285px;padding: 10px;min-width: 285px;">
+                                ${benchKey}
+                                <div class="seats" style="display: flex;flex-wrap: wrap;gap: 30px;margin-top: 5px;">
                         `;
-
-                        for (let j = 0; j < benchSeats; j++) {
-                            if (studentIndex < students.length) {
-                                const student = students[studentIndex];
+                        // justify-content: center;
+                        // We assume up to seatsPerBench seats, fill with assigned students or empty
+                        for (let j = 0; j < seatsPerBench; j++) {
+                            // Find the student assigned to this seat (seat numbers are 1-indexed)
+                            const student = benchStudents.find(s => s.seat === (j + 1));
+                            console.log(student)
+                            if (student) {
                                 html += `
                                     <div class="seat-student" style="border: 1px solid black;background: none;">
                                         <div class="student-info" style="color: black;padding: 2px;width: 110px;">
                                             <div class="student-name">${student.name}</div>
-                                            <div class="student-class">${student.class} / ${student.section}</div>
+                                            <div class="student-rol">${student.roll_no}</div>
                                         </div>
                                     </div>
                                 `;
-                                studentIndex++; // Move to the next student for the next seat
                             } else {
-                                html += '<div class="seat"></div>'; // Empty seat if no student is available
+                                html += '<div class="seat"></div>'; // Empty seat
                             }
                         }
+                        // <div class="student-class">${student.class} / ${student.section}</div>
 
                         html += '</div>'; // Close .seats
                         html += '</div>'; // Close .bench
                     }
-                    // <div class="student-class">Class - ${student.class}</div>
-                    // <div class="student-section">Section- ${student.section}</div>
 
                     html += '</div>'; // Close .row
 
@@ -611,13 +604,43 @@
             function getStudentsForRoom(buildingId, roomId) {
                 // This is your mock data based on the provided structure
                 const seatingData = JSON.parse(`<?php echo json_encode($data['arrangedData']); ?>`);
+
+                // Fetch the data for the specific building and room
+                if (seatingData[buildingId] && seatingData[buildingId][roomId]) {
+                    const room = seatingData[buildingId][roomId]; // Object with benches as keys
+                    const structuredData = {}; // Will hold { benchName: [{ student with seat }] }
+
+                    // Iterate through the benches in the room
+                    for (const bench in room) {
+                        const seats = room[bench];
+                        const seatsArray = Object.entries(seats).map(([seatNumber, student]) => ({
+                            seat: parseInt(seatNumber), // Preserve seat number
+                            id: student.id,
+                            name: student.name,
+                            class: student.class,
+                            section: student.section,
+                            gender: student.gender,
+                            handicapped: student.handicapped,
+                            roll_no: student.roll_no
+                        }));
+
+                        structuredData[bench] = seatsArray; // Group by bench
+                    }
+
+                    return structuredData; // e.g., { "Bench 1": [students with seats], "Bench 2": [...] }
+                }
+
+                return {}; // Return empty object if not found
+            }
+            function getStudentsForRoom1(buildingId, roomId) {
+                // This is your mock data based on the provided structure
+                const seatingData = JSON.parse(`<?php echo json_encode($data['arrangedData']); ?>`);
                 // console.log(seatingData[buildingId][roomId])
 
                 // Fetch the data for the specific building and room
                 if (seatingData[buildingId]) {
                     // We assume roomId corresponds to the bench number (adjust logic if necessary)
-                    const room = seatingData[buildingId][
-                    roomId]; // Room data, which corresponds to an array of benches
+                    const room = seatingData[buildingId][roomId]; // Room data, which corresponds to an array of benches
                     let students = [];
 
                     // Iterate through the benches in the room
@@ -652,7 +675,7 @@
                     return '<div class="empty-state"><div style="font-size: 4rem; margin-bottom: 20px;">🪑</div><h3>No individual layout</h3><p>This room has no individual seating arrangement configured.</p></div>';
                 }
 
-                let html = '<div class="seating-layout">';
+                let html = '<style>@media print {.seating-layout {gap:0!important;}}</style><div class="seating-layout" style="margin-top: 30px;display: flex!important;justify-content: center;gap: 75px;flex-wrap: wrap;border: 1px solid black;padding: 15px;">';
 
                 // Fetch students for the current building and room using the getStudentsForRoom function
                 const students = getStudentsForRoom(currentBuildingId, roomIndex);
@@ -660,16 +683,16 @@
 
                 // Iterate over rows in the individual layout
                 room.individual.forEach((row, rowIndex) => {
-                    html += '<div class="row-container">';
-                    html += `<div class="row-label">${row.name}</div>`;
-                    html += '<div class="row">';
+                    html += '<div class="row-container" style="display: flex;flex-direction: column;align-items: center;min-width: 300px;position: relative;">';
+                    html += `<div class="row-label" style="font-weight: bold;color: #495057;margin-bottom: 15px;text-align: center;padding: 8px 16px;font-size: 14px;border: 2px solid #000000;">${row.name}</div>`;
+                    html += '<div class="row" style="display: flex;flex-direction: column;gap: 15px;align-items: center;">';
 
                     // Iterate over benches in each row
                     row.bench.forEach(bench => {
                         html += `
-                        <div class="bench">
+                        <div class="bench" style="color: #000000; text-align: center; font-size: 15px; position: relative; border: 1px solid black;max-width: 285px;min-width: 285px;padding: 10px;">
                             ${bench.name}
-                            <div class="seats">
+                            <div class="seats" style="display: flex;justify-content: center;flex-wrap: wrap;gap: 30px;margin-top: 5px;">
                     `;
                         // console.log(bench.seats)
                         // For each seat in the bench, check if there's a student
@@ -678,8 +701,8 @@
                                 const student = students[
                                 studentIndex]; // Fetch the student for the seat
                                 html += `
-                                <div class="seat-student">
-                                    <div class="student-info">
+                                <div class="seat-student" style="border: 1px solid black;background: none;">
+                                    <div class="student-info" style="color: black;padding: 2px;width: 110px;">
                                         <div class="student-name">${student.name}</div>
                                         <div class="student-class">${student.class}</div>
                                         <div class="student-section">${student.section}</div>
@@ -701,7 +724,7 @@
 
                     // Add aisle label except for last row
                     if (rowIndex < room.individual.length - 1) {
-                        html += '<div class="aisle-label">Aisle</div>';
+                        html += '<div class="aisle-label" hide-when-printing>Aisle</div>';
                     }
 
                     html += '</div>'; // Close .row-container
@@ -856,7 +879,7 @@
                 //     counter++; // Increment the counter
                 // });
 
-                html += `<p>Roll Numbers = `;
+                html += `<p>Symbol Numbers = `;
                 roomData[className].forEach(rollNo => {
                     html += `${rollNo}, `;
                 });
@@ -873,7 +896,7 @@
 
             for (let classSection in roomData) {
                 html += `<h4>${classSection}</h4>`;
-                html += `<p>Roll Numbers = `;
+                html += `<p>Symbol Numbers = `;
                 roomData[classSection].forEach(rollNo => {
                     html += `${rollNo}, `;
                 });

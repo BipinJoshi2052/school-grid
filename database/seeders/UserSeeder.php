@@ -17,19 +17,19 @@ class UserSeeder extends Seeder
     public function run()
     {
 
-        $saType = UserType::where('name','superadmin')->first();
+        // $saType = UserType::where('name','superadmin')->first();
+        // User::firstOrCreate(
+        //     ['email'=>'nepal@example.com'],
+        //     [
+        //         'name'=>'Super Admin',
+        //         'password'=>Hash::make('secret'),
+        //         'user_type_id'=>$saType->id
+        //     ]
+        // );
         User::firstOrCreate(
-            ['email'=>'admin@example.com'],
+            ['email'=>'nepalmav@example.com'],
             [
-                'name'=>'Super Admin',
-                'password'=>Hash::make('secret'),
-                'user_type_id'=>$saType->id
-            ]
-        );
-        User::firstOrCreate(
-            ['email'=>'school@example.com'],
-            [
-                'name'=>'School Client',
+                'name'=>'Nepal Ma V.',
                 'password'=>Hash::make('secret'),
                 'user_type_id'=> 2
             ]

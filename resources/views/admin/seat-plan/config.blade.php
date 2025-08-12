@@ -720,7 +720,7 @@ Seat Plan Config
                         // Proceed to handle AJAX request after all messages have been shown
                         handleRequest();
                     }
-                }, 1000);
+                }, 100);
 
                 // Function to handle the AJAX request
                 function handleRequest() {

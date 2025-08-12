@@ -19,7 +19,7 @@ class ImportController extends Controller
     public function downloadSample()
     {
         // Define the path to the file
-        $filePath = public_path('downloadables/staff_sample_data.csv');
+        $filePath = public_path('downloadables/Sample Staff Import Data.csv');
         
         // Check if the file exists
         if (file_exists($filePath)) {
@@ -33,7 +33,7 @@ class ImportController extends Controller
     public function downloadSampleStudent()
     {
         // Define the path to the file
-        $filePath = public_path('downloadables/student_sample_data.csv');
+        $filePath = public_path('downloadables/Sample Student Import Data.csv');
         
         // Check if the file exists
         if (file_exists($filePath)) {
@@ -41,6 +41,86 @@ class ImportController extends Controller
         } else {
             // Return an error if file does not exist
             return response()->json(['error' => 'File not found'], 404);
+        }
+    }
+
+    public function validateStaffImport1(Request $request)
+    {
+        // Get the incoming data
+        $data = $request->input('data');
+        $mappings = $request->input('mappings');
+        $invalidEmails = [];
+        $updatedEmails = [];
+        $errors = [];
+
+        try {
+            $schoolId = session('school_id');
+
+            foreach ($data as $row) {
+                $email = $row['Email'] ?? null;
+                echo $email.'---';
+
+                // Check if the email belongs to the main school account
+                $mainSchoolUser = User::where('email', $email)->where('id', $schoolId)->first();
+                if ($mainSchoolUser) {
+                    $invalidEmails[] = $email;
+                    continue; // Skip this row
+                }
+
+                // Check if the email exists in a student account
+                $existingStudentUser = User::where('email', $email)->where('parent_id', $schoolId)->where('user_type_id',4)->first();
+                if ($existingStudentUser) {
+                    $invalidEmails[] = $email;
+                    continue; // Skip this row
+                }
+
+                // Check if the email exists within the same school (by parent_id)
+                $existingUser = User::where('email', $email)->where('parent_id', $schoolId)->where('user_type_id',3)->first();
+                if ($existingUser) {
+                    $updatedEmails[] = $email;
+                } else {
+                    // Check if email exists elsewhere
+                    $existingUserElsewhere = User::where('email', $email)->where('parent_id', '!=', $schoolId)->first();
+                    if ($existingUserElsewhere) {
+                        $invalidEmails[] = $email;
+                        continue; // Skip this row
+                    }
+                }
+            }
+
+            // Collect error messages
+            $errorMessages = [];
+
+        dd([
+            $data,
+            $mappings
+        ]);
+            if (count($invalidEmails) > 0) {
+                $errorMessages[] = "The following emails are already exists and are invalid to be uploaded: " . implode(', ', $invalidEmails);
+                return response()->json([
+                    'status' => 'error',
+                    'message' => $errorMessages,
+                    'invalidEmails' => count($invalidEmails) > 0
+                ], 400);
+            }
+
+            if (count($updatedEmails) > 0) {
+                $errorMessages[] = "The following emails already exist and will be updated: " . implode(', ', $updatedEmails);
+                return response()->json([
+                    'status' => 'error',
+                    'message' => $errorMessages
+                ], 200);
+            }
+
+            // If no errors, return a success message
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Validation passed. Ready to upload data.',
+            ]);
+        }
+        catch (\Exception $e) {
+            // If there is an error, store the error message for this row
+            $errors[] = "Error processing row with email: {$row['Email']}. Error: " . $e->getMessage();
         }
     }
 
@@ -392,16 +472,12 @@ class ImportController extends Controller
                 // Status mapping (set to 0 if 'inactive', 1 if 'active')
                 $userData['status'] = 1;
                 if (isset($mappings['Status'])) {
-                    $userData['status'] =  ($row['Status'] == 0 || strtolower($row['Status']) == 'inactive') ? 0 : 1;
+                    $userData['status'] =  ($row['Status'] == 0 || strtolower($row['Status']) == 'inactive') ? 0 : 1;;
                 }
 
                 $handicapped = 0;
                 if (isset($mappings['Handicapped'])) {
-                    $handicapped =  ($row['Handicapped'] == 0 || strtolower($row['Handicapped']) == 'no') ? 0 : 1;
-                }
-
-                if (isset($mappings['Roll'])) {
-                    $roll_no =  $row['Roll'] ?? null;
+                    $handicapped =  ($row['Handicapped'] == 0 || strtolower($row['Handicapped']) == 'no') ? 0 : 1;;
                 }
 
                 $userAlreadyExists = 0;
@@ -579,7 +655,6 @@ class ImportController extends Controller
                         'batch_id' => $batch->id ?? null,
                         'class_id' => $class->id ?? null,
                         'section_id' => $section->id ?? null,
-                        'roll_no' => $roll_no,
                         'handicapped' => $handicapped,
                         'gender' => $gender, // Map gender, if present
                         'address' => isset($mappings['Address']) ? $row[$mappings['Address']] : null, // Map address, if present
