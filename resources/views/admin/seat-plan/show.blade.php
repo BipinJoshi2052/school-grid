@@ -537,11 +537,19 @@
 
                 // Determine number of rows (2 or 3 based on total benches) - currently fixed at 2
                 let numRows = 2;
+                const benchesInFirstRow = Math.floor(totalBenches / numRows);
                 const benchesPerRow = Math.ceil(totalBenches / numRows);
+                const benchesInSecondRow = totalBenches - benchesInFirstRow;
+                console.log(`Row 1: ${benchesInFirstRow} benches, Row 2: ${benchesInSecondRow} benches`);
+                console.log(benchesPerRow)
 
                 for (let rowIndex = 0; rowIndex < numRows; rowIndex++) {
-                    const startBench = rowIndex * benchesPerRow;
-                    const endBench = Math.min(startBench + benchesPerRow, totalBenches);
+                    const benchesInRow = rowIndex === 0 ? benchesInFirstRow : benchesInSecondRow;
+                    const startBench = rowIndex === 0 ? 0 : benchesInFirstRow;
+                    const endBench = startBench + benchesInRow;
+
+                    // const startBench = rowIndex * benchesPerRow;
+                    // const endBench = Math.min(startBench + benchesPerRow, totalBenches);
 
                     if (startBench >= totalBenches) break;
 
@@ -566,7 +574,7 @@
                         for (let j = 0; j < seatsPerBench; j++) {
                             // Find the student assigned to this seat (seat numbers are 1-indexed)
                             const student = benchStudents.find(s => s.seat === (j + 1));
-                            console.log(student)
+                            // console.log(student)
                             if (student) {
                                 html += `
                                     <div class="seat-student" style="border: 1px solid black;background: none;">
