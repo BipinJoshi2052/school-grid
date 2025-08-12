@@ -329,6 +329,7 @@
       <div class="credits">
         Designed by <a href="/">Seat Plan Pro</a>
       </div>
+      <a href="mailto:seatplanpro@gmail.com">seatplanpro@gmail.com</a> 
     </div>
   </footer>
 
