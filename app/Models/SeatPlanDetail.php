@@ -9,7 +9,7 @@ class SeatPlanDetail extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['seat_plan_id', 'building_id', 'room', 'bench', 'seat', 'student_id','created_at','updated_at'];
+    protected $fillable = ['seat_plan_id', 'building_id', 'room', 'bench', 'seat', 'student_id','student_name','student_class','student_section','student_roll_no','created_at','updated_at'];
 
     public function seatPlan()
     {

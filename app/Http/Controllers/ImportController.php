@@ -368,7 +368,7 @@ class ImportController extends Controller
         $data = $request->input('data');
         $mappings = $request->input('mappings');
         $csvHeadings = $request->input('originalHeadings');
-
+        // dd($mappings);
         $imported = 0;
         $errors = [];
 
