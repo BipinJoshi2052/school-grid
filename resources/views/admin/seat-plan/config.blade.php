@@ -5,7 +5,7 @@ Seat Plan Config
 @endsection
 
 @section('styles')
-    <link href="{{ asset('admin/dist/css/seat-plan-config.css?v=1') }}" rel="stylesheet">
+    <link href="{{ asset('admin/dist/css/seat-plan-config.css?v=2') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -100,6 +100,10 @@ Seat Plan Config
                                     <div class="step-number">2</div>
                                     <div class="step-title">Class & Section Selection</div>
                                 </div>
+                                        <div class="select-all-container">
+                                            <input type="checkbox" id="selectAllSections" class="checkbox">
+                                            <label for="selectAllSections">Select all</label>
+                                        </div>
                                 
                                 <div class="grid" id="classesGrid">
                                     @if (isset($data['classes']) && !empty($data['classes']))
@@ -162,9 +166,13 @@ Seat Plan Config
                                     <div class="button-group">
                                         <button class="btn" id="backStep3">Back</button>
                                         <button class="btn" id="nextStep3">Next</button>
+                                        <button class="btn" id="skipStep3">Skip</button>
                                     </div>
                                 @else
-                                    <p>You have not added any staffs. Please add staff data.</p>                                    
+                                    <p>You have not added any staffs. Please add staff data.</p>      
+                                    <div class="button-group">
+                                        <button class="btn" id="skipStep3">Skip</button>
+                                    </div>                              
                                 @endif
                             </div>
 
@@ -409,6 +417,50 @@ Seat Plan Config
     <script>
         $(document).ready(function() {
             let currentStep = 1;
+
+            function isValidSelection() {
+                const checkedClasses = $('.class-checkbox:checked').length;
+                const checkedSections = $('.section-checkbox:checked').length;
+                return (checkedClasses + checkedSections) > 1;
+            }
+
+            $('#selectAllSections').on('change', function() {
+                $('.section-checkbox').prop('checked', $(this).prop('checked'));
+                
+                // Update class checkboxes based on section selections
+                $('.class-checkbox').each(function() {
+                    const classId = $(this).data('server-id');
+                    const allSectionsChecked = $(`.section-checkbox[data-class="${classId}"]`).length > 0 &&
+                        $(`.section-checkbox[data-class="${classId}"]`).filter(':checked').length === 
+                        $(`.section-checkbox[data-class="${classId}"]`).length;
+                    $(this).prop('checked', allSectionsChecked);
+
+                    // Update card appearance only if valid selection
+                    const card = $(this).closest('.card');
+                    if (isValidSelection()) {
+                        if (allSectionsChecked) {
+                            card.addClass('selected');
+                        } else {
+                            card.removeClass('selected');
+                        }
+                    } else {
+                        card.removeClass('selected');
+                    }
+                });
+                // Validate step 2 only if valid selection
+                if (isValidSelection()) {
+                    validateStep2();
+                }else{
+                    $('#nextStep2').attr('disabled','disabled');
+                }
+            });
+
+            // Update select all checkbox state when individual section checkboxes change
+            $('.section-checkbox').on('change', function() {
+                const allChecked = $('.section-checkbox').length > 0 && 
+                    $('.section-checkbox').filter(':checked').length === $('.section-checkbox').length;
+                $('#selectAllSections').prop('checked', allChecked);
+            });
             
             // Building checkbox logic
             $('.building-checkbox').on('change', function() {
@@ -464,7 +516,11 @@ Seat Plan Config
                     card.removeClass('selected');
                 }
                 
-                validateStep2();
+                // Validate step 2 only if valid selection
+                if (isValidSelection()) {
+                    validateStep2();
+                }
+                // validateStep2();
             });
 
             // Section checkbox logic
@@ -512,10 +568,17 @@ Seat Plan Config
                     moveToStep(3);
                 }
             });
+            $('#skipStep3').on('click', function() {
+                moveToStep(4);
+            });
             $('#nextStep3').on('click', function() {
                 if (validateStep3()) {
                     moveToStep(4);
                 }
+            });
+
+            $('#backStep4').on('click', function() {
+                moveToStep(3);
             });
 
             $('#backStep3').on('click', function() {

@@ -10,11 +10,11 @@ class Suggestion extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'message', 'ip', 'user_agent','added_by'
+        'name', 'message', 'ip', 'user_agent'
     ];
     
-    public function addedBy()
-    {
-        return $this->belongsTo(User::class, 'added_by', 'id')->select(['id', 'name', 'user_type_id']);
-    }
+    // public function addedBy()
+    // {
+    //     return $this->belongsTo(User::class, 'added_by', 'id')->select(['id', 'name', 'user_type_id']);
+    // }
 }

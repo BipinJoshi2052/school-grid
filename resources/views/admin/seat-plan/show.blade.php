@@ -48,6 +48,19 @@
             gap: 20px;
             margin-top: 20px;
         }
+        .stats{
+            height: 90px!important;
+        }
+        .grid .card {
+            min-height: 200px; /* Set a reasonable minimum height for consistency */
+            max-height: 300px; /* Prevent cards from growing too tall */
+            overflow: hidden; /* Hide overflowing content */
+            border: 1px solid #ddd; /* Optional: for visibility */
+            border-radius: 8px;
+            background-color: #fff;
+            display: flex;
+            flex-direction: column;
+        }
 
         .main-content .card {
             background: white;
@@ -71,11 +84,11 @@
             height: 4px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
-/* @page {
-    size: A4;
-    margin: 0;
-} */
-@page { size: auto;  margin: 0mm; }
+        /* @page {
+            size: A4;
+            margin: 0;
+        } */
+        /* @page { size: auto;  margin: 0mm; } */
         .main-content .card:hover {
             transform: translateY(-8px);
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
@@ -557,6 +570,10 @@
                     html += `<div class="row-label" style="font-weight: bold;color: #495057;margin-bottom: 15px;text-align: center;padding: 8px 16px;font-size: 14px;border: 2px solid #000000;">Row ${rowIndex + 1}</div>`;
                     html += '<div class="row" style="display: flex;flex-direction: column;gap: 15px;align-items: center;">';
 
+                    if(rowIndex === 0 && (totalBenches%2 != 0)){
+                        html += '<div class="bench" style=" position: relative;max-width: 315px;padding: 10px;min-width: 315px;min-height: 50px;"></div>'
+                    }
+
                     for (let i = startBench; i < endBench; i++) {
                         const benchKey = `Bench ${i + 1}`;
                         const benchStudents = structuredStudents[benchKey] || []; // Get students for this bench
@@ -565,9 +582,9 @@
                         benchStudents.sort((a, b) => a.seat - b.seat);
 
                         html += `
-                            <div class="bench" style="color: #000000; text-align: center; font-size: 15px; position: relative; border: 1px solid black;max-width: 315px;padding: 10px;min-width: 315px;">
+                            <div class="bench" style="color: #000000; text-align: center; font-size: 12px; position: relative; border: 1px solid black;max-width: 315px;padding: 10px;min-width: 315px;">
                                 ${benchKey}
-                                <div class="seats" style="display: flex;flex-wrap: wrap;gap: 30px;margin-top: 5px;">
+                                <div class="seats" style="display: flex;flex-wrap: wrap;gap: 30px;margin-top: 5px;margin-left: 15px;">
                         `;
                         // justify-content: center;
                         // We assume up to seatsPerBench seats, fill with assigned students or empty
@@ -792,6 +809,7 @@
                                     font-family: Arial, sans-serif; 
                                     font-size: 12px; 
                                     margin: 0;
+                                    margin-top:25px;
                                 }
                                 h2, h3 { 
                                     text-align: center; 
@@ -812,6 +830,14 @@
                                 .hide-when-printing {
                                     display: none;
                                 }
+                                footer {
+                                    position: fixed; /* Maintain fixed position in print */
+                                    // bottom: 10px;
+                                    right: 10px;
+                                    text-align: right;
+                                    font-size: 10px;
+                                    color: #666;
+                                }
                             </style>
                         </head>
                         <body>
@@ -821,7 +847,7 @@
 
                             <!-- Insert the layout content -->
                             ${printContents}
-
+                            <footer>seatplanpro.com</footer>
                         </body>
                     </html>
                 `);                
@@ -857,11 +883,12 @@
                         dataToPrint = generatePrintHTMLByClassSection(currentBuildingName,roomData, currentRoomName);
                     }
                 }
+
                 // Open a new window and print the content
                 const printWindow = window.open('', '_blank');
-                printWindow.document.write('<html><head><title>seatplanpro.com</title><style>body { font-family: Arial, sans-serif; font-size: 12px; } h2, h3 { text-align: center; } .class-section { margin-bottom: 15px; }@page { size: A4;  margin: 0mm; }.hide-when-printing {display: none;}</style></head><body>');
+                printWindow.document.write('<html><head><title>seatplanpro.com</title><style>body { font-family: Arial, sans-serif; font-size: 12px;margin-top:25px; } h2, h3 { text-align: center; } .class-section { margin-bottom: 15px; }@page { size: A4;  margin: 0mm; }.hide-when-printing {display: none;}footer {position: fixed;right: 10px;text-align: right;font-size: 10px;color: #666;}</style></head><body>');
                 printWindow.document.write(dataToPrint);
-                printWindow.document.write('</body></html>');
+                printWindow.document.write('</body><footer>seatplanpro.com</footer></html>');
                 printWindow.document.close();
 
                 // Add an event listener to handle after printing is done or canceled

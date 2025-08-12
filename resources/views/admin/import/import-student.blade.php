@@ -924,7 +924,7 @@
             // Show validation progress
             $('.validation-progress').show();
             $('#validationText').text('Validating Data...');
-
+            $('#validateDataBtn').attr('disabled','disabled');
             // Simulate validation delay
             setTimeout(() => {
                 performDataValidation();
@@ -1036,6 +1036,7 @@
                         showError(`❌ Upload failed: ${errorMessage}. Please fix the issue and reupload the file.`);
                     }
                 });
+                $('#validateDataBtn').removeAttr('disabled');
                 // showValidationSuccess();
             }
         }
@@ -1049,6 +1050,7 @@
             });
             
             $('.validation-errors').show();
+            $('#validateDataBtn').removeAttr('disabled');
         }
 
         function showValidationSuccess() {
@@ -1255,7 +1257,7 @@
             // Reset action buttons
             $('.action-buttons').html(`
                 <button class="btn btn-secondary" onclick="resetSystem()">Reset</button>
-                <button class="btn btn-primary" onclick="validateData()">Validate Data</button>
+                <button class="btn btn-primary" id="validateData" onclick="validateData()">Validate Data</button>
             `);
             
             hideMessages();

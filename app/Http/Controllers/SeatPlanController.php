@@ -261,19 +261,22 @@ class SeatPlanController extends Controller
         // echo '</pre>';
         // 4. Shuffle the staff array and get staff data
         $staffIds = $request->input('staff');
-        shuffle($staffIds); // Shuffle the staff array
 
-        $user_type_id_of_staff = UserType::where('name', 'staff')->first();
-        $staffs = User::where([
-            'parent_id' => session('school_id'),
-            'user_type_id' => $user_type_id_of_staff->id,
-        ])->whereIn('id', $staffIds)->get();
+        if(!empty($staffIds)){
+            shuffle($staffIds); // Shuffle the staff array
 
-        if ($staffs->isEmpty()) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'No staff found for the given staff IDs.'
-            ], 404);
+            $user_type_id_of_staff = UserType::where('name', 'staff')->first();
+            $staffs = User::where([
+                'parent_id' => session('school_id'),
+                'user_type_id' => $user_type_id_of_staff->id,
+            ])->whereIn('id', $staffIds)->get();
+
+            if ($staffs->isEmpty()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'No staff found for the given staff IDs.'
+                ], 404);
+            }
         }
 
         // Initialize arrays to store unassigned students and staff
@@ -339,37 +342,39 @@ class SeatPlanController extends Controller
         //         }
         //     }
         // }
-        foreach ($buildings as $building) {
-            // Decode the rooms JSON to an array
-            $rooms = json_decode($building->rooms, true); // Decode rooms data from JSON
-
-            // Process only the rooms selected by the user
-            foreach ($rooms as $roomIndex => $roomData) {
-                // Check if this room is selected by the user
-                if (isset($request->input('rooms')[$building->id]) && in_array($roomIndex, $request->input('rooms')[$building->id])) {
-                    if ($staffIndex < count($staffs)) {
-                        // If there's still staff available for the room
-                        $invigilator_plan_details[] = [
-                            'seat_plan_id' => $seat_plan_id,
-                            'building_id' => $building->id,
-                            'room' => $roomIndex, // Room index (0, 1, 2, etc.)
-                            'staff_id' => $staffs[$staffIndex]->id,
-                            'created_at' => $now,
-                            'updated_at' => $now
-                        ];
-                        $staffIndex++; // Increment the staff index
-                    }
-                    // No else block needed; rooms without staff will simply not have an invigilator assigned
-                }
-            }
-        }
-        // dd($seat_plan_details);
-        // dd($seat_plan_details);
         // 9. Insert seat plan details for students into the seat_plan_details table
         SeatPlanDetail::Insert($seat_plan_details);
 
-        // 10. Insert invigilator plan details into the invigilator_plan_details table
-        InvigilatorPlanDetail::Insert($invigilator_plan_details);
+        if(!empty($staffIds)){
+            foreach ($buildings as $building) {
+                // Decode the rooms JSON to an array
+                $rooms = json_decode($building->rooms, true); // Decode rooms data from JSON
+
+                // Process only the rooms selected by the user
+                foreach ($rooms as $roomIndex => $roomData) {
+                    // Check if this room is selected by the user
+                    if (isset($request->input('rooms')[$building->id]) && in_array($roomIndex, $request->input('rooms')[$building->id])) {
+                        if ($staffIndex < count($staffs)) {
+                            // If there's still staff available for the room
+                            $invigilator_plan_details[] = [
+                                'seat_plan_id' => $seat_plan_id,
+                                'building_id' => $building->id,
+                                'room' => $roomIndex, // Room index (0, 1, 2, etc.)
+                                'staff_id' => $staffs[$staffIndex]->id,
+                                'created_at' => $now,
+                                'updated_at' => $now
+                            ];
+                            $staffIndex++; // Increment the staff index
+                        }
+                        // No else block needed; rooms without staff will simply not have an invigilator assigned
+                    }
+                }
+            }
+            // 10. Insert invigilator plan details into the invigilator_plan_details table
+            InvigilatorPlanDetail::Insert($invigilator_plan_details);
+        }
+        // dd($seat_plan_details);
+        // dd($seat_plan_details);
 
         // 11. Save unassigned students and staff as JSON in the seat_plans table
         $seatPlan->update([

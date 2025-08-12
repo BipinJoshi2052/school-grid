@@ -25,12 +25,19 @@ class SuggestionController extends Controller
             'ip' => $request->ip(),
             'user_agent' => $request->header('User-Agent'),
         ]);
-
         if ($suggestion) {
-            return response()->json(['status' => 'success', 'message' => 'Thank you for your suggestion!']);
+            // Flash success message to session
+            $request->session()->flash('success', 'Thank you for your suggestion!');
         } else {
-            return response()->json(['status' => 'error', 'message' => 'Something went wrong, please try again!']);
+            $request->session()->flash('error', 'Thank you for your suggestion!');
         }
+        return back();
+
+        // if ($suggestion) {
+        //     return response()->json(['status' => 'success', 'message' => 'Thank you for your suggestion!']);
+        // } else {
+        //     return response()->json(['status' => 'error', 'message' => 'Something went wrong, please try again!']);
+        // }
     }
 
     public function store2(Request $request)

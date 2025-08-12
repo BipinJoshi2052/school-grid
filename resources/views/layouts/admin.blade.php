@@ -435,25 +435,27 @@
                                 </span>
                             </a>
                         </li>  --}}
-                        {{-- <li class="list-divider"></li>
+
+                        <li class="list-divider"></li>
+                        @if (App::environment('local'))
                         
                             <li class="nav-small-cap">
                                 <span class="hide-menu">Data</span>
                             </li>
 
                             <li class="sidebar-item"> 
-                                <form id="eraseDataForm" action="{{ route('erase-class-data') }}" method="POST" style="display: inline;">
+                                <form id="eraseClassForm" action="{{ route('erase-class-data') }}" method="POST" style="display: inline;">
                                     @csrf
-                                    <a class="sidebar-link" href="javascript:void(0)" onclick="this.closest('form').submit()"  aria-expanded="false">
+                                    <a class="sidebar-link" href="javascript:void(0)" onclick="confirmEraseData('classes')"  aria-expanded="false">
                                         <i data-feather="trash" class="feather-icon"></i>
                                         <span class="hide-menu">Erase Classes</span>
                                     </a>
                                 </form>
                             </li>
                             <li class="sidebar-item"> 
-                                <form id="eraseDataForm" action="{{ route('erase-seat-plan-data') }}" method="POST" style="display: inline;">
+                                <form id="eraseSeatForm" action="{{ route('erase-seat-plan-data') }}" method="POST" style="display: inline;">
                                     @csrf
-                                    <a class="sidebar-link" href="javascript:void(0)" onclick="this.closest('form').submit()"  aria-expanded="false">
+                                    <a class="sidebar-link" href="javascript:void(0)" onclick="confirmEraseData('seat-plans')"  aria-expanded="false">
                                         <i data-feather="trash" class="feather-icon"></i>
                                         <span class="hide-menu">Erase Seat Plans</span>
                                     </a>
@@ -461,16 +463,15 @@
                             </li>
 
                             <li class="sidebar-item"> 
-                                <form id="eraseDataForm" action="{{ route('erase-student-data') }}" method="POST" style="display: inline;">
+                                <form id="eraseStudentForm" action="{{ route('erase-student-data') }}" method="POST" style="display: inline;">
                                     @csrf
-                                    <a class="sidebar-link" href="javascript:void(0)" onclick="this.closest('form').submit()"  aria-expanded="false">
+                                    <a class="sidebar-link" href="javascript:void(0)" onclick="confirmEraseData('students')"  aria-expanded="false">
                                         <i data-feather="trash" class="feather-icon"></i>
                                         <span class="hide-menu">Erase Students</span>
                                     </a>
                                 </form>
-                            </li> --}}
+                            </li>
                         <li class="list-divider"></li>
-                        @if (App::environment('local'))
 
                             <li class="nav-small-cap">
                                 <span class="hide-menu">Data</span>
@@ -480,7 +481,7 @@
                                 <form id="eraseDataForm" action="{{ route('erase-data') }}" method="POST" style="display: inline;">
                                     @csrf
                                     {{-- onclick="this.closest('form').submit()" --}}
-                                    <a class="sidebar-link" href="javascript:void(0)" onclick="confirmEraseData()"  aria-expanded="false">
+                                    <a class="sidebar-link" href="javascript:void(0)" onclick="confirmEraseData('data')"  aria-expanded="false">
                                         <i data-feather="trash" class="feather-icon"></i>
                                         <span class="hide-menu">Erase Data</span>
                                     </a>
@@ -596,7 +597,7 @@
 
     {{-- <script src="{{ asset('admin/dist/js/pages/dashboards/dashboard1.min.js') }}"></script> --}}
     <script>
-        function confirmEraseData() {
+        function confirmEraseData(type) {
             // Use SweetAlert to ask for confirmation
             Swal.fire({
                 title: 'Are you sure?',
@@ -609,8 +610,18 @@
                 cancelButtonText: 'Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // If confirmed, submit the form
-                    document.getElementById('eraseDataForm').submit();
+                    if(type == 'classes'){
+                        document.getElementById('eraseClassForm').submit();
+                    }
+                    if(type == 'seat-plans'){
+                        document.getElementById('eraseSeatForm').submit();
+                    }
+                    if(type == 'students'){
+                        document.getElementById('eraseStudentForm').submit();
+                    }
+                    if(type == 'data'){
+                        document.getElementById('eraseDataForm').submit();
+                    }
                 }
             });
         }

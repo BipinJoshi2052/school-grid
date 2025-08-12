@@ -519,3 +519,9 @@
         font-size: 0.7rem;
     }
 }
+.card-body{
+    padding: 15px;
+}
+.select-all-container{
+    padding: 10px;
+}

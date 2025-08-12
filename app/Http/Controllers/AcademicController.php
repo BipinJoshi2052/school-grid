@@ -35,24 +35,24 @@ class AcademicController extends Controller
     {
         $this->middleware('auth');
     }
-    
+
     public function facultyBatch()
     {
         $data = Faculty::where('user_id', session('school_id'))
-                // ->with('addedBy')
-                ->with('batches.classes.sections')
-                ->orderBy('id','desc')
-                ->get()
-                ->toArray();
-                // dd($data);
+            // ->with('addedBy')
+            ->with('batches.classes.sections')
+            ->orderBy('id', 'desc')
+            ->get()
+            ->toArray();
+        // dd($data);
         return view('admin.academic.faculty', compact('data'));
     }
     public function ClassSection()
     {
         $data = ClassModel::where('user_id', session('school_id'))
-                ->with('sections')
-                ->whereNull('batch_id')
-                ->get()->toArray();
+            ->with('sections')
+            ->whereNull('batch_id')
+            ->get()->toArray();
         return view('admin.academic.class', compact('data'));
     }
 
@@ -107,7 +107,6 @@ class AcademicController extends Controller
             } else {
                 return response()->json(['error' => 'Batch not found'], 404);
             }
-            
         }
 
         return response()->json(['error' => 'Invalid type'], 400);  // Return error if type is invalid
@@ -137,9 +136,8 @@ class AcademicController extends Controller
                 'created_at' => $postData['created_at'],
                 'updated_at' => $postData['updated_at'],
             ]);
-            
+
             return response()->json(['message' => 'Class added successfully!', 'data' => $class, 'type' => $type], 201);
-            
         } elseif ($type === 'section') {
             // Create a new section record
             $section = Section::create([
@@ -151,9 +149,8 @@ class AcademicController extends Controller
                 'created_at' => $postData['created_at'],
                 'updated_at' => $postData['updated_at'],
             ]);
-            
-            return response()->json(['message' => 'Section added successfully!', 'data' => $section, 'type' => $type], 201);
 
+            return response()->json(['message' => 'Section added successfully!', 'data' => $section, 'type' => $type], 201);
         } elseif ($type === 'faculty') {
             // Create a new faculty record
             $faculty = Faculty::create([
@@ -161,12 +158,11 @@ class AcademicController extends Controller
                 'title' => $postData['title'],
                 'user_id' => session('school_id'),
                 'added_by' => auth()->id(),
-                'created_at' => $postData['created_at'],    
+                'created_at' => $postData['created_at'],
                 'updated_at' => $postData['updated_at'],
             ]);
-            
-            return response()->json(['message' => 'Faculty added successfully!', 'data' => $faculty, 'type' => $type], 201);
 
+            return response()->json(['message' => 'Faculty added successfully!', 'data' => $faculty, 'type' => $type], 201);
         } elseif ($type === 'batch') {
             // Create a new batch record
             $batch = Batch::create([
@@ -180,7 +176,6 @@ class AcademicController extends Controller
             ]);
 
             return response()->json(['message' => 'Batch added successfully!', 'data' => $batch, 'type' => $type], 201);
-            
         }
 
         // If the type is not recognized
@@ -220,87 +215,88 @@ class AcademicController extends Controller
             return response()->json(['success' => false, 'message' => 'Error deleting ' . $type . ': ' . $e->getMessage()], 500);
         }
     }
-    
+
     public function eraseClassData()
     {
-
         $userId = auth()->id();
         $schoolId = session('school_id');
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        Faculty::where('user_id', $schoolId)->delete();
+        Batch::where('user_id', $schoolId)->delete();
         ClassModel::where('user_id', $schoolId)->delete();
+        Section::where('user_id', $schoolId)->delete();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
         return redirect()->back()->with('success', 'Your data has been erased successfully.');
     }
 
     public function eraseStudentData()
     {
-
         $userId = auth()->id();
         $schoolId = session('school_id');
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         Student::where('school_id', $schoolId)->delete();
-        User::where('parent_id', $schoolId)->where('user_type_id',4)->delete();
+        User::where('parent_id', $schoolId)->where('user_type_id', 4)->delete();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-    return redirect()->back()->with('success', 'Your data has been erased successfully.');
+        return redirect()->back()->with('success', 'Your data has been erased successfully.');
     }
+    
     public function eraseSeatPlanData()
     {
-
         $userId = auth()->id();
         $schoolId = session('school_id');
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         SeatPlan::where('user_id', $schoolId)->delete();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-    return redirect()->back()->with('success', 'Your data has been erased successfully.');
+        return redirect()->back()->with('success', 'Your data has been erased successfully.');
     }
-   public function eraseData()
-{
-    // Get the currently authenticated user's ID
-    $userId = auth()->id();
-    $schoolId = session('school_id');
-    // dd($schoolId);
-    
-    if (!$userId) {
-        return response()->json(['error' => 'User ID is not authenticated.']);
+    public function eraseData()
+    {
+        // Get the currently authenticated user's ID
+        $userId = auth()->id();
+        $schoolId = session('school_id');
+        // dd($schoolId);
+
+        if (!$userId) {
+            return response()->json(['error' => 'User ID is not authenticated.']);
+        }
+        if (!$schoolId) {
+            return response()->json(['error' => 'School ID is not set.']);
+        }
+
+        // Disable foreign key checks temporarily
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+
+        // Delete related data for the authenticated user
+        Staff::where('school_id', $schoolId)->delete();
+        Student::where('school_id', $schoolId)->delete();
+        User::where('parent_id', $schoolId)->delete();
+        Building::where('user_id', $schoolId)->delete();
+        Faculty::where('user_id', $schoolId)->delete();
+        Batch::where('user_id', $schoolId)->delete();
+        ClassModel::where('user_id', $schoolId)->delete();
+        Section::where('user_id', $schoolId)->delete();
+        Department::where('user_id', $schoolId)->delete();
+        Position::where('user_id', $schoolId)->delete();
+        Building::where('user_id', $schoolId)->delete();
+        InstitutionDetail::where('user_id', $schoolId)->delete();
+
+        // Delete from SeatPlanDetail and InvigilatorPlanDetail where seat_plan_id = seat_plan.id
+        $seatPlans = SeatPlan::where('user_id', $schoolId)->get();
+
+        foreach ($seatPlans as $seatPlan) {
+            SeatPlanDetail::where('seat_plan_id', $seatPlan->id)->delete();
+            InvigilatorPlanDetail::where('seat_plan_id', $seatPlan->id)->delete();
+        }
+
+        // Delete related data from SeatPlan
+        SeatPlan::where('user_id', $schoolId)->delete();
+
+        // Re-enable foreign key checks
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+        // Optionally, you can add a success message or redirect
+        return redirect()->back()->with('success', 'Your data has been erased successfully.');
     }
-    if (!$schoolId) {
-        return response()->json(['error' => 'School ID is not set.']);
-    }
-
-    // Disable foreign key checks temporarily
-    DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-
-    // Delete related data for the authenticated user
-    Staff::where('school_id', $schoolId)->delete();
-    Student::where('school_id', $schoolId)->delete();
-    User::where('parent_id', $schoolId)->delete();
-    Building::where('user_id', $schoolId)->delete();
-    Faculty::where('user_id', $schoolId)->delete();
-    Batch::where('user_id', $schoolId)->delete();
-    ClassModel::where('user_id', $schoolId)->delete();
-    Section::where('user_id', $schoolId)->delete();
-    Department::where('user_id', $schoolId)->delete();
-    Position::where('user_id', $schoolId)->delete();
-    Building::where('user_id', $schoolId)->delete();
-    InstitutionDetail::where('user_id', $schoolId)->delete();
-
-    // Delete from SeatPlanDetail and InvigilatorPlanDetail where seat_plan_id = seat_plan.id
-    $seatPlans = SeatPlan::where('user_id', $schoolId)->get();
-
-    foreach ($seatPlans as $seatPlan) {
-        SeatPlanDetail::where('seat_plan_id', $seatPlan->id)->delete();
-        InvigilatorPlanDetail::where('seat_plan_id', $seatPlan->id)->delete();
-    }
-
-    // Delete related data from SeatPlan
-    SeatPlan::where('user_id', $schoolId)->delete();
-
-    // Re-enable foreign key checks
-    DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-
-    // Optionally, you can add a success message or redirect
-    return redirect()->back()->with('success', 'Your data has been erased successfully.');
-}
 
 
     public function populateData()
@@ -338,8 +334,8 @@ class AcademicController extends Controller
         }
         Faculty::insert(array_map(function ($faculty) use ($schoolId) {
             return array_merge($faculty, [
-            'created_at' => Carbon::now(), 
-            'updated_at' => Carbon::now()
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
             ]);
         }, $faculties));
 
@@ -402,11 +398,11 @@ class AcademicController extends Controller
         }
 
         $departments = [
-            ['user_id' => $schoolId, 'title' => 'Science','added_by' => $userId],
-            ['user_id' => $schoolId, 'title' => 'Mathematics','added_by' => $userId],
-            ['user_id' => $schoolId, 'title' => 'Arts','added_by' => $userId],
-            ['user_id' => $schoolId, 'title' => 'Sports','added_by' => $userId],
-            ['user_id' => $schoolId, 'title' => 'Computer Science','added_by' => $userId],
+            ['user_id' => $schoolId, 'title' => 'Science', 'added_by' => $userId],
+            ['user_id' => $schoolId, 'title' => 'Mathematics', 'added_by' => $userId],
+            ['user_id' => $schoolId, 'title' => 'Arts', 'added_by' => $userId],
+            ['user_id' => $schoolId, 'title' => 'Sports', 'added_by' => $userId],
+            ['user_id' => $schoolId, 'title' => 'Computer Science', 'added_by' => $userId],
         ];
 
         foreach ($departments as $dept) {
@@ -414,11 +410,11 @@ class AcademicController extends Controller
         }
 
         $positions = [
-            ['user_id' => $schoolId, 'title' => 'Principal','added_by' => $userId],
-            ['user_id' => $schoolId, 'title' => 'Vice Principal','added_by' => $userId],
-            ['user_id' => $schoolId, 'title' => 'Teacher','added_by' => $userId],
-            ['user_id' => $schoolId, 'title' => 'Accountant','added_by' => $userId],
-            ['user_id' => $schoolId, 'title' => 'Clerk','added_by' => $userId],
+            ['user_id' => $schoolId, 'title' => 'Principal', 'added_by' => $userId],
+            ['user_id' => $schoolId, 'title' => 'Vice Principal', 'added_by' => $userId],
+            ['user_id' => $schoolId, 'title' => 'Teacher', 'added_by' => $userId],
+            ['user_id' => $schoolId, 'title' => 'Accountant', 'added_by' => $userId],
+            ['user_id' => $schoolId, 'title' => 'Clerk', 'added_by' => $userId],
         ];
 
         foreach ($positions as $pos) {
@@ -428,7 +424,7 @@ class AcademicController extends Controller
         // Fetch departments and positions for the logged-in school (user_id = auth()->id())
         $departments = Department::where('user_id', $schoolId)->get();
         $positions = Position::where('user_id', $schoolId)->get();
-        
+
         // Instantiate Faker to generate Nepali names
         $faker = Faker::create('ne_NP'); // Nepali locale for names
         // dd($faker->phoneNumber);
@@ -539,7 +535,7 @@ class AcademicController extends Controller
         $users = [];
         foreach (range(1, 70) as $index) {
             // Create student user
-            echo $faker->unique()->safeEmail.'<br>';
+            echo $faker->unique()->safeEmail . '<br>';
             $users[] = [
                 // 'name' => $faker->name, 
                 // 'email' => $faker->unique()->safeEmail,

@@ -21,33 +21,10 @@
     <link href="{{ asset('images/apple-touch-icon.png')}}" rel="apple-touch-icon">
     
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{asset('admin/assets/libs/toastr/toastr.min.css')}}">   
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <link rel="stylesheet" href="{{ asset('website/css/styles.css')}}">
-    <link rel="stylesheet" href="{{asset('admin/assets/libs/toastr/toastr.min.css')}}">   
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2W4L40C767"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'G-2W4L40C767');
-    </script>
-    <style>
-      .toast-container {
-          position: fixed;
-          top: 20px;
-          left: 0!important;
-          right: 100px!important;
-          z-index: 1056; /* Above Bootstrap modal (z-index: 1055) */
-          max-width: 300px; /* Prevent Toastr from being too wide */
-      }
-      .toast {
-          margin-right: 0; /* Remove any extra right margin */
-          width: 100%; /* Ensure Toastr fits within container */
-      }
-    </style>
 </head>
 
 <body class="index-page">
@@ -136,10 +113,17 @@
                 </div>
                 
                 <div class="hero-buttons">
-                    <!-- Contact Us Button -->
-                    <a class="btn btn-hero btn-large" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#contactUsModal">
+                    {{-- <a class="btn btn-hero btn-large" href="{{ route('register') }}">
+                      Start Free Trial
+                      <i class="fas fa-arrow-right"></i>                    
+                    </a> --}}
+                    <a class="btn btn-hero btn-large" href="#">
                       Contact Us
                     </a>
+
+                     {{-- <button class="btn btn-demo btn-large">
+                        Watch Demo                        
+                    </button> --}}
                 </div>
                 
                 {{-- <p class="hero-trust">
@@ -288,39 +272,37 @@
                 </form>
                 <div id="loginError" class="mt-3 text-danger" style="display: none;"></div> <!-- Error div for login -->
               </div>
+
+              <!-- Register Tab -->
+              {{-- <div class="tab-pane fade" id="register" role="tabpanel" aria-labelledby="register-tab">
+                <h5>Create Your Account</h5>
+                <p>Sign up now and start using our service.</p>
+                <form id="registerForm">
+                  <div class="mb-3">
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="register-name" required>
+                  </div>
+                  <div class="mb-3">
+                    <label for="register-email" class="form-label">E-mail</label>
+                    <input type="email" class="form-control" id="register-email" required>
+                  </div>
+                  <div class="mb-3">
+                    <label for="register-password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="register-password" required>
+                  </div>
+                  <div class="mb-3">
+                    <label for="register-confirmation" class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control" id="register-confirmation" required>
+                  </div>
+                  <button type="submit" class="btn btn-primary w-100">Sign Up</button>
+                </form>
+                <div id="registerError" class="mt-3 text-danger" style="display: none;"></div> <!-- Error div for register -->
+              </div> --}}
             </div>
           </div>
         </div>
       </div>
     </div>
-    <!-- Contact Us Modal -->
-    <div class="modal fade" id="contactUsModal" tabindex="-1" aria-labelledby="contactUsModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 id="contactUsModalLabel">Contact Us</h3>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>We’d love to hear from you! Please fill out the form below to send us your message.</p>
-                    <form id="contactUsForm" action="{{route('feedback')}}" method="POST">
-                        @csrf
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Name</label>
-                            <input type="text" class="form-control" id="name" name="name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="message" class="form-label">Message</label>
-                            <textarea class="form-control" id="message" name="message" rows="4" required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Send Message</button>
-                    </form>
-                    <div id="contactError" class="mt-3 text-danger" style="display: none;"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
 {{-- </div> --}}
 
   <footer id="footer" class="footer">
@@ -335,23 +317,21 @@
   <!-- Scroll Top -->
   <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
+  <script src="{{asset('admin/assets/libs/toastr/toastr.min.js')}}"></script>
   <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="{{ asset('website/js/script.js')}}"></script>
-  <script src="{{asset('admin/assets/libs/toastr/toastr.min.js')}}"></script>
   
-  {{-- @if ($errors->any())      
+  @if ($errors->any())      
+  <?php echo 'asdfasdfasdfasdfasdfasdf'; ?>
       @foreach ($errors->all() as $error)
         <script>
             toastr.error('{{ $error }}');
         </script>
       @endforeach      
-  @endif --}}
+  @endif
 
   <script>
-    @if (session('success'))
-        toastr.success('{{ session('success') }}');
-    @endif
 
     $("#loginForm").on("submit", function(event) {
       event.preventDefault();

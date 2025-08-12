@@ -244,16 +244,21 @@ class SeatPlanController extends Controller
             shuffle($staffIds); // Shuffle the staff array
 
             $user_type_id_of_staff = UserType::where('name', 'staff')->first();
-            $staffs = User::where([
-                'parent_id' => session('school_id'),
-                'user_type_id' => $user_type_id_of_staff->id,
-            ])->whereIn('id', $staffIds)->get();
 
-            if ($staffs->isEmpty()) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'No staff found for the given staff IDs.'
-                ], 404);
+                dd(['here',$staffIds]);
+            if(!empty($staffIds)){
+                dd(['here',$staffIds]);
+                $staffs = User::where([
+                    'parent_id' => session('school_id'),
+                    'user_type_id' => $user_type_id_of_staff->id,
+                ])->whereIn('id', $staffIds)->get();
+
+                if ($staffs->isEmpty()) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'No staff found for the given staff IDs.'
+                    ], 404);
+                }
             }
 
             // Initialize arrays to store unassigned students and staff
