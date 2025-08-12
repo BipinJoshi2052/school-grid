@@ -86,7 +86,18 @@
                 </div>
                 
                 <button class="mobile-menu-btn" id="mobileMenuBtn">
-                    <i class="fas fa-bars"></i>
+                  @guest
+                    <a class="btn-getstarted btn btn-outline" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                      Login
+                    </a>
+                    {{-- <a href="#" class="btn btn-hero">Register</a> --}}
+                    {{-- <a href="{{ route('register') }}" class="btn btn-hero">Register</a> --}}
+                  @endguest
+
+                  @auth
+                    <a href="{{ route('dashboard') }}" class="btn btn-hero">Dashboard</a>
+                  @endauth
+                    {{-- <i class="fas fa-bars"></i> --}}
                 </button>
             </div>
         </div>
