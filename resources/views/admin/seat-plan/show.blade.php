@@ -516,11 +516,12 @@
                 let html = `
                     <button class="back-btn hide-when-printing" onclick="showRooms(${currentBuilding.id})">← Back to Rooms</button>
                     <h2 class="hide-when-printing" style="margin-bottom: 20px; color: #2c3e50;">🪑 ${currentRoom.name} - Seating Layout</h2>
-                    <button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('layout', ${currentBuilding.id}, '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Print Seating Layout</button>
-                    <button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('roll', ${currentBuilding.id},  '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Print by Symbol</button>
-                    <button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('class', ${currentBuilding.id},  '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Print by Class</button>
-                    <button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('class-section', ${currentBuilding.id},  '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Print by Class & Section</button>
-                    <button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('attendance', ${currentBuilding.id},  '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Print Attendance</button>
+                    <button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('layout', ${currentBuilding.id}, '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Seating Layout</button>
+                    <button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('roll', ${currentBuilding.id},  '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Symbol</button>
+                    <button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('class', ${currentBuilding.id},  '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Class</button>
+                    <button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('class-section', ${currentBuilding.id},  '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Class & Section</button>
+                    <button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('attendance', ${currentBuilding.id},  '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Attendance</button>
+                    <button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('attendance-custom', ${currentBuilding.id},  '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Attendance Custom</button>
                 `;
 
                     // <button class="btn btn-primary" onclick="printSeatingLayout('class', ${currentBuilding.id}, ${roomIndex}, '${JSON.stringify(groupedByBuildingRoomClass)}')"><i class="fa fa-print"></i>Print by Class</button>
@@ -901,6 +902,13 @@
                         console.log(groupedByBuildingRoomClass)
                         dataToPrint = generatePrintHTMLByAttendance(currentBuildingName,roomData, currentRoomName);
                     }
+                }else if (type === 'attendance-custom') {
+                    // Get the roll numbers grouped by class for the building and room
+                    if (studentDataForAttendance[buildingId] && studentDataForAttendance[buildingId][roomId]) {
+                        const roomData = studentDataForAttendance[buildingId][roomId];
+                        console.log(groupedByBuildingRoomClass)
+                        dataToPrint = generatePrintHTMLByAttendanceCustom(currentBuildingName,roomData, currentRoomName);
+                    }
                 }
 
                 // Open a new window and print the content
@@ -931,7 +939,7 @@
                         footer {
                             position: fixed;
                             right: 10px;
-                            text-align: right;
+                            text-align: left;
                             font-size: 10px;
                             color: #666;
                         }
@@ -939,9 +947,9 @@
                 </head>
                 <body>`);
                 printWindow.document.write(dataToPrint);
-                printWindow.document.write('</body><footer>seatplanpro.com</footer></html>');
+                printWindow.document.write('</body></html>');
                 printWindow.document.close();
-
+// <footer>seatplanpro.com</footer>
                 // Add an event listener to handle after printing is done or canceled
                 printWindow.onafterprint = function() {
                     printWindow.close();  // Close the print window after printing or canceling
@@ -950,7 +958,7 @@
             }
         }
             
-        function generatePrintHTMLByAttendance(currentBuildingName, roomData, roomName) {
+        function generatePrintHTMLByAttendance2(currentBuildingName, roomData, roomName) {
             // Get current date (formatted as YYYY-MM-DD)
             const today = new Date().toLocaleDateString('en-CA'); // e.g., 2025-08-13
 
@@ -1056,6 +1064,171 @@
 
             return html;
         }
+        function generatePrintHTMLByAttendanceCustom(currentBuildingName, roomData, roomName) {
+         // Get current date in DD/MM/YYYY format for Nepal
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const year = today.getFullYear();
+    const formattedDate = `${day}/${month}/${year}`; // e.g., 13/08/2025
+
+    // Function to generate a page's HTML
+    function generatePage(studentData) {
+        let html = `
+            <div class="attendance-sheet" style="page-break-after: always;">
+                <div style="text-align: center; margin-bottom: 10px;">
+                    <h2>प.फा.नं.&nbsp;&nbsp;&nbsp;&nbsp;परीक्षार्थीहरुको हाजिरी फाराम</h2>
+                    <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                        <span>विषयः ____________________</span>
+                        <span>पत्रः ____________________</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                        <span>मितिः ${formattedDate}</span>
+                        <span>कोठा नं. : ${roomName}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
+                    </div>
+                </div>
+                <table border="1" style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                    <thead>
+                        <tr style="background-color: #f2f2f2;">
+                            <th style="padding: 2px; text-align: center;">S.N.</th>
+                            <th style="padding: 2px; text-align: left;">Symbol No.</th>
+                            <th style="padding: 2px; text-align: left;">Name of Students</th>
+                            <th style="padding: 2px; text-align: left;">Answer Sheet No.</th>
+                            <th style="padding: 2px; text-align: left;">Subject of Tomorrow</th>
+                            <th style="padding: 2px; text-align: left;">Signature</th>
+                            <th style="padding: 2px; text-align: left;">Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        // Populate up to 30 rows
+        const maxRows = 30;
+        for (let i = 0; i < maxRows; i++) {
+            const student = studentData[i] || {};
+            html += `
+                <tr>
+                    <td style="padding: 2px; text-align: center;">${i + 1}</td>
+                    <td style="padding: 2px;">${student.roll_no || ''}</td>
+                    <td style="padding: 2px;">${student.name || ''}</td>
+                    <td style="padding: 2px;">${student.answer_sheet_no || ''}</td>
+                    <td style="padding: 2px;">${student.subject_of_tomorrow || ''}</td>
+                    <td style="padding: 2px;"></td>
+                    <td style="padding: 2px;">${student.remarks || ''}</td>
+                </tr>
+            `;
+        }
+
+        // Close table and add footer
+        html += `
+                    </tbody>
+                </table>
+                <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                    <p>निरीक्षकको हस्ताक्षर : ____________________</p>
+                    <p>केन्द्राध्यक्षको हस्ताक्षर : ____________________</p>
+                </div>
+                <div style="float: right;">
+                    <p>केन्द्राध्यक्षको नाम : ____________________</p>
+                    <p>परीक्षा केन्द्र : नेपाल नमूना मा.वि.</p>
+                </div>
+            </div>
+        `;
+        return html;
+    }
+
+    // Generate pages
+    let html = '';
+    const chunkSize = 30;
+    for (let i = 0; i < roomData.length; i += chunkSize) {
+        const chunk = roomData.slice(i, i + chunkSize);
+        html += generatePage(chunk);
+    }
+
+    // Ensure at least one page if no data
+    if (roomData.length === 0) {
+        html += generatePage([]);
+    }
+
+    return html;
+}
+
+// Print function with enhanced print styles
+function printAttendance() {
+    const printContent = document.getElementById('attendancePreview').innerHTML;
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <html>
+            <head>
+                <title>Attendance Sheet</title>
+                <style>
+                    @media print {
+                        body {
+                            margin: 0;
+                            padding: 0;
+                        }
+                        .attendance-sheet {
+                            margin-top: 10mm; /* Top margin for all pages */
+                            page-break-before: auto;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            page-break-inside: auto;
+                        }
+                        th, td {
+                            border: 1px solid black;
+                            padding: 2px;
+                            text-align: left;
+                        }
+                        th {
+                            background-color: #f2f2f2;
+                        }
+                        tr {
+                            page-break-inside: avoid; /* Prevent row splitting */
+                            page-break-after: auto;
+                        }
+                        @page {
+                            size: A4;
+                            margin: 0mm; /* Remove all margins to hide header and footer */
+                            @bottom-center {
+                                content: normal; /* Remove footer content */
+                            }
+                            @top-center {
+                                content: normal; /* Remove header content */
+                            }
+                        }
+                        thead {
+                            display: table-header-group; /* Repeat table headers on each page */
+                        }
+                        tfoot {
+                            display: table-footer-group;
+                        }
+                    }
+                    /* Screen styles for preview */
+                    table {
+                        width: 100%;
+                        border-collapse: collapse;
+                    }
+                    th, td {
+                        border: 1px solid black;
+                        padding: 2px;
+                        text-align: left;
+                    }
+                    th {
+                        background-color: #f2f2f2;
+                    }
+                    .attendance-sheet div {
+                        display: flex;
+                        justify-content: space-between;
+                    }
+                </style>
+            </head>
+            <body>${printContent}</body>
+        </html>
+    `);
+    printWindow.document.close();
+    printWindow.print();
+}
 
     </script>
 @endsection
