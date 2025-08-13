@@ -175,6 +175,121 @@ class SeatPlanController extends Controller
         return view('admin.seat-plan.config-2');
     }
 
+
+    public function seatPlanLayout($id)
+    {
+        // Step 1: Get seat plan data
+        $data['seat_plan'] = SeatPlan::select('id', 'title', 'unassigned_students')
+            ->where('id', $id)
+            ->first()
+            ->toArray();
+
+        // Step 2: Get distinct building IDs from seat_plan_details
+        $buildingIds = SeatPlanDetail::where('seat_plan_id', $id)
+            ->distinct()
+            ->pluck('building_id');
+
+        // Step 3: Get building information from the buildings table
+        $buildings = Building::whereIn('id', $buildingIds)
+            ->get();
+        $data['buildings'] = $buildings->toArray();
+
+        // Step 4: Get all seat plan details with student relationship loaded
+        // $seatPlanDetails = SeatPlanDetail::with(['student', 'student.class', 'student.section']) // Eager load relationships
+        //     ->where('seat_plan_id', $id)
+        //     ->get();
+
+        $seatPlanDetails = SeatPlanDetail::where('seat_plan_id', $id)->get();
+        // dd($seatPlanDetails);
+        // Group by class (class_id => [roll_no's])
+        // $classGrouped = $seatPlanDetails->groupBy(function($item) {
+        //     return $item->student->class->title; // Group by class title
+        // })->map(function($group) {
+        //     return $group->pluck('student.roll_no'); // Get all roll_no's
+        // });
+
+        // Group by class and section (class_id.section_id => [roll_no's])
+        // $classSectionGrouped = $seatPlanDetails->groupBy(function($item) {
+        //     return $item->student->class->title . ' ' . $item->student->section->title; // Group by class title + section title
+        // })->map(function($group) {
+        //     return $group->pluck('student.roll_no'); // Get all roll_no's
+        // });
+        // Output the result
+        // Step 5: Organize the data into the required structure
+        $arrangedData = [];
+
+        $groupedByBuildingAndRoom = [];
+        $studentDataForAttendance = [];
+        $groupedByBuildingRoomClass = [];
+        $groupedByBuildingRoomClassSection = [];
+
+        foreach ($seatPlanDetails as $detail) {
+            $buildingId = $detail->building_id;
+            $room = $detail->room; // Room number or identifier (this can be modified if needed)
+            $bench = $detail->bench;
+            $seat = $detail->seat;
+
+            // Initialize building and room if not already created
+            if (!isset($arrangedData[$buildingId])) {
+                $arrangedData[$buildingId] = [];
+            }
+
+            if (!isset($arrangedData[$buildingId][$room])) {
+                $arrangedData[$buildingId][$room] = [];
+            }
+
+            if (!isset($arrangedData[$buildingId][$room][$bench])) {
+                $arrangedData[$buildingId][$room][$bench] = [];
+            }
+
+            // Fetch the student details
+            $student = $detail->student; // Eager-loaded student
+            $studentData = [
+                // 'id' => $student->id,
+                'name' => $detail->student_name,
+                'class' => $detail->student_class ?? 'N/A', // Check if class exists before accessing
+                'section' => $detail->student_section ?? 'N/A', // Check if section exists before accessing
+                // 'gender' => $student->gender,
+                // 'handicapped' => $student->handicapped,
+                'roll_no' => $detail->student_roll_no,
+            ];
+            $studentDataForAttendance[$buildingId][$room][] = $studentData;
+
+            // Add the student data to the seat
+            $arrangedData[$buildingId][$room][$bench][$seat] = $studentData;
+
+            // 1. Group by Building and Room (roll numbers)
+            $groupedByBuildingAndRoom[$buildingId][$room][] = $studentData['roll_no'];
+
+            // 2. Group by Building, Room, and Class (roll numbers)
+            $classTitle = $studentData['class'];
+            if (!isset($groupedByBuildingRoomClass[$buildingId][$room][$classTitle])) {
+                $groupedByBuildingRoomClass[$buildingId][$room][$classTitle] = [];
+            }
+            $groupedByBuildingRoomClass[$buildingId][$room][$classTitle][] = $studentData['roll_no'];
+
+            // 3. Group by Building, Room, Class, and Section (roll numbers)
+            $sectionTitle = $studentData['section'];
+            $classSectionTitle = $classTitle . ' ' . $sectionTitle;
+            if (!isset($groupedByBuildingRoomClassSection[$buildingId][$room][$classSectionTitle])) {
+                $groupedByBuildingRoomClassSection[$buildingId][$room][$classSectionTitle] = [];
+            }
+            $groupedByBuildingRoomClassSection[$buildingId][$room][$classSectionTitle][] = $studentData['roll_no'];
+        }
+        $data['arrangedData'] = $arrangedData;
+        $data['studentDataForAttendance'] = $studentDataForAttendance;
+        $data['groupedByBuildingAndRoom'] = $groupedByBuildingAndRoom;
+        $data['groupedByBuildingRoomClass'] = $groupedByBuildingRoomClass;
+        $data['groupedByBuildingRoomClassSection'] = $groupedByBuildingRoomClassSection;
+        $data['configs'] = HelperFile::getSchooConfigs();
+        // Output the grouped data
+        // dd($groupedByBuildingAndRoom);
+
+
+        // Step 6: Return view with arranged data
+        return view('admin.seat-plan.show', compact('data'));
+    }
+
     public function generateSeatPlan(Request $request)
     {
         // dd($request->all());
@@ -970,119 +1085,6 @@ class SeatPlanController extends Controller
         // dd($data);
 
         // Step 6: Return view with data
-        return view('admin.seat-plan.show', compact('data'));
-    }
-
-    public function seatPlanLayout($id)
-    {
-        // Step 1: Get seat plan data
-        $data['seat_plan'] = SeatPlan::select('id', 'title', 'unassigned_students')
-            ->where('id', $id)
-            ->first()
-            ->toArray();
-
-        // Step 2: Get distinct building IDs from seat_plan_details
-        $buildingIds = SeatPlanDetail::where('seat_plan_id', $id)
-            ->distinct()
-            ->pluck('building_id');
-
-        // Step 3: Get building information from the buildings table
-        $buildings = Building::whereIn('id', $buildingIds)
-            ->get();
-        $data['buildings'] = $buildings->toArray();
-
-        // Step 4: Get all seat plan details with student relationship loaded
-        // $seatPlanDetails = SeatPlanDetail::with(['student', 'student.class', 'student.section']) // Eager load relationships
-        //     ->where('seat_plan_id', $id)
-        //     ->get();
-
-        $seatPlanDetails = SeatPlanDetail::where('seat_plan_id', $id)->get();
-        // dd($seatPlanDetails);
-        // Group by class (class_id => [roll_no's])
-        // $classGrouped = $seatPlanDetails->groupBy(function($item) {
-        //     return $item->student->class->title; // Group by class title
-        // })->map(function($group) {
-        //     return $group->pluck('student.roll_no'); // Get all roll_no's
-        // });
-
-        // Group by class and section (class_id.section_id => [roll_no's])
-        // $classSectionGrouped = $seatPlanDetails->groupBy(function($item) {
-        //     return $item->student->class->title . ' ' . $item->student->section->title; // Group by class title + section title
-        // })->map(function($group) {
-        //     return $group->pluck('student.roll_no'); // Get all roll_no's
-        // });
-        // Output the result
-        // Step 5: Organize the data into the required structure
-        $arrangedData = [];
-
-        $groupedByBuildingAndRoom = [];
-        $studentDataForAttendance = [];
-        $groupedByBuildingRoomClass = [];
-        $groupedByBuildingRoomClassSection = [];
-
-        foreach ($seatPlanDetails as $detail) {
-            $buildingId = $detail->building_id;
-            $room = $detail->room; // Room number or identifier (this can be modified if needed)
-            $bench = $detail->bench;
-            $seat = $detail->seat;
-
-            // Initialize building and room if not already created
-            if (!isset($arrangedData[$buildingId])) {
-                $arrangedData[$buildingId] = [];
-            }
-
-            if (!isset($arrangedData[$buildingId][$room])) {
-                $arrangedData[$buildingId][$room] = [];
-            }
-
-            if (!isset($arrangedData[$buildingId][$room][$bench])) {
-                $arrangedData[$buildingId][$room][$bench] = [];
-            }
-
-            // Fetch the student details
-            $student = $detail->student; // Eager-loaded student
-            $studentData = [
-                // 'id' => $student->id,
-                'name' => $detail->student_name,
-                'class' => $detail->student_class ?? 'N/A', // Check if class exists before accessing
-                'section' => $detail->student_section ?? 'N/A', // Check if section exists before accessing
-                // 'gender' => $student->gender,
-                // 'handicapped' => $student->handicapped,
-                'roll_no' => $detail->student_roll_no,
-            ];
-            $studentDataForAttendance[$buildingId][$room][] = $studentData;
-
-            // Add the student data to the seat
-            $arrangedData[$buildingId][$room][$bench][$seat] = $studentData;
-
-            // 1. Group by Building and Room (roll numbers)
-            $groupedByBuildingAndRoom[$buildingId][$room][] = $studentData['roll_no'];
-
-            // 2. Group by Building, Room, and Class (roll numbers)
-            $classTitle = $studentData['class'];
-            if (!isset($groupedByBuildingRoomClass[$buildingId][$room][$classTitle])) {
-                $groupedByBuildingRoomClass[$buildingId][$room][$classTitle] = [];
-            }
-            $groupedByBuildingRoomClass[$buildingId][$room][$classTitle][] = $studentData['roll_no'];
-
-            // 3. Group by Building, Room, Class, and Section (roll numbers)
-            $sectionTitle = $studentData['section'];
-            $classSectionTitle = $classTitle . ' ' . $sectionTitle;
-            if (!isset($groupedByBuildingRoomClassSection[$buildingId][$room][$classSectionTitle])) {
-                $groupedByBuildingRoomClassSection[$buildingId][$room][$classSectionTitle] = [];
-            }
-            $groupedByBuildingRoomClassSection[$buildingId][$room][$classSectionTitle][] = $studentData['roll_no'];
-        }
-        $data['arrangedData'] = $arrangedData;
-        $data['studentDataForAttendance'] = $studentDataForAttendance;
-        $data['groupedByBuildingAndRoom'] = $groupedByBuildingAndRoom;
-        $data['groupedByBuildingRoomClass'] = $groupedByBuildingRoomClass;
-        $data['groupedByBuildingRoomClassSection'] = $groupedByBuildingRoomClassSection;
-        // Output the grouped data
-        // dd($groupedByBuildingAndRoom);
-
-
-        // Step 6: Return view with arranged data
         return view('admin.seat-plan.show', compact('data'));
     }
 }

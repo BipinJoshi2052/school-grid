@@ -41,4 +41,22 @@ class HelperFile
 
         return null;
     }
+
+    public static function getSchooConfigs(){
+        if (app()->environment('local')) {
+            if(session('school_id') == 1502){
+                $configs = [
+                    'custom-seatplan-attendance-print' => 0
+                ];
+            }
+        }else{
+            if(session('school_id') == 1502){
+                $configs = [
+                    'custom-seatplan-attendance-print' => 0
+                ];
+            }
+        }
+
+        return $configs;
+    }
 }

@@ -356,6 +356,8 @@
         $groupedByBuildingRoomClass = json_encode($data['groupedByBuildingRoomClass'], JSON_HEX_TAG);
         $groupedByBuildingRoomClassSection = json_encode($data['groupedByBuildingRoomClassSection'], JSON_HEX_TAG);
         $studentDataForAttendance = json_encode($data['studentDataForAttendance'], JSON_HEX_TAG);
+        $configs = json_encode($data['configs'], JSON_HEX_TAG);
+        // $configs = 
         // dd($buildingsDataJson);
     ?>
 @endsection
@@ -365,6 +367,7 @@
         $(document).ready(function() {
             // Parse the entire data first
             const buildingsData = JSON.parse(`<?php echo addslashes($buildingsDataJson); ?>`);
+            const configs = JSON.parse(`<?php echo addslashes($configs); ?>`);
             // console.log(buildingsData);
 
             // Decode the 'rooms' field in JavaScript (since it's a JSON string)
@@ -521,8 +524,11 @@
                     <button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('class', ${currentBuilding.id},  '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Class</button>
                     <button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('class-section', ${currentBuilding.id},  '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Class & Section</button>
                     <button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('attendance', ${currentBuilding.id},  '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Attendance</button>
-                    <button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('attendance-custom', ${currentBuilding.id},  '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Attendance Custom</button>
                 `;
+
+                if(configs['custom-seatplan-attendance-print'] === 1){
+                    html += `<button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('attendance-custom', ${currentBuilding.id},  '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Attendance Custom</button>`;
+                }
 
                     // <button class="btn btn-primary" onclick="printSeatingLayout('class', ${currentBuilding.id}, ${roomIndex}, '${JSON.stringify(groupedByBuildingRoomClass)}')"><i class="fa fa-print"></i>Print by Class</button>
                     // <button class="btn btn-primary" onclick="printSeatingLayout('class-section', ${currentBuilding.id}, ${roomIndex}, '${JSON.stringify(groupedByBuildingRoomClassSection)}')"><i class="fa fa-print"></i>Print by Class & Section</button>

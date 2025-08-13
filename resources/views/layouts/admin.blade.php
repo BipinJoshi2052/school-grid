@@ -73,7 +73,7 @@
                     <!-- ============================================================== -->
                     <div class="navbar-brand" style="    border-bottom: 2px solid #edf2f9;">
                         <!-- Logo icon -->
-                        <a href="{{route('dashboard')}}">
+                        <a href="{{route('dashboard')}}" data-userId="{{auth()->id()}}" data-schoolId="{{session('school_id')}}">
                             <b>Seat Plan Pro</b>
                             {{-- <img src="{{ asset('admin/assets/images/edusched.png') }}" alt=""
                                 class="img-fluid"> --}}
