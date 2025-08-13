@@ -927,7 +927,10 @@
                 <div class="attendance-sheet">
                     <h2>Building Name: ${currentBuildingName}</h2>
                     <h3>Room Name: ${roomName}</h3>
-                    <p>Date: ${today}</p>
+                    <p style="display: flex; justify-content: space-between;">
+                        <span>Date: ${today}</span>
+                        <span>Subject: ____________________</span>
+                    </p>
                     <table border="1" style="width: 100%; border-collapse: collapse; margin-top: 10px;">
                         <thead>
                             <tr style="background-color: #f2f2f2;">
