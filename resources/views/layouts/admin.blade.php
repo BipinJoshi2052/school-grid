@@ -20,6 +20,14 @@
     <link href="{{ asset('admin/dist/css/style.css?v=1') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{asset('admin/assets/libs/toastr/toastr.min.css')}}">   
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2W4L40C767"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-2W4L40C767');
+    </script>
 
     @yield('styles')
     <style>
