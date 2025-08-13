@@ -905,7 +905,39 @@
 
                 // Open a new window and print the content
                 const printWindow = window.open('', '_blank');
-                printWindow.document.write('<html><head><title>seatplanpro.com</title><style>body { font-family: Arial, sans-serif; font-size: 12px;margin-top:25px; } h2, h3 { text-align: center; } .class-section { margin-bottom: 15px; }@page { size: A4;  margin: 0mm; }.hide-when-printing {display: none;}footer {position: fixed;right: 10px;text-align: right;font-size: 10px;color: #666;}</style></head><body>');
+                printWindow.document.write(`
+                <html>
+                <head>
+                    <title>seatplanpro.com</title>
+                    <style>
+                        body { 
+                            font-family: Arial, sans-serif; 
+                            font-size: 12px;
+                            margin-top:25px; 
+                        } 
+                        h2, h3 { 
+                            text-align: center; 
+                        } 
+                        .class-section { 
+                            margin-bottom: 15px; 
+                        }
+                        @page { 
+                            size: A4;  
+                            margin: 5mm; 
+                        }
+                        .hide-when-printing {
+                            display: none;
+                        }
+                        footer {
+                            position: fixed;
+                            right: 10px;
+                            text-align: right;
+                            font-size: 10px;
+                            color: #666;
+                        }
+                    </style>
+                </head>
+                <body>`);
                 printWindow.document.write(dataToPrint);
                 printWindow.document.write('</body><footer>seatplanpro.com</footer></html>');
                 printWindow.document.close();
