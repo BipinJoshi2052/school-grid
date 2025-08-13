@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('title')
-    Seat Plan
+    Room Edit
 @endsection
 
 @section('styles')
@@ -572,6 +572,7 @@
             <div class="header">
                 <h1>Engineering Building</h1>
                 <h2>Room 101 - Computer Science</h2>
+                <h2 style="background: red;">This feature is only a test. This will have no effect in the room layout.</h2>
             </div>
 
             <div class="room-layout">

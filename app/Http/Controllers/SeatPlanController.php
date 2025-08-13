@@ -289,6 +289,9 @@ class SeatPlanController extends Controller
         // Step 6: Return view with arranged data
         return view('admin.seat-plan.show', compact('data'));
     }
+    public function roomEdit($id){
+        return view('admin.seat-plan.room-edit');
+    }
 
     public function generateSeatPlan(Request $request)
     {

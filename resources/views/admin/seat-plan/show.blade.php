@@ -298,6 +298,37 @@
             padding: 2px;
             width: 110px;
         } */
+        .button-group{
+            display:flex;
+            gap:10px;
+        }
+        @media (max-width: 430px) {
+            .button-group{
+                display:block;
+            }
+            .btn-edit-layout{
+                margin-top: 10px;
+            }
+            .bench{
+                max-width: 250px!important;
+                min-width: 250px!important;
+            }
+            .seats{
+                flex-wrap: nowrap!important;
+                gap: 5px!important;
+                margin-top: 5px!important;
+                margin-left: 0px!important;
+            }
+            .content {
+                padding: 0px;
+            }
+            .aisle-label{
+                display: none!important;
+            }
+            .layout-content .row-container::after{
+                display: none!important;
+            }
+        }
     </style>
 @endsection
 
@@ -516,20 +547,42 @@
                 // console.log(`${JSON.stringify(groupedByBuildingRoomClass)}`)
                 // console.log(groupedByBuildingRoomClass)
                 // console.log(groupedByBuildingRoomClassSection)
+                // let html = `
+                //     <button class="back-btn hide-when-printing" onclick="showRooms(${currentBuilding.id})">← Back to Rooms</button>
+                //     <h2 class="hide-when-printing" style="margin-bottom: 20px; color: #2c3e50;">🪑 ${currentRoom.name} - Seating Layout</h2>
+                //     <button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('layout', ${currentBuilding.id}, '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Seating Layout</button>
+                //     <button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('roll', ${currentBuilding.id},  '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Symbol</button>
+                //     <button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('class', ${currentBuilding.id},  '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Class</button>
+                //     <button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('class-section', ${currentBuilding.id},  '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Class & Section</button>
+                //     <button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('attendance', ${currentBuilding.id},  '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Attendance</button>
+                // `;
+
+                // if(configs['custom-seatplan-attendance-print'] === 1){
+                //     html += `<button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('attendance-custom', ${currentBuilding.id},  '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Attendance Custom</button>`;
+                // }
+                // html += `<a class="btn btn-orange hide-when-printing" onclick=""><i class="fa fa-pencil"></i>Edit Layout</a>`;
                 let html = `
                     <button class="back-btn hide-when-printing" onclick="showRooms(${currentBuilding.id})">← Back to Rooms</button>
-                    <h2 class="hide-when-printing" style="margin-bottom: 20px; color: #2c3e50;">🪑 ${currentRoom.name} - Seating Layout</h2>
-                    <button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('layout', ${currentBuilding.id}, '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Seating Layout</button>
-                    <button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('roll', ${currentBuilding.id},  '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Symbol</button>
-                    <button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('class', ${currentBuilding.id},  '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Class</button>
-                    <button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('class-section', ${currentBuilding.id},  '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Class & Section</button>
-                    <button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('attendance', ${currentBuilding.id},  '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Attendance</button>
-                `;
-
-                if(configs['custom-seatplan-attendance-print'] === 1){
-                    html += `<button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('attendance-custom', ${currentBuilding.id},  '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Attendance Custom</button>`;
-                }
-
+                    <h2 class="hide-when-printing" style="margin-bottom: 20px; color: #2c3e50;">🪑 ${currentRoom.name} - Seating Layout</h2>`;
+                html += `
+                <div class="button-group">
+                        <div class="dropdown hide-when-printing">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="printDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa fa-print"></i> Print Options
+                                <i class="fa fa-caret-down ms-2"></i>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="printDropdown">
+                                <li><a class="dropdown-item" href="javascript:void(0);" onclick="printSeatingLayout('layout', ${currentBuilding.id}, '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')">Seating Layout</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0);" onclick="printSeatingLayout('roll', ${currentBuilding.id}, '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')">Symbol</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0);" onclick="printSeatingLayout('class', ${currentBuilding.id}, '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')">Class</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0);" onclick="printSeatingLayout('class-section', ${currentBuilding.id}, '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')">Class & Section</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0);" onclick="printSeatingLayout('attendance', ${currentBuilding.id}, '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')">Attendance</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0);" onclick="printSeatingLayout('attendance-custom', ${currentBuilding.id}, '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')">Attendance Custom</a></li>
+                            </ul>
+                        </div>
+                    `;
+                    html += `<button class="btn btn-success btn-edit-layout hide-when-printing" onclick="editLayout(${currentBuilding.id}, '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Edit Layout</button>`;
+                    html += `</div>`;
                     // <button class="btn btn-primary" onclick="printSeatingLayout('class', ${currentBuilding.id}, ${roomIndex}, '${JSON.stringify(groupedByBuildingRoomClass)}')"><i class="fa fa-print"></i>Print by Class</button>
                     // <button class="btn btn-primary" onclick="printSeatingLayout('class-section', ${currentBuilding.id}, ${roomIndex}, '${JSON.stringify(groupedByBuildingRoomClassSection)}')"><i class="fa fa-print"></i>Print by Class & Section</button>
                 if (currentRoom.selected_type === 'total') {
@@ -796,6 +849,12 @@
 
 
         });
+
+        function editLayout(buildingId, currentBuildingName,roomIndex, currentRoomName) {
+            // window.location.href = `/seat-plan/${id}`;
+            window.open(`/seat-plan/edit/1`, '_blank');
+        }
+
         function printSeatingLayout(type,buildingId, currentBuildingName,roomIndex, currentRoomName) {
             var groupedByBuildingRoomClass = JSON.parse(`<?php echo addslashes($groupedByBuildingRoomClass); ?>`);
             var groupedByBuildingRoomClassSection = JSON.parse(`<?php echo addslashes($groupedByBuildingRoomClassSection); ?>`);
@@ -832,7 +891,7 @@
                                 }
                                 @page { 
                                     size: A4; 
-                                    margin: 0mm; 
+                                    margin: 5mm; 
                                 }
                                 .seating-layout {
                                     display: flex !important;
@@ -859,6 +918,9 @@
 
                             <!-- Insert the layout content -->
                             ${printContents}
+                        <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                                <p>Invigilator Signature : ____________________</p>
+                        </div>
                             <footer>seatplanpro.com</footer>
                         </body>
                     </html>
@@ -955,7 +1017,7 @@
                 printWindow.document.write(dataToPrint);
                 printWindow.document.write('</body></html>');
                 printWindow.document.close();
-// <footer>seatplanpro.com</footer>
+                // <footer>seatplanpro.com</footer>
                 // Add an event listener to handle after printing is done or canceled
                 printWindow.onafterprint = function() {
                     printWindow.close();  // Close the print window after printing or canceling
@@ -1071,166 +1133,167 @@
             return html;
         }
         function generatePrintHTMLByAttendanceCustom(currentBuildingName, roomData, roomName) {
-         // Get current date in DD/MM/YYYY format for Nepal
-    const today = new Date();
-    const day = String(today.getDate()).padStart(2, '0');
-    const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-based
-    const year = today.getFullYear();
-    const formattedDate = `${day}/${month}/${year}`; // e.g., 13/08/2025
+        // Get current date in DD/MM/YYYY format for Nepal
+            const today = new Date();
+            const day = String(today.getDate()).padStart(2, '0');
+            const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+            const year = today.getFullYear();
+            const formattedDate = `${day}/${month}/${year}`; // e.g., 13/08/2025
 
-    // Function to generate a page's HTML
-    function generatePage(studentData) {
-        let html = `
-            <div class="attendance-sheet" style="page-break-after: always;">
-                <div style="text-align: center; margin-bottom: 10px;">
-                    <h2>प.फा.नं.&nbsp;&nbsp;&nbsp;&nbsp;परीक्षार्थीहरुको हाजिरी फाराम</h2>
-                    <div style="display: flex; justify-content: space-between; margin-top: 5px;">
-                        <span>विषयः ____________________</span>
-                        <span>पत्रः ____________________</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-top: 5px;">
-                        <span>मितिः ${formattedDate}</span>
-                        <span>कोठा नं. : ${roomName}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
-                    </div>
-                </div>
-                <table border="1" style="width: 100%; border-collapse: collapse; margin-top: 10px;">
-                    <thead>
-                        <tr style="background-color: #f2f2f2;">
-                            <th style="padding: 1px; text-align: center;">S.N.</th>
-                            <th style="padding: 1px; text-align: left;">Symbol No.</th>
-                            <th style="padding: 1px; text-align: left;">Name of Students</th>
-                            <th style="padding: 1px; text-align: left;">Answer Sheet No.</th>
-                            <th style="padding: 1px; text-align: left;">Subject of Tomorrow</th>
-                            <th style="padding: 1px; text-align: left;">Signature</th>
-                            <th style="padding: 1px; text-align: left;">Remarks</th>
+            // Function to generate a page's HTML
+            function generatePage(studentData) {
+                let html = `
+                    <div class="attendance-sheet" style="page-break-after: always;">
+                        <div style="text-align: center; margin-bottom: 10px;">
+                            <h2>प.फा.नं.&nbsp;&nbsp;&nbsp;&nbsp;परीक्षार्थीहरुको हाजिरी फाराम</h2>
+                            <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                                <span>विषयः ____________________</span>
+                                <span>पत्रः ____________________</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                                <span>मितिः ${formattedDate}</span>
+                                <span>कोठा नं. : ${roomName}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
+                            </div>
+                        </div>
+                        <table border="1" style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                            <thead>
+                                <tr style="background-color: #f2f2f2;">
+                                    <th style="padding: 1px; text-align: center;">S.N.</th>
+                                    <th style="padding: 1px; text-align: left;">Symbol No.</th>
+                                    <th style="padding: 1px; text-align: left;">Name of Students</th>
+                                    <th style="padding: 1px; text-align: left;">Answer Sheet No.</th>
+                                    <th style="padding: 1px; text-align: left;">Subject of Tomorrow</th>
+                                    <th style="padding: 1px; text-align: left;">Signature</th>
+                                    <th style="padding: 1px; text-align: left;">Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                // Populate up to 30 rows
+                const maxRows = 30;
+                for (let i = 0; i < maxRows; i++) {
+                    const student = studentData[i] || {};
+                    html += `
+                        <tr>
+                            <td style="padding: 2px; text-align: center;">${i + 1}</td>
+                            <td style="padding: 2px;width:100px;">${student.roll_no || ''}</td>
+                            <td style="padding: 2px;">${student.name || ''}</td>
+                            <td style="padding: 2px;">${student.answer_sheet_no || ''}</td>
+                            <td style="padding: 2px;">${student.subject_of_tomorrow || ''}</td>
+                            <td style="padding: 2px;"></td>
+                            <td style="padding: 2px;">${student.remarks || ''}</td>
                         </tr>
-                    </thead>
-                    <tbody>
-        `;
+                    `;
+                }
 
-        // Populate up to 30 rows
-        const maxRows = 30;
-        for (let i = 0; i < maxRows; i++) {
-            const student = studentData[i] || {};
-            html += `
-                <tr>
-                    <td style="padding: 2px; text-align: center;">${i + 1}</td>
-                    <td style="padding: 2px;width:100px;">${student.roll_no || ''}</td>
-                    <td style="padding: 2px;">${student.name || ''}</td>
-                    <td style="padding: 2px;">${student.answer_sheet_no || ''}</td>
-                    <td style="padding: 2px;">${student.subject_of_tomorrow || ''}</td>
-                    <td style="padding: 2px;"></td>
-                    <td style="padding: 2px;">${student.remarks || ''}</td>
-                </tr>
-            `;
+                // Close table and add footer
+                html += `
+                            </tbody>
+                        </table>
+                        <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                            <p>निरीक्षकको हस्ताक्षर : ____________________</p>
+                            <p>केन्द्राध्यक्षको हस्ताक्षर : ____________________</p>
+                        </div>
+                        <div style="float: right;">
+                            <p>केन्द्राध्यक्षको नाम : ____________________</p>
+                            <p>परीक्षा केन्द्र : नेपाल नमूना मा.वि.</p>
+                        </div>
+                    </div>
+                `;
+                return html;
+            }
+
+            // Generate pages
+            let html = '';
+            const chunkSize = 30;
+            for (let i = 0; i < roomData.length; i += chunkSize) {
+                const chunk = roomData.slice(i, i + chunkSize);
+                html += generatePage(chunk);
+            }
+
+            // Ensure at least one page if no data
+            if (roomData.length === 0) {
+                html += generatePage([]);
+            }
+
+            return html;
         }
 
-        // Close table and add footer
-        html += `
-                    </tbody>
-                </table>
-                <div style="display: flex; justify-content: space-between; margin-top: 5px;">
-                    <p>निरीक्षकको हस्ताक्षर : ____________________</p>
-                    <p>केन्द्राध्यक्षको हस्ताक्षर : ____________________</p>
-                </div>
-                <div style="float: right;">
-                    <p>केन्द्राध्यक्षको नाम : ____________________</p>
-                    <p>परीक्षा केन्द्र : नेपाल नमूना मा.वि.</p>
-                </div>
-            </div>
-        `;
-        return html;
-    }
-
-    // Generate pages
-    let html = '';
-    const chunkSize = 30;
-    for (let i = 0; i < roomData.length; i += chunkSize) {
-        const chunk = roomData.slice(i, i + chunkSize);
-        html += generatePage(chunk);
-    }
-
-    // Ensure at least one page if no data
-    if (roomData.length === 0) {
-        html += generatePage([]);
-    }
-
-    return html;
-}
-
-// Print function with enhanced print styles
-function printAttendance() {
-    const printContent = document.getElementById('attendancePreview').innerHTML;
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write(`
-                <style>
-                    @media print {
-                        body {
-                            margin: 0;
-                            padding: 0;
-                        }
-                        .attendance-sheet {
-                            margin-top: 10mm; /* Top margin for all pages */
-                            page-break-before: auto;
-                        }
-                        table {
-                            width: 100%;
-                            border-collapse: collapse;
-                            page-break-inside: auto;
-                        }
-                        th, td {
-                            border: 1px solid black;
-                            padding: 2px;
-                            text-align: left;
-                        }
-                        th {
-                            background-color: #f2f2f2;
-                        }
-                        tr {
-                            page-break-inside: avoid; /* Prevent row splitting */
-                            page-break-after: auto;
-                        }
-                        @page {
-                            size: A4;
-                            margin: 0mm; /* Remove all margins to hide header and footer */
-                            @bottom-center {
-                                content: normal; /* Remove footer content */
+        // Print function with enhanced print styles
+        //not used function
+        function printAttendance() {
+            const printContent = document.getElementById('attendancePreview').innerHTML;
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                        <style>
+                            @media print {
+                                body {
+                                    margin: 0;
+                                    padding: 0;
+                                }
+                                .attendance-sheet {
+                                    margin-top: 10mm; /* Top margin for all pages */
+                                    page-break-before: auto;
+                                }
+                                table {
+                                    width: 100%;
+                                    border-collapse: collapse;
+                                    page-break-inside: auto;
+                                }
+                                th, td {
+                                    border: 1px solid black;
+                                    padding: 2px;
+                                    text-align: left;
+                                }
+                                th {
+                                    background-color: #f2f2f2;
+                                }
+                                tr {
+                                    page-break-inside: avoid; /* Prevent row splitting */
+                                    page-break-after: auto;
+                                }
+                                @page {
+                                    size: A4;
+                                    margin: 0mm; /* Remove all margins to hide header and footer */
+                                    @bottom-center {
+                                        content: normal; /* Remove footer content */
+                                    }
+                                    @top-center {
+                                        content: normal; /* Remove header content */
+                                    }
+                                }
+                                thead {
+                                    display: table-header-group; /* Repeat table headers on each page */
+                                }
+                                tfoot {
+                                    display: table-footer-group;
+                                }
                             }
-                            @top-center {
-                                content: normal; /* Remove header content */
+                            /* Screen styles for preview */
+                            table {
+                                width: 100%;
+                                border-collapse: collapse;
                             }
-                        }
-                        thead {
-                            display: table-header-group; /* Repeat table headers on each page */
-                        }
-                        tfoot {
-                            display: table-footer-group;
-                        }
-                    }
-                    /* Screen styles for preview */
-                    table {
-                        width: 100%;
-                        border-collapse: collapse;
-                    }
-                    th, td {
-                        border: 1px solid black;
-                        padding: 2px;
-                        text-align: left;
-                    }
-                    th {
-                        background-color: #f2f2f2;
-                    }
-                    .attendance-sheet div {
-                        display: flex;
-                        justify-content: space-between;
-                    }
-                </style>
-                ${printContent}
-    `);
-            return html;
-    // printWindow.document.close();
-    // printWindow.print();
-}
+                            th, td {
+                                border: 1px solid black;
+                                padding: 2px;
+                                text-align: left;
+                            }
+                            th {
+                                background-color: #f2f2f2;
+                            }
+                            .attendance-sheet div {
+                                display: flex;
+                                justify-content: space-between;
+                            }
+                        </style>
+                        ${printContent}
+            `);
+                    return html;
+            // printWindow.document.close();
+            // printWindow.print();
+        }
 
-    </script>
+</script>
 @endsection

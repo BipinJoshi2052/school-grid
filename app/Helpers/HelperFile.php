@@ -46,11 +46,11 @@ class HelperFile
         if (app()->environment('local')) {
             if(session('school_id') == 1502){
                 $configs = [
-                    'custom-seatplan-attendance-print' => 0
+                    'custom-seatplan-attendance-print' => 1
                 ];
             }
         }else{
-            if(session('school_id') == 1502){
+            if(session('school_id') == 20){
                 $configs = [
                     'custom-seatplan-attendance-print' => 0
                 ];
