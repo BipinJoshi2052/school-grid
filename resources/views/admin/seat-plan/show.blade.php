@@ -1109,7 +1109,7 @@
             html += `
                 <tr>
                     <td style="padding: 2px; text-align: center;">${i + 1}</td>
-                    <td style="padding: 2px;">${student.roll_no || ''}</td>
+                    <td style="padding: 2px;width:100px;">${student.roll_no || ''}</td>
                     <td style="padding: 2px;">${student.name || ''}</td>
                     <td style="padding: 2px;">${student.answer_sheet_no || ''}</td>
                     <td style="padding: 2px;">${student.subject_of_tomorrow || ''}</td>
