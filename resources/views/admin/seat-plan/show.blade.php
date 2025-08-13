@@ -355,6 +355,7 @@
         $buildingsDataJson = json_encode($data['buildings'], JSON_HEX_TAG);
         $groupedByBuildingRoomClass = json_encode($data['groupedByBuildingRoomClass'], JSON_HEX_TAG);
         $groupedByBuildingRoomClassSection = json_encode($data['groupedByBuildingRoomClassSection'], JSON_HEX_TAG);
+        $studentDataForAttendance = json_encode($data['studentDataForAttendance'], JSON_HEX_TAG);
         // dd($buildingsDataJson);
     ?>
 @endsection
@@ -516,8 +517,10 @@
                     <button class="back-btn hide-when-printing" onclick="showRooms(${currentBuilding.id})">← Back to Rooms</button>
                     <h2 class="hide-when-printing" style="margin-bottom: 20px; color: #2c3e50;">🪑 ${currentRoom.name} - Seating Layout</h2>
                     <button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('layout', ${currentBuilding.id}, '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Print Seating Layout</button>
+                    <button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('roll', ${currentBuilding.id},  '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Print by Symbol</button>
                     <button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('class', ${currentBuilding.id},  '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Print by Class</button>
                     <button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('class-section', ${currentBuilding.id},  '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Print by Class & Section</button>
+                    <button class="btn btn-primary hide-when-printing" onclick="printSeatingLayout('attendance', ${currentBuilding.id},  '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')"><i class="fa fa-print"></i>Print Attendance</button>
                 `;
 
                     // <button class="btn btn-primary" onclick="printSeatingLayout('class', ${currentBuilding.id}, ${roomIndex}, '${JSON.stringify(groupedByBuildingRoomClass)}')"><i class="fa fa-print"></i>Print by Class</button>
@@ -629,6 +632,7 @@
             function getStudentsForRoom(buildingId, roomId) {
                 // This is your mock data based on the provided structure
                 const seatingData = JSON.parse(`<?php echo json_encode($data['arrangedData']); ?>`);
+                // console.log(seatingData)
 
                 // Fetch the data for the specific building and room
                 if (seatingData[buildingId] && seatingData[buildingId][roomId]) {
@@ -788,6 +792,7 @@
         function printSeatingLayout(type,buildingId, currentBuildingName,roomIndex, currentRoomName) {
             var groupedByBuildingRoomClass = JSON.parse(`<?php echo addslashes($groupedByBuildingRoomClass); ?>`);
             var groupedByBuildingRoomClassSection = JSON.parse(`<?php echo addslashes($groupedByBuildingRoomClassSection); ?>`);
+            var studentDataForAttendance = JSON.parse(`<?php echo addslashes($studentDataForAttendance); ?>`);
 
             // console.log(groupedByBuildingRoomClass)
             // console.log(groupedByBuildingRoomClassSection)
@@ -882,6 +887,20 @@
                         const roomData = groupedByBuildingRoomClassSection[buildingId][roomId];
                         dataToPrint = generatePrintHTMLByClassSection(currentBuildingName,roomData, currentRoomName);
                     }
+                }else if (type === 'roll') {
+                    // Get the roll numbers grouped by class for the building and room
+                    if (groupedByBuildingRoomClass[buildingId] && groupedByBuildingRoomClass[buildingId][roomId]) {
+                        const roomData = groupedByBuildingRoomClass[buildingId][roomId];
+                        console.log(groupedByBuildingRoomClass)
+                        dataToPrint = generatePrintHTMLByRoll(currentBuildingName,roomData, currentRoomName);
+                    }
+                }else if (type === 'attendance') {
+                    // Get the roll numbers grouped by class for the building and room
+                    if (studentDataForAttendance[buildingId] && studentDataForAttendance[buildingId][roomId]) {
+                        const roomData = studentDataForAttendance[buildingId][roomId];
+                        console.log(groupedByBuildingRoomClass)
+                        dataToPrint = generatePrintHTMLByAttendance(currentBuildingName,roomData, currentRoomName);
+                    }
                 }
 
                 // Open a new window and print the content
@@ -899,6 +918,67 @@
             }
         }
             
+        function generatePrintHTMLByAttendance(currentBuildingName, roomData, roomName) {
+            // Get current date (formatted as YYYY-MM-DD)
+            const today = new Date().toLocaleDateString('en-CA'); // e.g., 2025-08-13
+
+            // Start HTML with building and room name
+            let html = `
+                <div class="attendance-sheet">
+                    <h2>Building Name: ${currentBuildingName}</h2>
+                    <h3>Room Name: ${roomName}</h3>
+                    <p>Date: ${today}</p>
+                    <table border="1" style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                        <thead>
+                            <tr style="background-color: #f2f2f2;">
+                                <th style="padding: 8px; text-align: left;">S.N.</th>
+                                <th style="padding: 8px; text-align: left;">Symbol</th>
+                                <th style="padding: 8px; text-align: left;">Name</th>
+                                <th style="padding: 8px; text-align: left;">Signature</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            // Iterate over roomData array to populate table rows
+            roomData.forEach((student, index) => {
+                html += `
+                    <tr>
+                        <td style="padding: 8px;">${index + 1}</td>
+                        <td style="padding: 8px;">${student.roll_no}</td>
+                        <td style="padding: 8px;">${student.name}</td>
+                        <td style="padding: 8px;"></td>
+                    </tr>
+                `;
+            });
+
+            // Close table and div
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            return html;
+        }
+
+        function generatePrintHTMLByRoll(currentBuildingName, roomData, roomName) {
+            let html = `<h2>Building Name: ${currentBuildingName}</h2>`;
+            html += `<h3>Room Name: ${roomName}</h3>`;
+            
+            html += `<p>`;
+            for (let className in roomData) {
+                roomData[className].forEach(rollNo => {
+                    html += `${rollNo}, `;
+                });
+            }
+            html += `</p>`;
+                
+            // html += `</ul>`;
+
+            return html;
+        }
+
         function generatePrintHTMLByClass(currentBuildingName, roomData, roomName) {
             let html = `<h2>Building Name: ${currentBuildingName}</h2>`;
             html += `<h3>Room Name: ${roomName}</h3>`;
@@ -925,6 +1005,7 @@
 
             return html;
         }
+
         function generatePrintHTMLByClassSection(currentBuildingName, roomData, roomName) {
             let html = `<h2>Building Name: ${currentBuildingName}</h2>`;
             html += `<h3>Room Name: ${roomName}</h3>`;

@@ -1016,6 +1016,7 @@ class SeatPlanController extends Controller
         $arrangedData = [];
 
         $groupedByBuildingAndRoom = [];
+        $studentDataForAttendance = [];
         $groupedByBuildingRoomClass = [];
         $groupedByBuildingRoomClassSection = [];
 
@@ -1049,6 +1050,7 @@ class SeatPlanController extends Controller
                 // 'handicapped' => $student->handicapped,
                 'roll_no' => $detail->student_roll_no,
             ];
+            $studentDataForAttendance[$buildingId][$room][] = $studentData;
 
             // Add the student data to the seat
             $arrangedData[$buildingId][$room][$bench][$seat] = $studentData;
@@ -1072,11 +1074,12 @@ class SeatPlanController extends Controller
             $groupedByBuildingRoomClassSection[$buildingId][$room][$classSectionTitle][] = $studentData['roll_no'];
         }
         $data['arrangedData'] = $arrangedData;
+        $data['studentDataForAttendance'] = $studentDataForAttendance;
         $data['groupedByBuildingAndRoom'] = $groupedByBuildingAndRoom;
         $data['groupedByBuildingRoomClass'] = $groupedByBuildingRoomClass;
         $data['groupedByBuildingRoomClassSection'] = $groupedByBuildingRoomClassSection;
         // Output the grouped data
-        // dd($groupedByBuildingAndRoom, $groupedByBuildingRoomClass, $groupedByBuildingRoomClassSection);
+        // dd($groupedByBuildingAndRoom);
 
 
         // Step 6: Return view with arranged data
