@@ -958,7 +958,7 @@
             }
         }
             
-        function generatePrintHTMLByAttendance2(currentBuildingName, roomData, roomName) {
+        function generatePrintHTMLByAttendance(currentBuildingName, roomData, roomName) {
             // Get current date (formatted as YYYY-MM-DD)
             const today = new Date().toLocaleDateString('en-CA'); // e.g., 2025-08-13
 
@@ -1090,13 +1090,13 @@
                 <table border="1" style="width: 100%; border-collapse: collapse; margin-top: 10px;">
                     <thead>
                         <tr style="background-color: #f2f2f2;">
-                            <th style="padding: 2px; text-align: center;">S.N.</th>
-                            <th style="padding: 2px; text-align: left;">Symbol No.</th>
-                            <th style="padding: 2px; text-align: left;">Name of Students</th>
-                            <th style="padding: 2px; text-align: left;">Answer Sheet No.</th>
-                            <th style="padding: 2px; text-align: left;">Subject of Tomorrow</th>
-                            <th style="padding: 2px; text-align: left;">Signature</th>
-                            <th style="padding: 2px; text-align: left;">Remarks</th>
+                            <th style="padding: 1px; text-align: center;">S.N.</th>
+                            <th style="padding: 1px; text-align: left;">Symbol No.</th>
+                            <th style="padding: 1px; text-align: left;">Name of Students</th>
+                            <th style="padding: 1px; text-align: left;">Answer Sheet No.</th>
+                            <th style="padding: 1px; text-align: left;">Subject of Tomorrow</th>
+                            <th style="padding: 1px; text-align: left;">Signature</th>
+                            <th style="padding: 1px; text-align: left;">Remarks</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1157,9 +1157,6 @@ function printAttendance() {
     const printContent = document.getElementById('attendancePreview').innerHTML;
     const printWindow = window.open('', '_blank');
     printWindow.document.write(`
-        <html>
-            <head>
-                <title>Attendance Sheet</title>
                 <style>
                     @media print {
                         body {
@@ -1222,12 +1219,11 @@ function printAttendance() {
                         justify-content: space-between;
                     }
                 </style>
-            </head>
-            <body>${printContent}</body>
-        </html>
+                ${printContent}
     `);
-    printWindow.document.close();
-    printWindow.print();
+            return html;
+    // printWindow.document.close();
+    // printWindow.print();
 }
 
     </script>
