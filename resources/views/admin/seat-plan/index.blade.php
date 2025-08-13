@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('title')
-    Staffs
+    Seat Plan List
 @endsection
 
 @section('styles')
