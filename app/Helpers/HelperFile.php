@@ -42,7 +42,8 @@ class HelperFile
         return null;
     }
 
-    public static function getSchooConfigs(){
+    public static function getSchoolConfigs(){
+        $configs = [];
         if (app()->environment('local')) {
             if(session('school_id') == 1502){
                 $configs = [

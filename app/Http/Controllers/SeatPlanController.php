@@ -281,7 +281,7 @@ class SeatPlanController extends Controller
         $data['groupedByBuildingAndRoom'] = $groupedByBuildingAndRoom;
         $data['groupedByBuildingRoomClass'] = $groupedByBuildingRoomClass;
         $data['groupedByBuildingRoomClassSection'] = $groupedByBuildingRoomClassSection;
-        $data['configs'] = HelperFile::getSchooConfigs();
+        $data['configs'] = HelperFile::getSchoolConfigs();
         // Output the grouped data
         // dd($groupedByBuildingAndRoom);
 

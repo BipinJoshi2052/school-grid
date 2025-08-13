@@ -26,10 +26,18 @@ class UserSeeder extends Seeder
         //         'user_type_id'=>$saType->id
         //     ]
         // );
+        // User::firstOrCreate(
+        //     ['email'=>'nepalmav@example.com'],
+        //     [
+        //         'name'=>'Nepal Ma V.',
+        //         'password'=>Hash::make('secret'),
+        //         'user_type_id'=> 2
+        //     ]
+        // );
         User::firstOrCreate(
-            ['email'=>'nepalmav@example.com'],
+            ['email'=>'test-school@example.com'],
             [
-                'name'=>'Nepal Ma V.',
+                'name'=>'Test School',
                 'password'=>Hash::make('secret'),
                 'user_type_id'=> 2
             ]

@@ -23,7 +23,7 @@ class StudentController extends Controller
     public function index()
     {
         // Fetch all faculties related to the user's school_id
-        $faculties = Faculty::where('user_id', session('school_id'))->orderBy('title', 'asc')->get();
+        $faculties = Faculty::where('user_id', session('school_id'))->orderBy('id', 'asc')->get();
 
         // Fetch batches related to the user's school_id
         // $batches = Batch::where('user_id', session('school_id'))->orderBy('title', 'asc')->get();
@@ -32,7 +32,7 @@ class StudentController extends Controller
         // $classes = ClassModel::where('user_id', session('school_id'))->with('sections')->orderBy('title', 'asc')->get();
 
         // Fetch classes with no batch_id (classes without a batch)
-        $classesWithNoBatch = ClassModel::where('user_id', session('school_id'))->whereNull('batch_id')->orderBy('title', 'asc')->get();
+        $classesWithNoBatch = ClassModel::where('user_id', session('school_id'))->whereNull('batch_id')->orderBy('id', 'asc')->get();
 
         return view('admin.student.index', compact('faculties','classesWithNoBatch'));
     }
