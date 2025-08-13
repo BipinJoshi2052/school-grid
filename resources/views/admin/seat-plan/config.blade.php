@@ -186,10 +186,44 @@ Seat Plan Config
                                 
                                 <div class="pattern-grid">
                                     <!-- Sequential Class Assignment -->
+
+                                    <!-- Class-Based Row Assignment -->
+                                    <div class="pattern-card" data-pattern="rowbased">
+                                        <div class="pattern-header">
+                                            <input type="radio" name="seatingPattern" id="rowbased" class="pattern-radio" value="rowbased">
+                                            <label for="rowbased" class="pattern-title">Class-Based Row Assignment</label>
+                                        </div>
+                                        <div class="pattern-description">
+                                            Assign entire rows to specific classes
+                                        </div>
+                                        <div class="pattern-visual">
+                                            <div class="bench-row">
+                                                <div class="seat-row">
+                                                    <div class="seat cs">CS1</div>
+                                                    <div class="seat cs">CS2</div>
+                                                    <div class="seat cs">CS3</div>
+                                                    <div class="seat cs">CS4</div>
+                                                </div>
+                                                <div class="seat-row">
+                                                    <div class="seat math">M1</div>
+                                                    <div class="seat math">M2</div>
+                                                    <div class="seat math">M3</div>
+                                                    <div class="seat math">M4</div>
+                                                </div>
+                                            </div>
+                                            {{-- <div class="seat-row">
+                                                <div class="seat physics">P1</div>
+                                                <div class="seat physics">P2</div>
+                                                <div class="seat physics">P3</div>
+                                                <div class="seat physics">P4</div>
+                                            </div> --}}
+                                        </div>
+                                    </div>
+
                                     <div class="pattern-card" data-pattern="sequential">
                                         <div class="pattern-header">
-                                            <input type="radio" name="seatingPattern" id="sequential" class="pattern-radio" value="sequential">
-                                            <label for="sequential" class="pattern-title">Sequential Class Assignment</label>
+                                            <input type="radio" name="seatingPattern" id="sequential" class="pattern-radio" value="sequential" disabled>
+                                            <label for="sequential" class="pattern-title">Sequential Class Assignment <span style="color: red;">(Not Available)</span></label>
                                         </div>
                                         <div class="pattern-description">
                                             Assign students from the same class in consecutive order
@@ -230,8 +264,8 @@ Seat Plan Config
                                     <!-- Alternate Class Assignment -->
                                     <div class="pattern-card" data-pattern="alternate">
                                         <div class="pattern-header">
-                                            <input type="radio" name="seatingPattern" id="alternate" class="pattern-radio" value="alternate">
-                                            <label for="alternate" class="pattern-title">Alternate Class Assignment</label>
+                                            <input type="radio" name="seatingPattern" id="alternate" class="pattern-radio" value="alternate" disabled>
+                                            <label for="alternate" class="pattern-title">Alternate Class Assignment <span style="color: red;">(Not Available)</span> </label>
                                         </div>
                                         <div class="pattern-description">
                                             Assign students from different classes alternately
@@ -307,8 +341,8 @@ Seat Plan Config
                                     <!-- Random Student Assignment -->
                                     <div class="pattern-card" data-pattern="random">
                                         <div class="pattern-header">
-                                            <input type="radio" name="seatingPattern" id="random" class="pattern-radio" value="random">
-                                            <label for="random" class="pattern-title">Random Student Assignment</label>
+                                            <input type="radio" name="seatingPattern" id="random" class="pattern-radio" value="random" disabled>
+                                            <label for="random" class="pattern-title">Random Student Assignment <span style="color: red;">(Not Available)</span></label>
                                         </div>
                                         <div class="pattern-description">
                                             Seats are filled randomly with students from all classes
@@ -331,38 +365,6 @@ Seat Plan Config
                                         </div>
                                     </div>
 
-                                    <!-- Class-Based Row Assignment -->
-                                    <div class="pattern-card" data-pattern="rowbased">
-                                        <div class="pattern-header">
-                                            <input type="radio" name="seatingPattern" id="rowbased" class="pattern-radio" value="rowbased">
-                                            <label for="rowbased" class="pattern-title">Class-Based Row Assignment</label>
-                                        </div>
-                                        <div class="pattern-description">
-                                            Assign entire rows to specific classes
-                                        </div>
-                                        <div class="pattern-visual">
-                                            <div class="bench-row">
-                                                <div class="seat-row">
-                                                    <div class="seat cs">CS1</div>
-                                                    <div class="seat cs">CS2</div>
-                                                    <div class="seat cs">CS3</div>
-                                                    <div class="seat cs">CS4</div>
-                                                </div>
-                                                <div class="seat-row">
-                                                    <div class="seat math">M1</div>
-                                                    <div class="seat math">M2</div>
-                                                    <div class="seat math">M3</div>
-                                                    <div class="seat math">M4</div>
-                                                </div>
-                                            </div>
-                                            {{-- <div class="seat-row">
-                                                <div class="seat physics">P1</div>
-                                                <div class="seat physics">P2</div>
-                                                <div class="seat physics">P3</div>
-                                                <div class="seat physics">P4</div>
-                                            </div> --}}
-                                        </div>
-                                    </div>
                                 </div>
 
                                 <!-- Special Needs Seating -->
