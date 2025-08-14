@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SeatPlan-Pro - @yield('title')</title>
+    <title>SeatPlan-Pro - Home</title>
     <meta name="description" content="Generate optimal exam seat plans in seconds with our intelligent system. Drag-and-drop customization, automated notifications, and complete student management.">
     <meta name="author" content="SeatPlan Pro">
     
