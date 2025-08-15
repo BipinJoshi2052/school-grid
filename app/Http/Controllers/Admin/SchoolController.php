@@ -1,19 +1,23 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use App\Helpers\HelperFile;
-use App\Models\Department;
-use App\Models\Position;
-use App\Models\Staff;
+use App\Http\Controllers\Controller;
+use App\Models\InstitutionDetail;
 use App\Models\User;
+use App\Models\UserType;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
-class StaffController extends Controller
+class SchoolController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -21,11 +25,7 @@ class StaffController extends Controller
      */
     public function index()
     {
-        return view('admin.staff.index');
-    }
-
-    public function listV2() {
-        return view('admin.staff.v2');
+        return view('super-admin.schools.index');
     }
 
     public function listPartial(Request $request) {
@@ -35,27 +35,21 @@ class StaffController extends Controller
         // Pagination parameters
         $page = $request->get('page', 1);  // Default page is 1
         $perPage = $request->get('pageLength', 10);  // Use the pageLength parameter to get the number of items per page
-
+        
+        $user_type_id_of_school = UserType::where('name', 'client')->first();
         // Build the query to filter data
-        $query = Staff::where('school_id', session('school_id'))
-                        ->with('user')
-                        ->with('department')
-                        ->with('position')
+        $query = User::where('user_type_id', $user_type_id_of_school->id)
+                        ->with('details')
                         ->orderBy('id', 'desc');
 
         // Apply the search filter if a search term is provided
         if ($searchTerm) {
             $query->where(function ($q) use ($searchTerm) {
-                $q->whereHas('user', function ($query) use ($searchTerm) {
-                    $query->where('name', 'like', '%' . $searchTerm . '%')
-                        ->orWhere('email', 'like', '%' . $searchTerm . '%')
-                        ->orWhere('phone', 'like', '%' . $searchTerm . '%');
-                })
-                ->orWhereHas('department', function ($query) use ($searchTerm) {
-                    $query->where('title', 'like', '%' . $searchTerm . '%');
-                })
-                ->orWhereHas('position', function ($query) use ($searchTerm) {
-                    $query->where('title', 'like', '%' . $searchTerm . '%');
+                $q->where('namex', 'like', '%' . $searchTerm . '%')
+                ->orwhere('email', 'like', '%' . $searchTerm . '%')
+                ->orWhere('name', 'like', '%' . $searchTerm . '%')
+                ->orWhereHas('details', function ($query) use ($searchTerm) {
+                    $query->where('client_id', 'like', '%' . $searchTerm . '%');
                 });
             });
         }
@@ -74,9 +68,8 @@ class StaffController extends Controller
 
     
     public function createPartial(){
-        $departments = Department::select('id','title')->where('user_id',session('school_id'))->get();
-        $positions = Position::select('id','title')->where('user_id',session('school_id'))->get();
-        return view('admin.staff.create-partial', compact('departments','positions'));
+        $data = [];
+        return view('super-admin.schools.create-partial',compact('data'));
     }
     /**
      * Show the form for creating a new resource.
@@ -85,22 +78,10 @@ class StaffController extends Controller
      */
     public function create()
     {
-        $departments = Department::select('id','title')->where('user_id',session('school_id'))->get();
-        $positions = Position::select('id','title')->where('user_id',session('school_id'))->get();
-        return view('admin.staff.create-partial', compact('departments','positions'));
+        $data = [];
+        return view('super-admin.schools.create-partial', compact('data'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    // public function store(Request $request)
-    // {
-    //     $staff = Staff::create($request->all());
-    //     return response()->json($staff, 201);
-    // }
     public function store(Request $request)
     {
         // Validate the request data
@@ -108,38 +89,42 @@ class StaffController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'email|unique:users,email',
             'phone' => 'nullable|string|min:10',
-            'gender' => 'nullable|string',
-            'address' => 'nullable|string',
-            'joined_date' => 'nullable|date',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
             // 'department_id' => 'required|exists:departments,id',
             // 'position_id' => 'required|exists:positions,id',
         // dd('here');
         try{
+            $userCount = User::count(); // Get the count of existing users
+
+            // Generate client_id based on the count
+            $clientId = 'CLNT-' . now()->year . '-' . str_pad($userCount + 1, 5, '0', STR_PAD_LEFT); // Example: CLNT-2025-00001
+
             // Create the user first
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => bcrypt('secret'),  // Set password as 'secret'
                 'phone' => $request->phone,
-                'avatar' => HelperFile::uploadFile($request,'avatars/staff'), // Handle avatar upload
-                'parent_id' => session('school_id'),
-                'user_type_id' => 3, // Staff
+                // 'avatar' => HelperFile::uploadFile($request,'avatars/staff'), // Handle avatar upload
+                'user_type_id' => 2, // Staff
                 'added_by' => auth()->id(),
             ]);
 
+            // Upload the avatar and update the user record
+            $avatar = HelperFile::uploadFileSuperAdmin($request, 'avatars', $user->id);  // Pass the user ID into the helper
+
+            // Update the user with the avatar path
+            $user->update([
+                'avatar' => $avatar,  // Save the avatar URL or path
+            ]);
             // Create the staff record
-            $staff = Staff::create([
-                'name' => $request->name,
-                'school_id' => session('school_id'),
+            $staff = InstitutionDetail::create([
                 'user_id' => $user->id,
-                'department_id' => $request->department_id,
-                'position_id' => $request->position_id,
-                'address' => $request->address,
-                'gender' => $request->gender,
-                'joined_date' => $request->joined_date,
-                'added_by' => auth()->id(),
+                'client_id' => $clientId,
+                'institution_name' => $request->name,
+                'registration_id' => $request->registration_id,
+                'expiration_date' => $request->expiration_date
             ]);
         }catch(Exception $e){
             return response()->json(['success' => false, 'message' => $e->getMessage()]);    
@@ -147,33 +132,6 @@ class StaffController extends Controller
 
         return response()->json(['success' => true, 'staff' => $staff]);
     }
-
-    // protected function uploadAvatar($request,$path)
-    // {
-    //     if ($request->hasFile('avatar')) {
-    //         // Get the school ID from the session
-    //         $schoolId = session('school_id');
-            
-    //         // Define the folder path inside 'public' storage
-    //         $folderPath = "{$schoolId}/avatars/staff";
-
-    //         // Create the folder if it does not exist
-    //         $storagePath = storage_path("app/public/{$folderPath}");
-            
-    //         if (!file_exists($storagePath)) {
-    //             mkdir($storagePath, 0777, true);  // Creates the folder and subfolders if they don't exist
-    //         }
-
-    //         // Store the file in the defined path
-    //         $avatarPath = $request->file('avatar')->store($folderPath, 'public');
-    //         Log::info('Avatar stored at: ' . $avatarPath);
-    //         // dd($avatarPath);
-
-    //         return $avatarPath;
-    //     }
-
-    //     return null;
-    // }
 
     /**
      * Display the specified resource.
@@ -183,7 +141,7 @@ class StaffController extends Controller
      */
     public function show($id)
     {
-        $staff = Staff::findOrFail($id);
+        $staff = User::findOrFail($id);
         return response()->json($staff);
     }
 
@@ -195,14 +153,11 @@ class StaffController extends Controller
      */
     public function edit($id)
     {
-        $staff = Staff::where('school_id',session('school_id'))
-                        ->where('id',$id)
-                        // ->with('user')
+        $school = User::where('id',$id)
+                        // ->with('details')
                         ->first();
-        // dd($staff);
-        $departments = Department::select('id','title')->where('user_id',session('school_id'))->get();
-        $positions = Position::select('id','title')->where('user_id',session('school_id'))->get();
-        return view('admin.staff.edit-partial', compact('staff','departments','positions'));
+                        // dd($school);
+        return view('super-admin.schools.edit-partial', compact('school'));
     }
 
     /**
@@ -221,30 +176,27 @@ class StaffController extends Controller
 
         try {
             // Find the staff record
-            $staff = Staff::findOrFail($id);
+            $user = User::findOrFail($id);
 
             // Find the associated user based on the user_id in the staff table
-            $user = User::findOrFail($staff->user_id);
+            $institution_details = InstitutionDetail::where('user_id',$user->id)->first();
             $old_avatar = $user->avatar;
 
             // Update the user's table with the new data
-        // dd($this->uploadAvatar($request));
+            // dd($this->uploadAvatar($request));
             $user->update([
                 'name' => $request->input('name'),
                 'email' => $request->input('email'),
-                // 'avatar' => $this->uploadAvatar($request),
-                'avatar' => $request->hasFile('avatar') ? HelperFile::uploadFile($request,'avatars/staff') : $user->avatar,  // Update avatar if a new one is uploaded
+                'suspend' => $request->input('suspend'),
+                'avatar' => $request->hasFile('avatar') ? HelperFile::uploadFile($request,'avatars/schools') : $user->avatar,  // Update avatar if a new one is uploaded
                 'phone' => $request->input('phone'),
             ]);
 
             // Update the staff's table with the new data
-            $staff->update([
-                'name' => $request->input('name'),
-                'department_id' => $request->input('department_id'),
-                'position_id' => $request->input('position_id'),
-                'gender' => $request->input('gender'),
-                'joined_date' => $request->input('joined_date'),
-                'address' => $request->input('address'),
+            $institution_details->update([
+                'institution_name' => $request->input('institution_name'),
+                'registration_id' => $request->input('registration_id'),
+                'expiration_date' => $request->input('expiration_date')
             ]);
 
             // Check if the staff already has an avatar, and delete it if it exists
@@ -257,7 +209,7 @@ class StaffController extends Controller
             DB::commit();
 
             // Return the updated staff record as a JSON response
-            return response()->json($staff);
+            return response()->json($user);
         } catch (\Exception $e) {
             // Rollback in case of an error
             DB::rollBack();
@@ -280,20 +232,21 @@ class StaffController extends Controller
         DB::beginTransaction();  // Start a transaction
 
         try {
-            // Find the staff record
-            $staff = Staff::where('user_id',$id)->first();
             
             // Get the user associated with this staff
             $user = User::where('id',$id)->first();
+
+            // Find the InstitutionDetail record
+            $institution_details = InstitutionDetail::where('user_id',$user->id)->first();
 
             // Delete the user record first
             $userDeleted = $user ? $user->delete() : true;
 
             // Delete the staff record
-            $staffDeleted = $staff->delete();
+            $institutionDetailsDeleted = $institution_details->delete();
 
             // Check if both deletions were successful
-            if ($userDeleted && $staffDeleted) {
+            if ($userDeleted && $institutionDetailsDeleted) {
                 // Now delete the avatar image after the deletions are successful
                 if ($user && $user->avatar) {
                     $avatarPath = storage_path('app/public/' . $user->avatar);  // Get the avatar path
@@ -306,7 +259,7 @@ class StaffController extends Controller
                 return response()->json(null, 204);  // Return success response
             } else {
                 DB::rollBack();  // Rollback if any deletion failed
-                return response()->json(['message' => 'Error deleting staff or user'], 500);
+                return response()->json(['message' => 'Error deleting school'], 500);
             }
         } catch (\Exception $e) {
             // Rollback in case of any exception

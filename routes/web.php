@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\BuildingsController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Admin\DashboardController as SuperAdminDashboardController;
+use App\Http\Controllers\Admin\SchoolController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ImportController;
@@ -35,9 +37,19 @@ Auth::routes(['verify' => true]);
 // Custom logout route, if necessary
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
+//Super Admin Routes
+Route::middleware(['auth', 'UserIsSuperAdmin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [SuperAdminDashboardController::class, 'index'])->name('dashboard');
+    
+    Route::get('/schools', [SchoolController::class, 'index'])->name('schools.index');
 
+    Route::get('/schools/list-partial', [SchoolController::class, 'listPartial'])->name('schools.list-partial');
+    Route::post('schools/update/{id}', [SchoolController::class, 'update'])->name('schools.update');
+    Route::resource('schools', SchoolController::class);
+});
 
-Route::middleware('auth')->group(function () {
+//School Routes
+Route::middleware(['auth', 'UserIsSchoolOrStaff'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/seat-plan-config-v3', [SeatPlanController::class, 'seatPlanConfigV3'])->name('seat-plan.configV3');
@@ -81,7 +93,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/import-staff-data', [ImportController::class, 'staffImport'])->name('import.staff-data');
     Route::get('/import-staff', [HomeController::class, 'importStaff'])->name('import.staff');
     
-
     Route::get('/download/sample/student', [ImportController::class, 'downloadSampleStudent'])->name('import.downloadSampleStudent');
     Route::post('/validate-student-import', [ImportController::class, 'validateStudentImport'])->name('import.student.validate');
     Route::post('/import-student-data', [ImportController::class, 'StudentImport'])->name('import.student-data');
@@ -92,9 +103,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/buildings/visualize', [BuildingsController::class, 'visualize'])->name('buildings.visualize');
     Route::get('/buildings/visualize-v2', [BuildingsController::class, 'visualize2'])->name('buildings.visualizev2');
     Route::get('/buildings', [BuildingsController::class, 'index'])->name('buildings.index');
-    
-    // Route::get('/seat-plan', [HomeController::class, 'seatPlan'])->name('seat-plan');
-    // Route::get('/seat-plan-config', [HomeController::class, 'seatPlanConfig'])->name('seat-plan-config');
 
     Route::post('/erase-data', [AcademicController::class, 'eraseData'])->name('erase-data');
     Route::post('/erase-class-data', [AcademicController::class, 'eraseClassData'])->name('erase-class-data');
@@ -102,13 +110,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/erase-seat-plan-data', [AcademicController::class, 'eraseSeatPlanData'])->name('erase-seat-plan-data');
     Route::post('/populate-data', [AcademicController::class, 'populateData'])->name('populate-data');
     Route::post('/populate-student-data', [AcademicController::class, 'populateStudentData'])->name('populate-student-data');
-    
-
-    // Route::resource('staff', StaffController::class);
-    // Route::resource('students', StudentController::class);
 });
-
-
 
 Route::middleware('guest')->group(function () {
     // OTP routes

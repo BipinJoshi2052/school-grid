@@ -13,7 +13,7 @@ class CreateSuggestionsTable extends Migration
             $table->text('message');
             $table->string('ip')->nullable();
             $table->string('user_agent')->nullable();
-            $table->foreignId('user_id')->constrained('users')->after('user_agent'); // Add user_id after user_agent
+            $table->foreignId('user_id')->constrained('users')->after('user_agent');
             $table->timestamps();
         });
     }

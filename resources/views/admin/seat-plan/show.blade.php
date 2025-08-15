@@ -234,8 +234,11 @@
             height: 12px;
             background: rgba(255, 255, 255, 0.8);
             border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.5);            
         }
+        /* .seats{
+            background: red!important;
+        } */
 
         .empty-state {
             text-align: center;
@@ -301,6 +304,9 @@
         .button-group{
             display:flex;
             gap:10px;
+        }
+        .dropdown-menu{
+            z-index: 9;
         }
         @media (max-width: 430px) {
             .button-group{
@@ -573,11 +579,34 @@
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="printDropdown">
                                 <li><a class="dropdown-item" href="javascript:void(0);" onclick="printSeatingLayout('layout', ${currentBuilding.id}, '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')">Seating Layout</a></li>
-                                <li><a class="dropdown-item" href="javascript:void(0);" onclick="printSeatingLayout('roll', ${currentBuilding.id}, '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')">Symbol</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0);" onclick="printSeatingLayout('roll', ${currentBuilding.id}, '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')">Roll No.</a></li>
                                 <li><a class="dropdown-item" href="javascript:void(0);" onclick="printSeatingLayout('class', ${currentBuilding.id}, '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')">Class</a></li>
                                 <li><a class="dropdown-item" href="javascript:void(0);" onclick="printSeatingLayout('class-section', ${currentBuilding.id}, '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')">Class & Section</a></li>
                                 <li><a class="dropdown-item" href="javascript:void(0);" onclick="printSeatingLayout('attendance', ${currentBuilding.id}, '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')">Attendance</a></li>
                                 <li><a class="dropdown-item" href="javascript:void(0);" onclick="printSeatingLayout('attendance-custom', ${currentBuilding.id}, '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')">Attendance Custom</a></li>
+                            </ul>
+                        </div>
+                        <div class="dropdown hide-when-printing">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="showDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                Show
+                                <i class="fa fa-caret-down ms-2"></i>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="showDropdown">
+                                <li>
+                                    <label class="dropdown-item">
+                                        <input type="checkbox" id="nameCheckbox" checked disabled> Name
+                                    </label>
+                                </li>
+                                <li>
+                                    <label class="dropdown-item">
+                                        <input type="checkbox" id="classCheckbox"> Class
+                                    </label>
+                                </li>
+                                <li>
+                                    <label class="dropdown-item">
+                                        <input type="checkbox" id="rollCheckbox" checked disabled> Roll No.
+                                    </label>
+                                </li>
                             </ul>
                         </div>
                     `;
@@ -592,6 +621,15 @@
                 }
 
                 $('#main-content').html(html);
+
+                $('#classCheckbox').change(function() {
+                    console.log('object')
+                    if ($(this).is(':checked')) {
+                        $('.student-class').show(); // Show the class div
+                    } else {
+                        $('.student-class').hide(); // Hide the class div
+                    }
+                });
             }
 
             function generateTotalLayout(room, roomIndex) {
@@ -660,6 +698,7 @@
                                     <div class="seat-student" style="border: 1px solid black;background: none;">
                                         <div class="student-info" style="color: black;padding: 2px;width: 110px;">
                                             <div class="student-name">${student.name}</div>
+                                            <div class="student-class" style="display:none;">Class - ${student.class}</div>
                                             <div class="student-rol">${student.roll_no}</div>
                                         </div>
                                     </div>
@@ -1133,7 +1172,7 @@
             return html;
         }
         function generatePrintHTMLByAttendanceCustom(currentBuildingName, roomData, roomName) {
-        // Get current date in DD/MM/YYYY format for Nepal
+            // Get current date in DD/MM/YYYY format for Nepal
             const today = new Date();
             const day = String(today.getDate()).padStart(2, '0');
             const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-based

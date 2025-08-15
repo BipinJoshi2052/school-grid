@@ -301,13 +301,13 @@
             <div class="col-sm-12 col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        <div class="header">
+                        {{-- <div class="header">
                             <h1>🏢 Building Management System</h1>
                             <p>Interactive Room & Seating Visualization</p>
                         </div>
                         <div class="breadcrumb">
                             <span id="breadcrumb-content">🏠 Hoasdme</span>
-                        </div>
+                        </div> --}}
                         <div class="content">
                             <div id="main-content" class="main-content">
                                 <!-- Content will be populated here -->

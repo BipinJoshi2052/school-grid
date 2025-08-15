@@ -41,7 +41,32 @@ class HelperFile
 
         return null;
     }
+    public static function uploadFileSuperAdmin($request,$path,$user_id)
+    {
+        if ($request->hasFile('avatar')) {
+            // Get the school ID from the session
+            $schoolId = $user_id;
+            
+            // Define the folder path inside 'public' storage
+            $folderPath = "admin/{$schoolId}/{$path}";
 
+            // Create the folder if it does not exist
+            $storagePath = storage_path("app/public/{$folderPath}");
+            
+            if (!file_exists($storagePath)) {
+                mkdir($storagePath, 0777, true);  // Creates the folder and subfolders if they don't exist
+            }
+
+            // Store the file in the defined path
+            $avatarPath = $request->file('avatar')->store($folderPath, 'public');
+            // Log::info('Avatar stored at: ' . $avatarPath);
+            // dd($avatarPath);
+
+            return $avatarPath;
+        }
+
+        return null;
+    }
     public static function getSchoolConfigs(){
         $configs = [];
         if (app()->environment('local')) {

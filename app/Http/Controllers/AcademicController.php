@@ -379,7 +379,7 @@ class AcademicController extends Controller
         }
 
         // Add sections using Eloquent ORM
-        $classes = ClassModel::pluck('id');
+        $classes = ClassModel::where('user_id', $schoolId)->pluck('id');
         foreach ($classes as $classId) {
             Section::create([
                 'user_id' => $schoolId,

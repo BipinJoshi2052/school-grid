@@ -221,13 +221,13 @@
     </div>
 
     <div class="container copyright text-center mt-4">
-      <p>© <span>Copyright</span> <b>Edu</b>Sched <span>All Rights Reserved</span></p>
+      <p>© <span>Copyright</span> <b>Seat Plan Pro</b> <span>All Rights Reserved</span></p>
       <div class="credits">
         <!-- All the links in the footer should remain intact. -->
         <!-- You can delete the links only if you've purchased the pro version. -->
         <!-- Licensing information: https://bootstrapmade.com/license/ -->
         <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
-        Designed by EduSched
+        Designed by Seat Plan Pro
       </div>
     </div>
 

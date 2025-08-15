@@ -369,8 +369,6 @@
       event.preventDefault();
       var email = $("#email").val();
       var password = $("#password").val();
-      console.log(email)
-      console.log(password)
 
       $.ajax({
         url: "{{ route('login') }}", // Replace with your actual login route
@@ -382,7 +380,8 @@
         },
         success: function(response) {
           // Handle success (e.g., redirect to dashboard)
-          window.location.href = "/dashboard"; // Replace with your redirect URL
+          // window.location.href = "/dashboard";
+          window.location.href = response.redirect;
         },
         error: function(xhr) {
           // Handle error (show error message)
@@ -396,6 +395,13 @@
           }
         }
       });
+    });
+
+    // Allow form submission when Enter is pressed in either input field
+    $("#email, #password").on("keypress", function(event) {
+      if (event.which === 13) { // Enter key code is 13
+        $("#loginForm").submit(); // Trigger the form submit event
+      }
     });
   </script>
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
+use Carbon\Carbon;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -79,44 +80,42 @@ class LoginController extends Controller
         if (Hash::check($request->password, $user->password)) {
             Auth::login($user, $request->has('remember'));
 
-            $request->session()->put('user_id', $user->id);
-            $request->session()->put('name', $user->name);
-            $request->session()->put('parent_id', $user->parent_id);
-            $request->session()->put('user_type_id', $user->user_type_id);
-            $request->session()->put('avatar', $user->avatar);
+            // Update last access date and from
+            $user->update([
+                'last_access_date' => Carbon::now(),  // Set current date and time for last access
+                'last_access_from' => json_encode([
+                    'ip' => $request->ip(),  // Get the user's IP address
+                    'user_agent' => $request->header('User-Agent')  // Get the user's User-Agent
+                ])
+            ]);
+            
+            if($user->user_type_id == 2){
+                $request->session()->put('user_id', $user->id);
+                $request->session()->put('name', $user->name);
+                $request->session()->put('parent_id', $user->parent_id);
+                $request->session()->put('user_type_id', $user->user_type_id);
+                $request->session()->put('avatar', $user->avatar);
 
-            // Set school_id based on user_type_id
-            $school_id = ($user->user_type_id == 2) ? $user->id : $user->parent_id;
-            $request->session()->put('school_id', $school_id);
+                // Set school_id based on user_type_id
+                $school_id = ($user->user_type_id == 2) ? $user->id : $user->parent_id;
+                $request->session()->put('school_id', $school_id);
+            }
 
             // Determine redirect URL based on user_type_id
             $redirectUrl = $user->user_type_id === 1
                 ? route('admin.dashboard')
-                : route('user.dashboard');
-
+                : route('dashboard');
+            // dd($redirectUrl);
             return response()->json([
                 'success' => true,
                 'redirect' => $redirectUrl
             ], 200);
-
-            // Redirect based on user_type_id
-            // if ($user->user_type_id === 1) {
-            //     return redirect()->route('admin.dashboard');
-            // } elseif ($user->user_type_id === 2) {
-            //     return redirect()->intended($this->redirectTo);
-            // }
         }
 
         // If password is incorrect
         return response()->json([
             'errors' => ['email' => 'Invalid email or password.']
         ], 422);
-        // return redirect()->route('home')->withErrors([
-        //     'email' => 'Not a valid user.',
-        // ]);
-        // return redirect()->back()
-        //     ->withErrors(['email' => 'Invalid email or password.'])
-        //     ->withInput($request->only('email', 'remember'));
     }
 
     /**
