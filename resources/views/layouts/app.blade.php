@@ -11,14 +11,14 @@
     <meta property="og:title" content="SeatPlan Pro - Automated Exam Seat Planning Made Simple">
     <meta property="og:description" content="Generate optimal exam seat plans in seconds with our intelligent system. Drag-and-drop customization, automated notifications, and complete student management.">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="{{ asset('images/favicon.ico') }}">
+    <meta property="og:image" content="{{ asset('images/faviconseatplan.png') }}">
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:site" content="@seatplanpro">
-    <meta name="twitter:image" content="{{ asset('images/favicon.ico') }}">
+    <meta name="twitter:image" content="{{ asset('images/faviconseatplan.png') }}">
 
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon.ico') }}">
-    <link href="{{ asset('images/favicon.ico')}}" rel="apple-touch-icon">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/faviconseatplan.png') }}">
+    <link href="{{ asset('images/faviconseatplan.png')}}" rel="apple-touch-icon">
     
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
