@@ -222,8 +222,8 @@ Seat Plan Config
 
                                     <div class="pattern-card" data-pattern="sequential">
                                         <div class="pattern-header">
-                                            <input type="radio" name="seatingPattern" id="sequential" class="pattern-radio" value="sequential" disabled>
-                                            <label for="sequential" class="pattern-title">Sequential Class Assignment <span style="color: red;">(Not Available)</span></label>
+                                            <input type="radio" name="seatingPattern" id="sequential" class="pattern-radio" value="sequential">
+                                            <label for="sequential" class="pattern-title">Sequential Class Assignment</label>
                                         </div>
                                         <div class="pattern-description">
                                             Assign students from the same class in consecutive order

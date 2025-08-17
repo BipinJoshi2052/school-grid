@@ -237,9 +237,9 @@
                     <div class="feature-icon">
                         <i class="fas fa-users"></i>
                     </div>
-                    <h3 class="feature-title">Multi-user Collaboration</h3>
+                    <h3 class="feature-title">Invigilator Room Planning</h3>
                     <p class="feature-description">
-                        Allow multiple staff members to work simultaneously with role-based permissions and audit trails for accountability.
+                        Create Invigilator room planning as well with randomized staff assign.
                     </p>
                 </div>
                 
@@ -314,11 +314,15 @@
                 </div>
                 <div class="modal-body">
                     <p>We’d love to hear from you! Please fill out the form below to send us your message.</p>
-                    <form id="contactUsForm" action="{{route('feedback')}}" method="POST">
+                    <form id="contactUsForm" action="{{route('message.store')}}" method="POST">
                         @csrf
                         <div class="mb-3">
                             <label for="name" class="form-label">Name</label>
                             <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone</label>
+                            <input type="text" class="form-control" id="phone" name="phone" required>
                         </div>
                         <div class="mb-3">
                             <label for="message" class="form-label">Message</label>
@@ -359,8 +363,32 @@
         </script>
       @endforeach      
   @endif --}}
-
+<style>
+  .toast-top-center{
+    top: -20px;
+    right: 300px;
+  }
+</style>
   <script>
+    
+    toastr.options = {
+        "closeButton": false,
+        "debug": false,
+        "newestOnTop": false,
+        "progressBar": false,
+        "positionClass": "toast-top-center",
+        "preventDuplicates": false,
+        "onclick": null,
+        "showDuration": "100000",
+        "hideDuration": "100000",
+        "timeOut": "100000",
+        "extendedTimeOut": "100000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+    };
+
     @if (session('success'))
         toastr.success('{{ session('success') }}');
     @endif

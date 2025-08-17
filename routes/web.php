@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\SchoolController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ImportController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\SeatPlanController;
 use App\Http\Controllers\StaffController;
@@ -30,7 +31,8 @@ use App\Http\Controllers\SuggestionController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-Route::post('/feedback', [SuggestionController::class, 'store'])->name('feedback');
+Route::post('/feedback', [SuggestionController::class, 'store'])->name('feedback.store');
+Route::post('/message/store', [MessageController::class, 'store'])->name('message.store');
 
 Auth::routes(['verify' => true]);
 

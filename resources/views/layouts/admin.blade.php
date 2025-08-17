@@ -377,7 +377,8 @@
                         </li>
                         <li class="sidebar-item"> 
                             <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
-                                <i data-feather="home" class="feather-icon"></i>
+                                {{-- <i data-feather="home" class="feather-icon"></i> --}}
+                                <i class="fa fa-table"></i>
                                 <span class="hide-menu">Seat Plan </span>
                             </a>
                             <ul aria-expanded="false" class="collapse first-level base-level-line">
@@ -392,6 +393,19 @@
                             </ul>
                         </li>
 
+                        <li class="list-divider"></li>
+
+                        <li class="nav-small-cap">
+                            <span class="hide-menu">Extras</span>
+                        </li>
+                        <li class="sidebar-item"> 
+                            <a class="sidebar-link" href="#" aria-expanded="false" data-bs-toggle="modal" data-bs-target="#feedbackModal">
+                                <i data-feather="message-circle" class="feather-icon"></i>
+                                <span
+                                    class="hide-menu">Feedback
+                                </span>
+                            </a>
+                        </li>
                         {{-- <li class="sidebar-item"> 
                             <a class="sidebar-link" href="{{route('buildings.index')}}" aria-expanded="false">
                                 <i data-feather="home" class="feather-icon"></i>
@@ -579,6 +593,35 @@
     <!-- ============================================================== -->
     <!-- End Wrapper -->
     <!-- ============================================================== -->
+    <div id="feedbackModal" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="feedbackForm" action="{{route('feedback.store')}}" method="POST" enctype="multipart/form-data">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="myModalLabel">Feedback / Suggestion</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+                    </div>
+                    <div class="modal-body">
+                            @csrf
+                            <div class="mb-3">
+                                <label for="message" class="form-label">Message</label>
+                                <textarea class="form-control" id="message" name="message" rows="4" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Attachments</label>
+                                <input type="file" class="form-control" id="file" name="files[]" multiple>
+                            </div>
+                            {{-- <button type="submit" class="btn btn-primary w-100">Send Message</button> --}}
+                        <div id="feedbackError" class="mt-3 text-danger" style="display: none;"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
     <!-- All Jquery -->
     <!-- ============================================================== -->
     <script src="{{ asset('admin/assets/libs/jquery/dist/jquery.min.js') }}"></script>
@@ -605,6 +648,9 @@
 
     {{-- <script src="{{ asset('admin/dist/js/pages/dashboards/dashboard1.min.js') }}"></script> --}}
     <script>
+        @if (session('success'))
+            toastr.success('{{ session('success') }}');
+        @endif
         function confirmEraseData(type) {
             // Use SweetAlert to ask for confirmation
             Swal.fire({

@@ -10,7 +10,7 @@ class Suggestion extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'message', 'ip', 'user_agent'
+        'name', 'message', 'ip', 'user_agent','file','user_id','added_by'
     ];
     
     // public function addedBy()

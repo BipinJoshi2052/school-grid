@@ -411,13 +411,15 @@ class SeatPlanController extends Controller
 
         if ($seatingPattern['type'] == 'sequential') {
             $seatingData = $this->assignSeatsSequentially($buildings, $students,$studentDetails, $seat_plan_id, $seat_plan_details, $unassigned_students, $request->input('rooms'));
-        } elseif ($seatingPattern['type'] == 'alternate') {
-            $seatingData = $this->assignSeatsIndividually($buildings, $students, $seat_plan_id, $seat_plan_details, $unassigned_students, $request->input('rooms'));
-        } elseif ($seatingPattern['type'] == 'random') {
-            $seatingData = $this->assignSeatsIndividually($buildings, $students, $seat_plan_id, $seat_plan_details, $unassigned_students, $request->input('rooms'));
         } elseif ($seatingPattern['type'] == 'rowbased') {
             $seatingData = $this->assignSeatsRowBased($buildings, $students,$studentDetails, $reorderedStudentData, $seat_plan_id, $seat_plan_details, $unassigned_students, $request->input('rooms'));
-        } else {
+        } 
+        // elseif ($seatingPattern['type'] == 'random') {
+            // $seatingData = $this->assignSeatsIndividually($buildings, $students, $seat_plan_id, $seat_plan_details, $unassigned_students, $request->input('rooms'));
+        // } elseif ($seatingPattern['type'] == 'alternate') {
+            // $seatingData = $this->assignSeatsIndividually($buildings, $students, $seat_plan_id, $seat_plan_details, $unassigned_students, $request->input('rooms'));
+        // } 
+        else {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Invalid seating pattern type provided.'
@@ -431,35 +433,7 @@ class SeatPlanController extends Controller
 
         // 8. Initialize staff index and loop through rooms to assign staff to each room
         $staffIndex = 0; // Initialize staffIndex before looping
-        // foreach ($buildings as $building) {
-        //     // Decode the rooms JSON to an array
-        //     $rooms = json_decode($building->rooms, true); // Decode rooms data from JSON
 
-        //     // Process only the rooms selected by the user
-        //     foreach ($rooms as $roomIndex => $roomData) {
-        //         // Check if this room is selected by the user
-        //         if (isset($request->input('rooms')[$building->id]) && in_array($roomIndex, $request->input('rooms')[$building->id])) {
-        //             if ($staffIndex < count($staffs)) {
-        //                 echo count($staffs);
-        //                 // If there's still staff available for the room
-        //                 $invigilator_plan_details[] = [
-        //                     'seat_plan_id' => $seat_plan_id,
-        //                     'building_id' => $building->id,
-        //                     'room' => $roomIndex, // Room index (0, 1, 2, etc.)
-        //                     'staff_id' => $staffs[$staffIndex]->id,
-        //                     'created_at' => $now,
-        //                     'updated_at' => $now
-        //                 ];
-        //                 $staffIndex++; // Increment the staff index
-        //             } 
-        //             else {
-        //                 // Add remaining staff to unassigned_staffs
-        //                 $unassigned_staffs[] = $staffs[$staffIndex]->id;
-        //                 $staffIndex++; // Increment the staff index
-        //             }
-        //         }
-        //     }
-        // }
         // 9. Insert seat plan details for students into the seat_plan_details table
         SeatPlanDetail::Insert($seat_plan_details);
 
@@ -532,30 +506,34 @@ class SeatPlanController extends Controller
                     // Check the type of seating for the room (individual or total)
                     if ($roomData['selected_type'] == 'individual') {
                         // Individual seating: Loop through each row and bench, assign seats
-                        foreach ($roomData['individual'] as $rowIndex => $row) {
-                            foreach ($row['bench'] as $benchIndex => $bench) {
-                                for ($seatIndex = 0; $seatIndex < $bench['seats']; $seatIndex++) {
-                                    // Check if there are students to assign
-                                    if ($studentIndex < count($students)) {
-                                        //here is issue
-                                        $seat_plan_details[] = [
-                                            'seat_plan_id' => $seat_plan_id,
-                                            'building_id' => $building->id,
-                                            'room' => $roomIndex,
-                                            'bench' => $bench['name'],  // Use the bench name directly from the data
-                                            'seat' => $seatIndex + 1,   // Assign seat number starting from 1
-                                            'student_id' => $students[$studentIndex],
-                                            'created_at' => $now,
-                                            'updated_at' => $now
-                                        ];
-                                        $studentIndex++;
-                                    } else {
-                                        // Break if no students are left to assign
-                                        break 2;
-                                    }
-                                }
-                            }
-                        }
+                        // foreach ($roomData['individual'] as $rowIndex => $row) {
+                        //     foreach ($row['bench'] as $benchIndex => $bench) {
+                        //         for ($seatIndex = 0; $seatIndex < $bench['seats']; $seatIndex++) {
+                        //             // Check if there are students to assign
+                        //             if ($studentIndex < count($students)) {
+                        //                 //here is issue
+                        //                 $seat_plan_details[] = [
+                        //                     'seat_plan_id' => $seat_plan_id,
+                        //                     'building_id' => $building->id,
+                        //                     'room' => $roomIndex,
+                        //                     'bench' => $bench['name'],  // Use the bench name directly from the data
+                        //                     'seat' => $seatIndex + 1,   // Assign seat number starting from 1
+                        //                     'student_id' => $students[$studentIndex],
+                        //                     'student_name' => $student['name'],
+                        //                     'student_class' => $student['class_name'],
+                        //                     'student_section' => $student['section_name'],
+                        //                     'student_roll_no' => $student['roll_no'],
+                        //                     'created_at' => $now,
+                        //                     'updated_at' => $now
+                        //                 ];
+                        //                 $studentIndex++;
+                        //             } else {
+                        //                 // Break if no students are left to assign
+                        //                 break 2;
+                        //             }
+                        //         }
+                        //     }
+                        // }
                     } elseif ($roomData['selected_type'] == 'total') {
                         // Total seating: All benches are treated as a single block
                         $totalBenches = $roomData['total']['benches'];  // Number of benches
@@ -563,6 +541,13 @@ class SeatPlanController extends Controller
 
                         for ($benchIndex = 0; $benchIndex < $totalBenches; $benchIndex++) {
                             for ($seatIndex = 0; $seatIndex < $seatsPerBench; $seatIndex++) {
+                                $studentId = $students[$studentIndex];
+                                $student = $studentDetails[$studentId] ?? [
+                                    'name' => $studentDetails[$studentId]['name'],
+                                    'class_name' => $studentDetails[$studentId]['class_name'] ?? 'N/A',
+                                    'section_name' => $studentDetails[$studentId]['section_name'] ?? 'N/A',
+                                    'roll_no' => $studentDetails[$studentId]['roll_no'] ?? 'N/A',
+                                ];
                                 // Check if there are students to assign
                                 if ($studentIndex < count($students)) {
                                     $seat_plan_details[] = [
@@ -571,7 +556,11 @@ class SeatPlanController extends Controller
                                         'room' => $roomIndex,
                                         'bench' => "Bench " . ($benchIndex + 1),  // Assign the bench number
                                         'seat' => $seatIndex + 1,                 // Assign seat number
-                                        'student_id' => $students[$studentIndex],
+                                        'student_id' => $studentId,
+                                        'student_name' => $student['name'],
+                                        'student_class' => $student['class_name'],
+                                        'student_section' => $student['section_name'],
+                                        'student_roll_no' => $student['roll_no'],
                                         'created_at' => $now,
                                         'updated_at' => $now
                                     ];
@@ -692,8 +681,8 @@ class SeatPlanController extends Controller
                     'room' => $roomIndex,
                     'bench' => "Bench " . $benchNumber,
                     'seat' => 1,
-                    // 'student_id' => $studentId,
-                    'student_id' => null,
+                    'student_id' => $studentId,
+                    // 'student_id' => null,
                     'student_name' => $student['name'],
                     'student_class' => $student['class_name'],
                     'student_section' => $student['section_name'],
@@ -756,8 +745,8 @@ class SeatPlanController extends Controller
                         'room' => $roomIndex,
                         'bench' => "Bench " . $benchNumber,
                         'seat' => $seatIndex + 1,
-                        // 'student_id' => $studentId,
-                        'student_id' => null,
+                        'student_id' => $studentId,
+                        // 'student_id' => null,
                         'student_name' => $student['name'],
                         'student_class' => $student['class_name'],
                         'student_section' => $student['section_name'],
@@ -785,7 +774,6 @@ class SeatPlanController extends Controller
             }
         }
     }
-
 
     private function assignSeatsToRow3(&$studentClassWiseData, &$students, &$studentIndex, $seat_plan_id, &$seat_plan_details, $buildingId, $roomIndex, $benchNumber, $seatsPerBench, $now, &$classIds, $totalClasses)
     {

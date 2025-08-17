@@ -72,7 +72,7 @@
             border: 2px solid transparent;
             position: relative;
             overflow: hidden;
-            max-height: 50%;
+            /* max-height: 50%; */
         }
 
         .main-content .card::before {
@@ -110,7 +110,7 @@
         .stats {
             display: flex;
             justify-content: space-between;
-            margin-top: 15px;
+            /* margin-top: 15px; */
         }
 
         .stat {
@@ -281,18 +281,8 @@
         }
 
         @media (max-width: 768px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
-
-            .header h1 {
-                font-size: 2rem;
-            }
-
-            .content {
-                padding: 20px;
-            }
         }
+
         @media print {.hide-when-printing {display: none;}}
 
         /* .student-info {
@@ -308,11 +298,17 @@
         .dropdown-menu{
             z-index: 9;
         }
-        @media (max-width: 430px) {
+
+        @media (max-width: 400px){
+
+            /* Your styles for small devices */
             .button-group{
                 display:block;
             }
             .btn-edit-layout{
+                margin-top: 10px;
+            }
+            .show-filter{
                 margin-top: 10px;
             }
             .bench{
@@ -335,6 +331,95 @@
                 display: none!important;
             }
         }
+
+        /* Small devices (mobile phones, 600px and below) */
+        @media (min-width: 401px) and (max-width: 600px) {
+            /* Your styles for small devices */
+            .button-group{
+                display:block;
+            }
+            .btn-edit-layout{
+                margin-top: 10px;
+            }
+            .show-filter{
+                margin-top: 10px;
+            }
+            .bench{
+                max-width: 250px!important;
+                min-width: 250px!important;
+            }
+            .seats{
+                flex-wrap: nowrap!important;
+                gap: 5px!important;
+                margin-top: 5px!important;
+                margin-left: 0px!important;
+            }
+            .content {
+                padding: 0px;
+            }
+            .aisle-label{
+                display: none!important;
+            }
+            .layout-content .row-container::after{
+                display: none!important;
+            }
+        }
+
+        /* Medium devices (tablets, 600px to 900px) */
+        @media (min-width: 601px) and (max-width: 900px) {
+            /* Your styles for medium devices */
+            .button-group{
+                display:block;
+            }
+            .btn-edit-layout{
+                margin-top: 10px;
+            }
+            .show-filter{
+                margin-top: 10px;
+            }
+            .bench{
+                max-width: 250px!important;
+                min-width: 250px!important;
+            }
+            .seats{
+                flex-wrap: nowrap!important;
+                gap: 5px!important;
+                margin-top: 5px!important;
+                margin-left: 0px!important;
+            }
+            .content {
+                padding: 0px;
+            }
+            .aisle-label{
+                display: none!important;
+            }
+            .layout-content .row-container::after{
+                display: none!important;
+            }
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .content {
+                padding: 20px;
+            }
+        }
+
+        /* Large devices (desktops, 900px to 1200px) */
+        @media (min-width: 901px) and (max-width: 1200px) {
+            /* Your styles for large devices */
+        }
+
+        /* @media (min-width: 431px) and (max-width: 886px) {
+            .bench{
+                background: red;
+            }
+
+        } */
     </style>
 @endsection
 
@@ -586,7 +671,7 @@
                                 <li><a class="dropdown-item" href="javascript:void(0);" onclick="printSeatingLayout('attendance-custom', ${currentBuilding.id}, '${currentBuilding.name}',${roomIndex},'${currentRoom.name}')">Attendance Custom</a></li>
                             </ul>
                         </div>
-                        <div class="dropdown hide-when-printing">
+                        <div class="dropdown show-filter hide-when-printing">
                             <button class="btn btn-primary dropdown-toggle" type="button" id="showDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                 Show
                                 <i class="fa fa-caret-down ms-2"></i>
@@ -621,8 +706,9 @@
                 }
 
                 $('#main-content').html(html);
-
-                $('#classCheckbox').change(function() {
+            }
+                $(document).on("click","#classCheckbox",function() {    
+                // $('#classCheckbox').change(function() {
                     console.log('object')
                     if ($(this).is(':checked')) {
                         $('.student-class').show(); // Show the class div
@@ -630,7 +716,6 @@
                         $('.student-class').hide(); // Hide the class div
                     }
                 });
-            }
 
             function generateTotalLayout(room, roomIndex) {
                 // console.log(room);
