@@ -260,6 +260,10 @@
             margin-left: 10px;
         }
 
+        #breadcrumb-content a{
+            cursor: pointer;
+        }
+        
         @media (max-width: 768px) {
             .grid {
                 grid-template-columns: 1fr;

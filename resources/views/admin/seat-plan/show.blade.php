@@ -279,8 +279,8 @@
             text-transform: uppercase;
             margin-left: 10px;
         }
-
-        @media (max-width: 768px) {
+        #breadcrumb-content a{
+            cursor: pointer;
         }
 
         @media print {.hide-when-printing {display: none;}}
@@ -437,9 +437,11 @@
                                     Dashboard
                                 </a>
                             </li>
-                            {{-- <li class="breadcrumb-item text-muted active" aria-current="page">
-                                {{$data['seat_plan']['title']}}
-                            </li> --}}
+                            <li class="breadcrumb-item text-muted active" aria-current="page">
+                                <a href="{{ route('seat-plan') }}">
+                                    Seat Plans
+                                </a>
+                            </li>
                             <li class="breadcrumb-item text-muted active" aria-current="page">
                                 <div class="breadcrumb">
                                     <span id="breadcrumb-content">🏠 {{ $data['seat_plan']['title'] }}</span>
