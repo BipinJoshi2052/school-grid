@@ -31,7 +31,7 @@ use App\Http\Controllers\SuggestionController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-Route::post('/feedback', [SuggestionController::class, 'store'])->name('feedback.store');
+Route::post('/feedback/store', [SuggestionController::class, 'store'])->name('feedback.store');
 Route::post('/message/store', [MessageController::class, 'store'])->name('message.store');
 
 Auth::routes(['verify' => true]);
@@ -44,6 +44,7 @@ Route::middleware(['auth', 'UserIsSuperAdmin'])->prefix('admin')->name('admin.')
     Route::get('/dashboard', [SuperAdminDashboardController::class, 'index'])->name('dashboard');
     
     Route::get('/schools', [SchoolController::class, 'index'])->name('schools.index');
+    Route::get('/feedback', [SuggestionController::class, 'index'])->name('feedback.index');
 
     Route::get('/schools/list-partial', [SchoolController::class, 'listPartial'])->name('schools.list-partial');
     Route::post('schools/update/{id}', [SchoolController::class, 'update'])->name('schools.update');

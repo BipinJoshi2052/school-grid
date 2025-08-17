@@ -10,6 +10,7 @@ class SuggestionController extends Controller
 {
     public function index()
     {
+        dd(Suggestion::all()->toArray());
         return view('suggestions.create');
     }
     

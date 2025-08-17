@@ -18,7 +18,7 @@
     <meta name="twitter:image" content="{{ asset('images/favicon.ico') }}">
 
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon.ico') }}">
-    <link href="{{ asset('images/apple-touch-icon.png')}}" rel="apple-touch-icon">
+    <link href="{{ asset('images/favicon.ico')}}" rel="apple-touch-icon">
     
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
@@ -57,10 +57,11 @@
         <div class="container">
             <div class="nav-content">
                 <a href="#" class="logo">
-                    <div class="logo-icon">
+                    <img src="{{ asset('images/seat-plan-logo-2.png') }}" alt="" class="img-fluid" style="max-width: 60%;">
+                    {{-- <div class="logo-icon">
                         <i class="fas fa-graduation-cap"></i>
                     </div>
-                    <span class="logo-text">SeatPlan Pro</span>
+                    <span class="logo-text">SeatPlan Pro</span> --}}
                 </a>
                 
                 {{-- <nav class="nav-menu" id="navMenu">
