@@ -62,6 +62,7 @@ class SeatPlanController extends Controller
 
         // Paginate the results
         $seat_plans = $query->paginate($perPage);
+        // dd($seat_plans);
 
         // Return the response in JSON format for DataTables
         return response()->json([
@@ -166,6 +167,8 @@ class SeatPlanController extends Controller
             'user_type_id' => $user_type_id_of_staff->id,
 
         ])->with('staff.department:id,title')->get()->toArray();
+            
+        // dd($data['staffs']);
 
         return view('admin.seat-plan.config', compact('data'));
     }
@@ -173,6 +176,228 @@ class SeatPlanController extends Controller
     public function seatPlanConfigV3()
     {
         return view('admin.seat-plan.config-2');
+    }
+    
+    public function unassignedList(Request $request, $id)
+    {
+        // Fetch the seat plan by ID
+        $seatPlan = SeatPlan::findOrFail($id);
+
+        // Parse unassigned students and staffs
+        $unassignedStudents = $seatPlan->unassigned_students ? json_decode($seatPlan->unassigned_students, true) : [];
+        $unassignedStaffs = $seatPlan->unassigned_staffs ? json_decode($seatPlan->unassigned_staffs, true) : [];
+
+        // Fetch student details with related class, section, and user
+        $students = [];
+        if (!empty($unassignedStudents)) {
+            $students = Student::whereIn('id', $unassignedStudents)
+                ->with(['class', 'section', 'user'])
+                ->get()
+                ->map(function ($student, $index) {
+                    return [
+                        'sn' => $index + 1,
+                        'id' => $student->id ?? 'N/A',
+                        'image' => $student->user->avatar ?? 'default.jpg',
+                        'name' => $student->user->name ?? 'N/A',
+                        'class' => $student->class->title ?? 'N/A',
+                        'section' => $student->section->title ?? 'N/A',
+                    ];
+                })->toArray();
+        }
+        // dd($students);
+
+        // Fetch staff details with related department, position, and user
+        $staffs = [];
+        if (!empty($unassignedStaffs)) {
+            $staffs = Staff::whereIn('id', $unassignedStaffs)
+                ->with(['department', 'position', 'user'])
+                ->get()
+                ->map(function ($staff, $index) {
+                    return [
+                        'sn' => $index + 1,
+                        'id' => $staff->id ?? 'N/A',
+                        'image' => $staff->user->profile_image ?? 'default.jpg',
+                        'name' => $staff->user->name ?? 'N/A',
+                        'department' => $staff->department->title ?? 'N/A',
+                        'position' => $staff->position->title ?? 'N/A',
+                    ];
+                })->toArray();
+        }
+
+        // <th>Image</th>
+        // <td><img src="' . asset('storage/' . $student['image']) . '" alt="image" width="50" height="50"></td>
+        // <th>Image</th>
+        // <td><img src="' . asset('storage/' . $staff['image']) . '" alt="image" width="50" height="50"></td>
+
+        // HTML for the modal content
+        $modalContent = '
+        <div class="modal-header">
+            <h5 class="modal-title" id="myModalLabel">Unassigned List</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <ul class="nav nav-tabs" id="unassignedTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="students-tab" data-bs-toggle="tab" data-bs-target="#students" type="button" role="tab" aria-controls="students" aria-selected="true">Students</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="staffs-tab" data-bs-toggle="tab" data-bs-target="#staffs" type="button" role="tab" aria-controls="staffs" aria-selected="false">Staffs</button>
+                </li>
+            </ul>
+            <div class="tab-content" id="unassignedTabContent">
+                <div class="tab-pane fade show active" id="students" role="tabpanel" aria-labelledby="students-tab">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>SN</th>
+                                <th>Name</th>
+                                <th>Class</th>
+                                <th>Section</th>
+                            </tr>
+                        </thead>
+                        <tbody>';
+
+        if (empty($students)) {
+            $modalContent .= '<tr><td colspan="5" class="text-center">No unassigned students found</td></tr>';
+        } else {
+            foreach ($students as $student) {
+                $modalContent .= '
+                    <tr>
+                        <td>' . $student['sn'] . '</td>
+                        <td>' . htmlspecialchars($student['name']) . '</td>
+                        <td>' . htmlspecialchars($student['class']) . '</td>
+                        <td>' . htmlspecialchars($student['section']) . '</td>
+                    </tr>';
+            }
+        }
+
+        $modalContent .= '
+                        </tbody>
+                    </table>
+                </div>
+                <div class="tab-pane fade" id="staffs" role="tabpanel" aria-labelledby="staffs-tab">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>SN</th>
+                                <th>Name</th>
+                                <th>Department</th>
+                                <th>Position</th>
+                            </tr>
+                        </thead>
+                        <tbody>';
+
+        if (empty($staffs)) {
+            $modalContent .= '<tr><td colspan="5" class="text-center">No unassigned staffs found</td></tr>';
+        } else {
+            foreach ($staffs as $staff) {
+                $modalContent .= '
+                    <tr>
+                        <td>' . $staff['sn'] . '</td>
+                        <td>' . htmlspecialchars($staff['name']) . '</td>
+                        <td>' . htmlspecialchars($staff['department']) . '</td>
+                        <td>' . htmlspecialchars($staff['position']) . '</td>
+                    </tr>';
+            }
+        }
+
+        $modalContent .= '
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>';
+
+        return response()->json(['modal_content' => $modalContent]);
+    }
+
+    public function seatInvigilatorLayout($id)
+    {
+        // Step 1: Get seat plan data
+        $data['seat_plan'] = SeatPlan::select('id', 'title', 'unassigned_students', 'unassigned_staffs')
+            ->where('id', $id)
+            ->first()
+            ->toArray();
+
+        // Step 2: Get distinct building IDs from seat_plan_details
+        $buildingIds = InvigilatorPlanDetail::where('seat_plan_id', $id)
+            ->distinct()
+            ->pluck('building_id');
+
+        // Step 3: Get building information from the buildings table
+        $buildings = Building::whereIn('id', $buildingIds)
+            ->get();
+        $data['buildings'] = $buildings->toArray();
+
+        // Step 4: Get all seat plan details for the given seat_plan_id
+        $seatPlanDetails = InvigilatorPlanDetail::where('seat_plan_id', $id)
+            ->get();
+
+        // Step 5: Group by building_id and room, then map staff details
+        $groupedStaff = [];
+
+        foreach ($seatPlanDetails as $detail) {
+            // Check if staff exists for the current detail
+            // $staff = $detail->staff;
+            // if ($staff) {
+                // Initialize the group if it doesn't exist
+                if (!isset($groupedStaff[$detail->building_id])) {
+                    $groupedStaff[$detail->building_id] = [];
+                }
+
+                // Initialize the room index if it doesn't exist
+                if (!isset($groupedStaff[$detail->building_id][$detail->room])) {
+                    $groupedStaff[$detail->building_id][$detail->room] = [];
+                }
+
+                // Add the staff details
+                $groupedStaff[$detail->building_id][$detail->room][$detail->staff_id] = [
+                    'name' => $detail->staff_name,
+                    'department' => $detail->staff_department,
+                    'position' => $detail->staff_position
+                ];
+            // }
+        }
+
+        // Step 6: Handle unassigned staff
+        if (!empty($data['seat_plan']['unassigned_staffs'])) {
+            $unassignedStaffIds = json_decode($data['seat_plan']['unassigned_staffs'], true);
+
+            // Fetch details of unassigned staff in one query
+            $unassignedStaffs = Staff::whereIn('id', $unassignedStaffIds)
+                ->with('user') // Eager load the user relation
+                ->get();
+
+            // Store the staff details in an array
+            $unassignedStaffDetails = [];
+            foreach ($unassignedStaffs as $staff) {
+                $unassignedStaffDetails[$staff->id] = [
+                    'id' => $staff->id,
+                    'name' => $staff->name,
+                    'department' => $staff->department->title,
+                    'position' => $staff->position->title,
+                    'avatar' => $staff->user ? $staff->user->avatar : null // Get avatar from the user relation
+                ];
+            }
+
+            // Add unassigned staff details to data
+            $data['unassigned_staffs'] = $unassignedStaffDetails;
+        } else {
+            // If there are no unassigned staffs, set to empty array
+            $data['unassigned_staffs'] = [];
+        }
+
+        // Step 7: Return the grouped staff data
+        $data['grouped_staff'] = $groupedStaff;
+        // dd($data);
+        $data['configs'] = HelperFile::getSchoolConfigs();
+
+        return view('admin.seat-plan.invig-show', compact('data'));
+        
+        // For debugging purposes
     }
 
 
@@ -289,6 +514,7 @@ class SeatPlanController extends Controller
         // Step 6: Return view with arranged data
         return view('admin.seat-plan.show', compact('data'));
     }
+    
     public function roomEdit($id){
         return view('admin.seat-plan.room-edit');
     }
@@ -383,11 +609,16 @@ class SeatPlanController extends Controller
         if(!empty($staffIds)){
             shuffle($staffIds); // Shuffle the staff array
 
-            $user_type_id_of_staff = UserType::where('name', 'staff')->first();
-            $staffs = User::where([
-                'parent_id' => session('school_id'),
-                'user_type_id' => $user_type_id_of_staff->id,
+            // $user_type_id_of_staff = UserType::where('name', 'staff')->first();
+            // $staffs = User::where([
+            //     'parent_id' => session('school_id'),
+            //     'user_type_id' => $user_type_id_of_staff->id,
+            // ])->whereIn('id', $staffIds)->get();
+
+            $staffs = Staff::where([
+                'school_id' => session('school_id')
             ])->whereIn('id', $staffIds)->get();
+            // dd($staffs->toArray());
 
             if ($staffs->isEmpty()) {
                 return response()->json([
@@ -453,6 +684,9 @@ class SeatPlanController extends Controller
                                 'building_id' => $building->id,
                                 'room' => $roomIndex, // Room index (0, 1, 2, etc.)
                                 'staff_id' => $staffs[$staffIndex]->id,
+                                'staff_name' => $staffs[$staffIndex]->name,
+                                'staff_department' => $staffs[$staffIndex]->department->title,
+                                'staff_position' => $staffs[$staffIndex]->position->title,
                                 'created_at' => $now,
                                 'updated_at' => $now
                             ];
@@ -465,6 +699,14 @@ class SeatPlanController extends Controller
             // 10. Insert invigilator plan details into the invigilator_plan_details table
             InvigilatorPlanDetail::Insert($invigilator_plan_details);
         }
+        
+        // Collect unassigned staff
+        while ($staffIndex < count($staffs)) {
+            // If there are staff left without rooms assigned
+            $unassigned_staffs[] = $staffs[$staffIndex]->id;
+            $staffIndex++; // Move to the next staff
+        }
+
         // dd($seat_plan_details);
         // dd($seat_plan_details);
 

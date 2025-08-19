@@ -511,13 +511,16 @@
             let currentBuilding = null;
             let currentRoom = null;
 
+
             function showBuildings() {
                 currentView = 'buildings';
                 currentBuilding = null;
                 currentRoom = null;
                 updateBreadcrumb();
 
-                let html = '<h2 style="margin-bottom: 20px; color: #2c3e50;">🏢 Buildings Overview</h2>';
+                // let html = '<h2 style="margin-bottom: 20px; color: #2c3e50;">🏢 Buildings Overview</h2>';
+                let html = '<button class="back-btn" onclick="showSeatPlans()">← Back</button><h2 style="margin-bottom: 20px; color: #2c3e50;">🏢 Buildings Overview</h2>';
+                
                 html += '<div class="grid">';
 
                 if (buildingsData.length <= 0) {
@@ -576,7 +579,7 @@
                 const rooms = currentBuilding.rooms;
 
                 let html = `
-                    <button class="back-btn" onclick="showBuildings()">← Back to Buildings</button>
+                    <button class="back-btn" onclick="showBuildings()">← Back</button>
                     <h2 style="margin-bottom: 20px; color: #2c3e50;">🚪 ${currentBuilding.name} - Rooms</h2>
                 `;
                 html += '<div class="grid">';
@@ -655,7 +658,7 @@
                 // }
                 // html += `<a class="btn btn-orange hide-when-printing" onclick=""><i class="fa fa-pencil"></i>Edit Layout</a>`;
                 let html = `
-                    <button class="back-btn hide-when-printing" onclick="showRooms(${currentBuilding.id})">← Back to Rooms</button>
+                    <button class="back-btn hide-when-printing" onclick="showRooms(${currentBuilding.id})">← Back</button>
                     <h2 class="hide-when-printing" style="margin-bottom: 20px; color: #2c3e50;">🪑 ${currentRoom.name} - Seating Layout</h2>`;
                 html += `
                 <div class="button-group">
@@ -709,15 +712,16 @@
 
                 $('#main-content').html(html);
             }
-                $(document).on("click","#classCheckbox",function() {    
+
+            $(document).on("click","#classCheckbox",function() {    
                 // $('#classCheckbox').change(function() {
-                    console.log('object')
-                    if ($(this).is(':checked')) {
-                        $('.student-class').show(); // Show the class div
-                    } else {
-                        $('.student-class').hide(); // Hide the class div
-                    }
-                });
+                console.log('object')
+                if ($(this).is(':checked')) {
+                    $('.student-class').show(); // Show the class div
+                } else {
+                    $('.student-class').hide(); // Hide the class div
+                }
+            });
 
             function generateTotalLayout(room, roomIndex) {
                 // console.log(room);
@@ -755,7 +759,7 @@
                     if (startBench >= totalBenches) break;
 
                     html += '<div class="row-container" style="display: flex;flex-direction: column;align-items: center;min-width: 300px;position: relative;">';
-                    html += `<div class="row-label" style="font-weight: bold;color: #495057;margin-bottom: 15px;text-align: center;padding: 8px 16px;font-size: 14px;border: 2px solid #000000;">Row ${rowIndex + 1}</div>`;
+                    html += `<div class="row-label" style="font-weight: bold;color: #495057;margin-bottom: 15px;text-align: center;padding: 8px 16px;font-size: 14px;border: 2px solid #000000;">Column ${rowIndex + 1}</div>`;
                     html += '<div class="row" style="display: flex;flex-direction: column;gap: 15px;align-items: center;">';
 
                     if(rowIndex === 0 && (totalBenches%2 != 0)){
@@ -949,8 +953,6 @@
                 return html;
             }
 
-
-
             function updateBreadcrumb() {
                 let breadcrumb = '<a onclick="showBuildings()">🏠 Home</a>';
 
@@ -994,7 +996,7 @@
                 var originalContents = document.body.innerHTML;
 
                 // Temporarily replace the body content with the layout content for printing
-                document.body.innerHTML = printContents;
+                // document.body.innerHTML = printContents;
                 // Open a new window to handle printing (similar to other sections)
                 const printWindow = window.open('', '_blank');
                 printWindow.document.write(`
@@ -1018,6 +1020,11 @@
                                 @page { 
                                     size: A4; 
                                     margin: 5mm; 
+                                    @bottom-right {
+                                        content: "seatplanpro.com";
+                                        font-size: 10px;
+                                        color: #666;
+                                    }
                                 }
                                 .seating-layout {
                                     display: flex !important;
@@ -1047,7 +1054,6 @@
                         <div style="display: flex; justify-content: space-between; margin-top: 5px;">
                                 <p>Invigilator Signature : ____________________</p>
                         </div>
-                            <footer>seatplanpro.com</footer>
                         </body>
                     </html>
                 `);                
@@ -1126,6 +1132,11 @@
                         @page { 
                             size: A4;  
                             margin: 5mm; 
+                            @bottom-right {
+                                content: "seatplanpro.com";
+                                font-size: 10px;
+                                color: #666;
+                            }
                         }
                         .hide-when-printing {
                             display: none;
@@ -1419,6 +1430,10 @@
                     return html;
             // printWindow.document.close();
             // printWindow.print();
+        }
+
+        function showSeatPlans(){
+            window.location.href = `/seat-plan/`;
         }
 
 </script>

@@ -146,15 +146,26 @@ Seat Plan Config
                                         $staffChunks = array_chunk($data['staffs'], ceil(count($data['staffs']) / 3)); // Splits into 3 parts    
                                     @endphp    
                                     <div class="grid" id="staffGrid">
+                                        {{-- @foreach ($staffChunks as $index => $staffGroup)
+                                            <div class="card">
+                                                <div class="card-content">
+                                                    @foreach ($staffGroup as $staffItem)
+                                                        <div class="staff-item">
+                                                            <input type="checkbox" class="checkbox staff-checkbox" id="staff{{$staffItem['id']}}" data-server-id="{{$staffItem['id']}}" checked>
+                                                            <label for="staff1">{{$staffItem['name']}}</label>
+                                                            <span class="staff-info">{{isset($staffItem['staff']['department']['title']) ? '('.$staffItem['staff']['department']['title'].')' : ''}}</span>
+                                                        </div>                                         
+                                                    @endforeach
+                                                </div>
+                                            </div>                                            
+                                        @endforeach --}}
+
                                         @foreach ($staffChunks as $index => $staffGroup)
                                             <div class="card">
                                                 <div class="card-content">
                                                     @foreach ($staffGroup as $staffItem)
-                                                    {{-- @php
-                                                        dd($staffChunks);
-                                                    @endphp --}}
                                                         <div class="staff-item">
-                                                            <input type="checkbox" class="checkbox staff-checkbox" id="staff{{$staffItem['id']}}" data-server-id="{{$staffItem['id']}}" checked>
+                                                            <input type="checkbox" class="checkbox staff-checkbox" id="staff{{$staffItem['staff']['id']}}" data-server-id="{{$staffItem['staff']['id']}}" checked>
                                                             <label for="staff1">{{$staffItem['name']}}</label>
                                                             <span class="staff-info">{{isset($staffItem['staff']['department']['title']) ? '('.$staffItem['staff']['department']['title'].')' : ''}}</span>
                                                         </div>                                         

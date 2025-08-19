@@ -20,6 +20,16 @@
         .seat-plan-create-btn:hover{
             color: white;
         }
+        .unassigned-list{
+            cursor: pointer;
+        }
+        .nav-tabs{
+            margin-bottom: 10px;
+        }
+        .nav-item .active{
+            background: linear-gradient(to right, #8971ea, #7f72ea, #7574ea, #6a75e9, #5f76e8);
+            color: white!important;
+        }
         /* Styling for table cells */
     </style>
 @endsection
@@ -62,6 +72,8 @@
                                             <th>#</th>
                                             <th>Title</th>
                                             <th>Seat Plan</th>
+                                            <th>Invigilator Plan</th>
+                                            <th>Unassigned</th>
                                             {{-- <th>Invigilator Plan</th>
                                             <th>Action</th> --}}
                                         </tr>
@@ -76,6 +88,12 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div id="unassignedListModal" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
     </div>
 @endsection
 
@@ -124,13 +142,30 @@
                         "render": function(data, type, row) {
                             return `<button class="btn btn-primary btn-sm editSeatplanBtn" data-id="${row.id}">View</button>`;
                         }
+                    },
+                    {
+                        "data": null,
+                        "render": function(data, type, row) {
+                            return `<button class="btn btn-secondary btn-sm editInvigplanBtn" data-id="${row.id}">View</button>`;
+                        }
+                    },
+                    {
+                        "data": null,
+                        "render": function(data, type, row) {
+                            // Parse unassigned students and staff to count them
+                            const unassignedStudents = row.unassigned_students ? JSON.parse(row.unassigned_students) : [];
+                            const unassignedStaffs = row.unassigned_staffs ? JSON.parse(row.unassigned_staffs) : [];
+
+                            // console.log(unassignedStudents)
+                            // console.log(row)
+                            // Get the counts
+                            const studentCount = unassignedStudents.length;
+                            const staffCount = unassignedStaffs.length;
+
+                            return `<span class="unassigned-list" data-id="${row.id}">Student - ${studentCount} <br> Invigilator - ${staffCount}</span>`;
+                            // return `Student - ${studentCount} <br> Invigilator - ${staffCount}`;
+                        }
                     }
-                    // {
-                    //     "data": null,
-                    //     "render": function(data, type, row) {
-                    //         return `<button class="btn btn-secondary btn-sm editInvigplanBtn" data-id="${row.id}">View</button>`;
-                    //     }
-                    // },
                     // {
                     //     "data": null,
                     //     "render": function(data, type, row) {
@@ -147,6 +182,7 @@
 
             $(document).on('click', '.editInvigplanBtn', function () {
                 let id = $(this).data('id');
+                window.location.href = '/seat-plan/invigilator/' + id;
             });
 
             // Edit Position
@@ -188,6 +224,26 @@
                                 toastr.error('An error occurred. Please try again.');
                             }
                         });
+                    }
+                });
+            });
+
+
+            $(document).on('click', '.unassigned-list', function () {
+                let seatPlanId = $(this).data('id');
+
+                // Make AJAX request
+                $.ajax({
+                    url: '/unassigned-list/' + seatPlanId,
+                    type: 'GET',
+                    success: function(response) {
+                        // Update modal content and show
+                        $('#unassignedListModal .modal-content').html(response.modal_content);
+                        $('#unassignedListModal').modal('show');
+                    },
+                    error: function(xhr) {
+                        console.error('Error fetching unassigned list:', xhr);
+                        alert('Failed to load unassigned list. Please try again.');
                     }
                 });
             });

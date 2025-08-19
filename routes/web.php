@@ -59,9 +59,11 @@ Route::middleware(['auth', 'UserIsSchoolOrStaff'])->group(function () {
     Route::post('/generate-seat-plan', [SeatPlanController::class, 'generateSeatPlan'])->name('seat-plan.generate');
     Route::get('/seat-plan/list-partial', [SeatPlanController::class, 'listPartial'])->name('seat-plan.list-partial');
     Route::get('/seat-plan/create', [SeatPlanController::class, 'config'])->name('seat-plan.create');
+    Route::get('/seat-plan/invigilator/{id}', [SeatPlanController::class, 'seatInvigilatorLayout'])->name('invigilatorPlanLayout');
+    Route::get('/unassigned-list/{id}', [SeatPlanController::class, 'unassignedList'])->name('unassignedList');
+    // Route::get('/seat-plan/invigilator/{id}', [SeatPlanController::class, 'seatInvigilatorLayout'])->name('seat-plan.invigilator');
     Route::get('/seat-plan/edit/{id}', [SeatPlanController::class, 'roomEdit'])->name('roomEditBlade');
     Route::get('/seat-plan/{id}', [SeatPlanController::class, 'seatPlanLayout'])->name('seatPlanLayout');
-    Route::get('/seat-plan/invigilator/{id}', [SeatPlanController::class, 'seatPlanLayout'])->name('invigilatorPlanLayout');
     Route::get('/seat-plan', [SeatPlanController::class, 'index'])->name('seat-plan');
 
     Route::get('/faculty', [AcademicController::class, 'facultyBatch'])->name('academics.faculty');
