@@ -78,7 +78,7 @@
                       Login
                     </a>
                     {{-- <a href="#" class="btn btn-hero">Register</a> --}}
-                    <a href="{{ route('register') }}" class="btn btn-hero">Register</a>
+                    {{-- <a href="{{ route('register') }}" class="btn btn-hero">Register</a> --}}
                   @endguest
 
                   @auth
