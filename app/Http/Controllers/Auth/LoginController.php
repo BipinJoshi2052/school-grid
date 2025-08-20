@@ -86,13 +86,15 @@ class LoginController extends Controller
                 'errors' => ['institution' => 'Institution details not found.']
             ], 422);
         }
-
+        // dd($institution);
         // Check if the expiration date is today or in the past
-        $expirationDate = Carbon::parse($institution->expiration_date);
-        if ($expirationDate->isToday() || $expirationDate->isPast()) {
-            return response()->json([
-                'errors' => ['subscription' => 'Your subscription has expired. Please contact us at seatplanpro@gmail.com or use the contact us button in the page.']
-            ], 422);
+        if($institution->expiration_date){
+            $expirationDate = Carbon::parse($institution->expiration_date);
+            if ($expirationDate->isToday() || $expirationDate->isPast()) {
+                return response()->json([
+                    'errors' => ['subscription' => 'Your subscription has expired. Please contact us at seatplanpro@gmail.com or use the contact us button in the page.']
+                ], 422);
+            }
         }
 
         // Verify password and attempt login
