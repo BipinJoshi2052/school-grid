@@ -75,8 +75,7 @@
                         <!-- Logo icon -->
                         <a href="{{route('dashboard')}}" data-userId="{{auth()->id()}}" data-schoolId="{{session('school_id')}}">
                             {{-- <b>Seat Plan Pro</b> --}}
-                            <img src="{{ asset('images/seat-plan-logo-2.png') }}" alt=""
-                                class="img-fluid">
+                            <img src="{{ asset('images/seat-plan-pro.svg') }}" alt="" class="img-fluid" style="width: 100%">
                         </a>
                     </div>
                     <!-- ============================================================== -->
@@ -403,6 +402,23 @@
                                 <i data-feather="message-circle" class="feather-icon"></i>
                                 <span
                                     class="hide-menu">Feedback
+                                </span>
+                            </a>
+                        </li>
+
+                        <li class="list-divider"></li>
+                        
+                        <li class="nav-small-cap">
+                            <span class="hide-menu">Account</span>
+                        </li>
+                        <li class="sidebar-item"> 
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                @csrf
+                            </form>
+                            <a class="sidebar-link" href="javascript:void(0)" aria-expanded="false" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" >
+                                <i data-feather="power" class="feather-icon"></i>
+                                <span
+                                    class="hide-menu">Logout
                                 </span>
                             </a>
                         </li>

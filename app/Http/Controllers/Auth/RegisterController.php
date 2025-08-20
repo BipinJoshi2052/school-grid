@@ -47,7 +47,7 @@ class RegisterController extends Controller
      */
     public function __construct()
     {
-        // $this->middleware('guest');
+        $this->middleware('guest');
     }
 
     /**
@@ -142,13 +142,13 @@ class RegisterController extends Controller
         // Store email in session for later use in the OTP verification page
         Session::put('email', $user->email);
 
-        return redirect()->route('otp.verify');
-
+        // return redirect()->route('otp.verify');
+// 
         // Return response
-        // return response()->json([
-        //     'success' => true,
-        //     'message' => 'Registration successful!',
-        // ]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Registration successful!',
+        ]);
     }
     public function register2(Request $request)
     {
@@ -214,10 +214,12 @@ class RegisterController extends Controller
             Session::forget('email');
 
             // Redirect the user to the dashboard
-            return redirect()->route('dashboard');
+            return response()->json(['message' => 'OTP verification successfull!'], 200);
+            // return redirect()->route('dashboard');
         }
 
         // OTP is incorrect
-        return back()->withErrors(['otp' => 'The OTP is incorrect.']);
+        return response()->json(['error' => 'The OTP is incorrect'], 400); 
+        // return back()->withErrors(['otp' => 'The OTP is incorrect.']);
     }
 }
