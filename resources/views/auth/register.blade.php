@@ -253,6 +253,9 @@
             gap: 15px;
             margin-top: 30px;
         }
+        .navigation-buttons .submit-btn{
+            display: flex;
+        }
 
         .btn-back {
             background: #6b7280;
@@ -439,7 +442,7 @@
                         <input type="text" id="institution" name="institution_name" required>
                         <div class="error-message" id="institutionError">Institution name is required</div>
                     </div>
-                    <div class="form-group">
+                    {{-- <div class="form-group">
                         <label for="howFound">How did you come across our service? *</label>
                         <select id="howFound" name="how_found" required>
                             <option value="">Select an option</option>
@@ -461,7 +464,7 @@
                             <option value="manual">We manage manually</option>
                         </select>
                         <div class="error-message" id="currentSoftwareError">Please select your current software status</div>
-                    </div>
+                    </div> --}}
                     <div class="navigation-buttons">
                         <button type="button" class="btn btn-back" onclick="prevStep()">Back</button>
                         <button type="button" class="btn btn-next" onclick="nextStep()">Next Step</button>
@@ -499,7 +502,7 @@
                     </div>
                     <div class="navigation-buttons">
                         <button type="button" class="btn btn-back" onclick="prevStep()">Back</button>
-                        <button type="button" class="btn btn-next" onclick="submitForm()">
+                        <button type="button" class="btn btn-next submit-btn" onclick="submitForm()">
                             <span class="loader" id="submitLoader"></span>
                             <span id="submitText">Complete Registration</span>
                         </button>
@@ -542,7 +545,7 @@
             <div class="success-title">Welcome, <span id="welcomeName"></span>!</div>
             <div class="success-message">
                 You have successfully registered for our system.<br><br>
-                This is a <strong>Free Tier</strong> plan, and you'll enjoy a <strong>10-day free trial</strong> of all features. Enjoy exploring the system!
+                This is a <strong>Free Tier</strong> plan, and you'll enjoy a <strong>14-day free trial</strong> of all features. Enjoy exploring the system!
             </div>
         </div>
     </div>
@@ -619,15 +622,15 @@
                     isValid = false;
                 }
                 
-                if (!howFound) {
-                    showError('howFound', 'Please select how you found our service');
-                    isValid = false;
-                }
+                // if (!howFound) {
+                //     showError('howFound', 'Please select how you found our service');
+                //     isValid = false;
+                // }
                 
-                if (!currentSoftware) {
-                    showError('currentSoftware', 'Please select your current software status');
-                    isValid = false;
-                }
+                // if (!currentSoftware) {
+                //     showError('currentSoftware', 'Please select your current software status');
+                //     isValid = false;
+                // }
             } else if (step === 3) {
                 const password = $('#password').val();
                 const confirmPassword = $('#confirmPassword').val();
@@ -842,7 +845,7 @@
             $('#otpLoader').show();
             $('#verifyText').text('Verifying...');
             $('#verifyOtpBtn').prop('disabled', true);
-            
+            // return;
             // Simulate AJAX call to verify OTP
             $.ajax({
                 url: "/otp/verify",
@@ -916,14 +919,34 @@
             $('#resendBtn').prop('disabled', true);
             
             // Simulate AJAX call to resend OTP
-            setTimeout(function() {
-                // Start countdown
-                startResendCountdown(waitTime);
+
+            $.ajax({
+                url: "/resend-otp",
+                method: 'POST',
+                data: { 
+                    email: formData.email,
+                    _token: "{{ csrf_token() }}", 
+                },
+                success: function(response) {
+                    startResendCountdown(waitTime);
+                    $('#otpError').removeClass('error-message').css('color', '#10b981').text('OTP has been resent to your email').show();
+                    setTimeout(() => $('#otpError').hide(), 3000);
+                },
+                error: function(xhr) {
+                    $('#resendText').text('Resend OTP');
+                    $('#resendBtn').prop('disabled', false);
+                    $('#otpError').addClass('error-message').css('color', '#ef4444').text('Failed to resend OTP. Please try again.').show();
+                }
+            });
+
+            // setTimeout(function() {
+            //     // Start countdown
+            //     startResendCountdown(waitTime);
                 
-                // Show success message briefly
-                $('#otpError').removeClass('error-message').css('color', '#10b981').text('OTP has been resent to your email').show();
-                setTimeout(() => $('#otpError').hide(), 3000);
-            }, 1000);
+            //     // Show success message briefly
+            //     $('#otpError').removeClass('error-message').css('color', '#10b981').text('OTP has been resent to your email').show();
+            //     setTimeout(() => $('#otpError').hide(), 3000);
+            // }, 1000);
         }
 
         function startResendCountdown(seconds) {

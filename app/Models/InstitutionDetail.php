@@ -13,7 +13,8 @@ class InstitutionDetail extends Model
         'client_id',
         'institution_name',
         'registration_id',
-        'expiration_date'
+        'expiration_date',
+        'package_type'
     ];
 
     // Define the relationship with the User model

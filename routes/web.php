@@ -121,6 +121,7 @@ Route::middleware('guest')->group(function () {
     // OTP routes
     Route::get('otp/verify', [RegisterController::class, 'showOtpVerificationForm'])->name('otp.verify');
     Route::post('otp/verify', [RegisterController::class, 'verifyOtp']);
+    Route::post('resend-otp', [RegisterController::class, 'resendOtp'])->name('resend-otp');
 });
 
 

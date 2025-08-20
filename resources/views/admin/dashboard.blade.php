@@ -5,12 +5,21 @@ Home
 @endsection
 
 @section('content')
+<style>
+    .trial-period-message{
+        margin-top: 10px;
+    }
+    .trial-period-message .alert{
+        margin-bottom: 0;
+    }
+</style>
+
     <div class="page-breadcrumb">
         <div class="row">
             <div class="col-7 align-self-center">
-                <h3 class="page-title text-truncate text-dark font-weight-medium mb-1">
+                {{-- <h3 class="page-title text-truncate text-dark font-weight-medium mb-1">
                     Good Morning, {{ auth()->user()->name }}!
-                </h3>
+                </h3> --}}
                 <div class="d-flex align-items-center">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb m-0 p-0">
@@ -23,6 +32,20 @@ Home
                     </nav>
                 </div>
             </div>
+            @if ($data['institution_details']->package_type == 'trial')
+                <div class="trial-period-message">
+                    <div class="alert alert-primary" role="alert">
+                        Welcome, {{ auth()->user()->name }}!<br>
+                        You're currently in a 14-day Free Trial!<br>
+
+                        Enjoy exploring the full features of our system during your free trial. If you'd like to upgrade to premium, please reach out to us at <a href="mailto:seatplanpro@gmail.com">seatplanpro@gmail.com</a>
+                        to upgrade to a premium plan.
+
+                        We’re here to assist you!<br><br>
+                        <strong>Remaining days in your trial: {{ $data['remainingDays'] }} days</strong>
+                    </div>
+                </div>                
+            @endif
         </div>
     </div>
     <div class="container-fluid">

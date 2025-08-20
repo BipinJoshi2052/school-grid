@@ -78,7 +78,7 @@
                       Login
                     </a>
                     {{-- <a href="#" class="btn btn-hero">Register</a> --}}
-                    {{-- <a href="{{ route('register') }}" class="btn btn-hero">Register</a> --}}
+                    <a href="{{ route('register') }}" class="btn btn-hero">Register</a>
                   @endguest
 
                   @auth
@@ -186,7 +186,7 @@
           var errors = xhr.responseJSON.errors;
           console.log(errors)
           if (errors) {
-            $("#loginError").html(errors.email || errors.password || "An error occurred.").show();  
+            $("#loginError").html(errors.email || errors.password || errors.subscription || "An error occurred.").show();  
             setTimeout(() => {
               $("#loginError").hide();
             }, 2000);

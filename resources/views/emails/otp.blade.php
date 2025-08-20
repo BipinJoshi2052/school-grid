@@ -259,14 +259,15 @@
         style="max-width: 600px;margin: 0 auto;background-color: #ffffff;border-radius: 12px;overflow: hidden;box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);">
         <!-- Header -->
         <div class="header"
-            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);padding: 40px 30px;text-align: center;color: white;">
+            style="background: linear-gradient(135deg, #f4f4f4 0%, #8864ad 100%);padding: 40px 30px;text-align: center;color: white;">
             <div class="logo-container"
                 style="display: flex;align-items: center;justify-content: center;margin-bottom: 20px;gap: 12px;">
-                <div class="logo" style="width: 40px;height: 40px;background: white;border-radius: 50%;display: flex;align-items: center;justify-content: center;font-weight: bold;color: #667eea;font-size: 18px;">
+
+                    <img src="https://seatplanpro.com/images/seat-plan-pro.svg" alt="" class="img-fluid" style="width: 55%;">
+                {{-- <div class="logo" style="width: 40px;height: 40px;background: white;border-radius: 50%;display: flex;align-items: center;justify-content: center;font-weight: bold;color: #667eea;font-size: 18px;"> --}}
                     {{-- 📚 --}}
                     {{-- <img src="{{ asset('images/seat-plan-pro.svg') }}" alt="" class="img-fluid"> --}}
-                    <img src="https://seatplanpro.com/images/seat-plan-pro.svg" alt="" class="img-fluid">
-                </div>
+                {{-- </div> --}}
                 {{-- <div class="company-name" style="font-size: 28px;font-weight: bold;letter-spacing: -0.5px;">
                     Seat Plan Pro
                 </div> --}}
@@ -347,7 +348,7 @@
             <div style="color: #333;font-weight: 600;margin-bottom: 15px;" class="company-info">Seat Plan Pro -
                 Automated Exam Seat Planning Made Simple</div>
 
-            <div style="margin: 20px 0;" class="social-links">
+            {{-- <div style="margin: 20px 0;" class="social-links">
                 <a style="display: inline-block;width: 36px;height: 36px;background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);color: white;text-decoration: none;border-radius: 50%;margin: 0 8px;line-height: 36px;font-size: 16px;transition: transform 0.3s ease;"
                     onmouseover="this.style.transform='translateY(-2px)'"
                     onmouseout="this.style.transform='translateY(0)'" href="#" title="Facebook">📘</a>
@@ -360,11 +361,13 @@
                 <a style="display: inline-block;width: 36px;height: 36px;background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);color: white;text-decoration: none;border-radius: 50%;margin: 0 8px;line-height: 36px;font-size: 16px;transition: transform 0.3s ease;"
                     onmouseover="this.style.transform='translateY(-2px)'"
                     onmouseout="this.style.transform='translateY(0)'" href="#" title="Email">✉️</a>
-            </div>
+            </div> --}}
 
             <p style="color: #666;font-size: 14px;margin-bottom: 8px;">Questions? Contact our support team at
                 <strong>seatplanpro@gmail.com</strong></p>
-            <p style="color: #666;font-size: 14px;margin-bottom: 8px;">🌐 www.seatplanpro.com</p>
+                <p style="color: #666;font-size: 14px;margin-bottom: 8px;">
+                        🌐 <a href="https://www.seatplanpro.com/">www.seatplanpro.com</a>
+                </p>
             {{-- 📞 +977-1-XXXXXXX |  --}}
 
             <div style="margin-top: 20px; font-size: 12px; color: #999;">

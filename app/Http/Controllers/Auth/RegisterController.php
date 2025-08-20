@@ -89,8 +89,8 @@ class RegisterController extends Controller
             'phone' => 'required|string|max:100',
             'institution' => 'required|string|max:250',
             'password' => 'required|string|min:6|confirmed',
-            'usingMIS' => 'required',
-            'hearAbout' => 'required',
+            // 'usingMIS' => 'required',
+            // 'hearAbout' => 'required',
         ]);
 
         // Create the registration record
@@ -99,7 +99,7 @@ class RegisterController extends Controller
             'email' => $request->email,
             'phone' => $request->countryCode.$request->phone,
             'institution_name' => $request->institution,
-            'hearAbout' => $request->hearAbout, // assuming hearAbout is passed
+            'hearAbout' => $request->hearAbout ? $request->hearAbout : '',
             'usingMIS' => $request->usingMIS == 'yes' ? 1 : 0,
         ]);
 
@@ -127,7 +127,8 @@ class RegisterController extends Controller
             'client_id' => $clientId,
             'institution_name' => $request->institution,
             'registration_id' => $registration->id, // Link registration to institution details
-            'expiration_date' => Carbon::now()->addDays(15), // 15 days expiration
+            'expiration_date' => Carbon::now()->addDays(15), // 14 days expiration
+            'package_type' => 'trial',
         ]);
 
         // Generate OTP
@@ -213,6 +214,15 @@ class RegisterController extends Controller
             // Remove the email from the session after login
             Session::forget('email');
 
+            $request->session()->put('user_id', $user->id);
+            $request->session()->put('name', $user->name);
+            $request->session()->put('parent_id', $user->parent_id);
+            $request->session()->put('user_type_id', $user->user_type_id);
+            $request->session()->put('avatar', $user->avatar);
+            // Set school_id based on user_type_id
+            $school_id = ($user->user_type_id == 2) ? $user->id : $user->parent_id;
+            $request->session()->put('school_id', $school_id);
+
             // Redirect the user to the dashboard
             return response()->json(['message' => 'OTP verification successfull!'], 200);
             // return redirect()->route('dashboard');
@@ -221,5 +231,21 @@ class RegisterController extends Controller
         // OTP is incorrect
         return response()->json(['error' => 'The OTP is incorrect'], 400); 
         // return back()->withErrors(['otp' => 'The OTP is incorrect.']);
+    }
+
+    public function resendOtp(Request $request){
+        $email = $request->email;
+
+        $user = User::where('email',$email)->first();
+        // Generate OTP
+        $otp = rand(100000, 999999);
+        $user->otp = $otp;
+        $user->save();
+        // Send OTP via email
+        Mail::to($email)->send(new SendOTP($otp));
+        return response()->json([
+            'success' => true,
+            'message' => 'OTP Email resent!',
+        ]);
     }
 }

@@ -88,31 +88,11 @@ Home
                 
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-mouse-pointer"></i>
-                    </div>
-                    <h3 class="feature-title">Drag-and-Drop Customization</h3>
-                    <p class="feature-description">
-                        Easily customize seat arrangements with intuitive drag-and-drop interface. Perfect for accommodating special needs students and last-minute changes.
-                    </p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
                         <i class="fas fa-database"></i>
                     </div>
                     <h3 class="feature-title">Complete CRUD Management</h3>
                     <p class="feature-description">
                         Manage classes, sections, students, and staff data with our comprehensive system. Import from Excel, update in bulk, and maintain accurate records.
-                    </p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-comment"></i>
-                    </div>
-                    <h3 class="feature-title">Smart Notifications & SMS</h3>
-                    <p class="feature-description">
-                        Automatically notify students about their seat assignments via SMS or email. Customizable templates and delivery scheduling included.
                     </p>
                 </div>
                 
@@ -153,6 +133,27 @@ Home
                     <h3 class="feature-title">Flexible Configuration</h3>
                     <p class="feature-description">
                         Customize the system to match your institution's specific requirements with flexible rules, templates, and workflow settings.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mouse-pointer"></i>
+                    </div>
+                    <h3 class="feature-title">Drag-and-Drop Customization</h3>
+                    <span style="color: green">(Coming Soon)</span>
+                    <p class="feature-description">
+                        Easily customize seat arrangements with intuitive drag-and-drop interface. Perfect for accommodating special needs students and last-minute changes.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-comment"></i>
+                    </div>
+                    <h3 class="feature-title">Smart Notifications & SMS</h3>
+                    <span style="color: green">(Coming Soon)</span>
+                    <p class="feature-description">
+                        Automatically notify students about their seat assignments via SMS or email. Customizable templates and delivery scheduling included.
                     </p>
                 </div>
             </div>

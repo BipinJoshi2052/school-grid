@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\InstitutionDetail;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Carbon\Carbon;
@@ -52,6 +53,91 @@ class LoginController extends Controller
      * @return mixed
      */
     public function login(Request $request)
+    {
+        // Validate the request
+        $this->validateLogin($request);
+
+        // Find the user by email
+        $user = User::where('email', $request->email)->first();
+
+        // Check if user exists
+        if (!$user) {
+            return response()->json([
+                'errors' => ['email' => 'No account found with this email.']
+            ], 422);
+        }
+
+        // Check if user exists and has valid user_type_id
+        if (!$user || !in_array($user->user_type_id, [1, 2, 3, 4])) {
+            return response()->json([
+                'errors' => ['email' => 'Not a valid user type.']
+            ], 422);
+        }
+
+        // Determine the institution ID based on the user type
+        $institution_id = ($user->user_type_id == 2) ? $user->id : $user->parent_id;
+        // dd($institution_id);
+        // Check the expiration date from the institution_details table
+        $institution = InstitutionDetail::where('user_id', $institution_id)->first();
+
+        // If the institution does not exist or expiration date is not found
+        if (!$institution) {
+            return response()->json([
+                'errors' => ['institution' => 'Institution details not found.']
+            ], 422);
+        }
+
+        // Check if the expiration date is today or in the past
+        $expirationDate = Carbon::parse($institution->expiration_date);
+        if ($expirationDate->isToday() || $expirationDate->isPast()) {
+            return response()->json([
+                'errors' => ['subscription' => 'Your subscription has expired. Please contact us at seatplanpro@gmail.com or use the contact us button in the page.']
+            ], 422);
+        }
+
+        // Verify password and attempt login
+        if (Hash::check($request->password, $user->password)) {
+            Auth::login($user, $request->has('remember'));
+
+            // Update last access date and from
+            $user->update([
+                'last_access_date' => Carbon::now(),  // Set current date and time for last access
+                'last_access_from' => json_encode([
+                    'ip' => $request->ip(),  // Get the user's IP address
+                    'user_agent' => $request->header('User-Agent')  // Get the user's User-Agent
+                ])
+            ]);
+            
+            if($user->user_type_id == 2){
+                $request->session()->put('user_id', $user->id);
+                $request->session()->put('name', $user->name);
+                $request->session()->put('parent_id', $user->parent_id);
+                $request->session()->put('user_type_id', $user->user_type_id);
+                $request->session()->put('avatar', $user->avatar);
+
+                // Set school_id based on user_type_id
+                $school_id = ($user->user_type_id == 2) ? $user->id : $user->parent_id;
+                $request->session()->put('school_id', $school_id);
+            }
+
+            // Determine redirect URL based on user_type_id
+            $redirectUrl = $user->user_type_id === 1
+                ? route('admin.dashboard')
+                : route('dashboard');
+            
+            return response()->json([
+                'success' => true,
+                'redirect' => $redirectUrl
+            ], 200);
+        }
+
+        // If password is incorrect
+        return response()->json([
+            'errors' => ['email' => 'Invalid email or password.']
+        ], 422);
+    }
+
+    public function login2(Request $request)
     {
         // Validate the request
         $this->validateLogin($request);
