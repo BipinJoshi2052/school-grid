@@ -273,7 +273,7 @@ Seat Plan Config
                                     </div>
 
                                     <!-- Alternate Class Assignment -->
-                                    <div class="pattern-card" data-pattern="alternate">
+                                    {{-- <div class="pattern-card" data-pattern="alternate">
                                         <div class="pattern-header">
                                             <input type="radio" name="seatingPattern" id="alternate" class="pattern-radio" value="alternate" disabled>
                                             <label for="alternate" class="pattern-title">Alternate Class Assignment <span style="color: red;">(Not Available)</span> </label>
@@ -312,7 +312,7 @@ Seat Plan Config
                                                 <input type="number" class="config-input" id="alternateRoll" placeholder="e.g., 1" min="1">
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> --}}
 
                                     <!-- Class Assignment in Stages -->
                                     {{-- <div class="pattern-card" data-pattern="stages">
@@ -350,7 +350,7 @@ Seat Plan Config
                                     </div> --}}
 
                                     <!-- Random Student Assignment -->
-                                    <div class="pattern-card" data-pattern="random">
+                                    {{-- <div class="pattern-card" data-pattern="random">
                                         <div class="pattern-header">
                                             <input type="radio" name="seatingPattern" id="random" class="pattern-radio" value="random" disabled>
                                             <label for="random" class="pattern-title">Random Student Assignment <span style="color: red;">(Not Available)</span></label>
@@ -374,7 +374,7 @@ Seat Plan Config
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> --}}
 
                                 </div>
 

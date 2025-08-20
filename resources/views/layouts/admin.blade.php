@@ -475,7 +475,7 @@
                         </li>  --}}
 
                         <li class="list-divider"></li>
-                        @if (App::environment('local') || auth()->id() == '1089' || auth()->id() == '2')
+                        @if (App::environment('local') || auth()->id() == '2')
                         
                             <li class="nav-small-cap">
                                 <span class="hide-menu">Data</span>
