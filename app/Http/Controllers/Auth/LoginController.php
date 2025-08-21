@@ -73,30 +73,30 @@ class LoginController extends Controller
                 'errors' => ['email' => 'Not a valid user type.']
             ], 422);
         }
+        if($user->user_type_id != 1){
+            // Determine the institution ID based on the user type
+            $institution_id = ($user->user_type_id == 2) ? $user->id : $user->parent_id;
+            // dd($institution_id);
+            // Check the expiration date from the institution_details table
+            $institution = InstitutionDetail::where('user_id', $institution_id)->first();
 
-        // Determine the institution ID based on the user type
-        $institution_id = ($user->user_type_id == 2) ? $user->id : $user->parent_id;
-        // dd($institution_id);
-        // Check the expiration date from the institution_details table
-        $institution = InstitutionDetail::where('user_id', $institution_id)->first();
-
-        // If the institution does not exist or expiration date is not found
-        if (!$institution) {
-            return response()->json([
-                'errors' => ['institution' => 'Institution details not found.']
-            ], 422);
-        }
-        // dd($institution);
-        // Check if the expiration date is today or in the past
-        if($institution->expiration_date){
-            $expirationDate = Carbon::parse($institution->expiration_date);
-            if ($expirationDate->isToday() || $expirationDate->isPast()) {
+            // If the institution does not exist or expiration date is not found
+            if (!$institution) {
                 return response()->json([
-                    'errors' => ['subscription' => 'Your subscription has expired. Please contact us at seatplanpro@gmail.com or use the contact us button in the page.']
+                    'errors' => ['institution' => 'Institution details not found.']
                 ], 422);
             }
+            // dd($institution);
+            // Check if the expiration date is today or in the past
+            if($institution->expiration_date){
+                $expirationDate = Carbon::parse($institution->expiration_date);
+                if ($expirationDate->isToday() || $expirationDate->isPast()) {
+                    return response()->json([
+                        'errors' => ['subscription' => 'Your subscription has expired. Please contact us at seatplanpro@gmail.com or use the contact us button in the page.']
+                    ], 422);
+                }
+            }
         }
-
         // Verify password and attempt login
         if (Hash::check($request->password, $user->password)) {
             Auth::login($user, $request->has('remember'));
