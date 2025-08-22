@@ -85,21 +85,27 @@
                     <a href="{{ route('dashboard') }}" class="btn btn-hero">Dashboard</a>
                   @endauth
                 </div>
-                
-                <button class="mobile-menu-btn" id="mobileMenuBtn">
-                  @guest
-                    <a class="btn-getstarted btn btn-outline" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                      Login
-                    </a>
-                    {{-- <a href="#" class="btn btn-hero">Register</a> --}}
-                    {{-- <a href="{{ route('register') }}" class="btn btn-hero">Register</a> --}}
-                  @endguest
-
-                  @auth
-                    <a href="{{ route('dashboard') }}" class="btn btn-hero">Dashboard</a>
-                  @endauth
-                    {{-- <i class="fas fa-bars"></i> --}}
-                </button>
+                @guest
+                  <style> 
+                        .mobile-menu-btn-register {
+                            display: none;
+                        }
+                    @media (max-width: 768px) {
+                        .mobile-menu-btn-register {
+                            display: block;
+                        }
+                    }
+                  </style>
+                  <button class="mobile-menu-btn" id="mobileMenuBtn">
+                      <a class="btn-getstarted btn btn-outline" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        Login
+                      </a>
+                  </button>
+                  <a href="{{ route('register') }}" class="btn btn-hero mobile-menu-btn-register">Register</a>
+                @endguest
+                @auth
+                  <a href="{{ route('dashboard') }}" class="btn btn-hero">Dashboard</a>
+                @endauth
             </div>
         </div>
     </header>
