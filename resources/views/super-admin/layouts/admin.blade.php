@@ -73,7 +73,7 @@
                     <!-- ============================================================== -->
                     <div class="navbar-brand" style="    border-bottom: 2px solid #edf2f9;">
                         <!-- Logo icon -->
-                        <a href="{{route('dashboard')}}" data-userId="{{auth()->id()}}" data-schoolId="{{session('school_id')}}">
+                        <a href="{{route('admin.dashboard')}}" data-userId="{{auth()->id()}}" data-schoolId="{{session('school_id')}}">
                             <b>Seat Plan Pro</b>
                             {{-- <img src="{{ asset('admin/assets/images/edusched.png') }}" alt=""
                                 class="img-fluid"> --}}
@@ -256,8 +256,8 @@
                 <!-- Sidebar navigation-->
                 <nav class="sidebar-nav">
                     <ul id="sidebarnav">
-                        <li class="sidebar-item {{ request()->routeIs('dashboard') ? 'selected' : '' }}"> 
-                            <a class="sidebar-link" href="{{route('dashboard')}}" aria-expanded="false">
+                        <li class="sidebar-item {{ request()->routeIs('admin.dashboard') ? 'selected' : '' }}"> 
+                            <a class="sidebar-link" href="{{route('admin.dashboard')}}" aria-expanded="false">
                                 <i data-feather="cpu" class="feather-icon"></i>
                                 <span class="hide-menu">Dashboard</span>
                             </a>

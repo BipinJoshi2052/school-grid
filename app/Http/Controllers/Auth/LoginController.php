@@ -110,11 +110,12 @@ class LoginController extends Controller
                 ])
             ]);
             
+            $request->session()->put('user_id', $user->id);
+            $request->session()->put('user_type_id', $user->user_type_id);
+            
             if($user->user_type_id == 2){
-                $request->session()->put('user_id', $user->id);
                 $request->session()->put('name', $user->name);
                 $request->session()->put('parent_id', $user->parent_id);
-                $request->session()->put('user_type_id', $user->user_type_id);
                 $request->session()->put('avatar', $user->avatar);
 
                 // Set school_id based on user_type_id

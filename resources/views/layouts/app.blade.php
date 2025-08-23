@@ -71,6 +71,15 @@
                     <a href="student-search.html" class="nav-link">Find Seat</a>
                     <a href="#contact" class="nav-link">Contact</a>
                 </nav> --}}
+                @auth
+                    @if (session('user_type_id') == 1)
+                        <?php 
+                          $dashboardRoute = 'admin.dashboard';
+                        ?>
+                    @else
+                        <?php $dashboardRoute = 'dashboard'; ?>                      
+                    @endif
+                @endauth
                 
                 <div class="nav-actions">
                   @guest
@@ -82,7 +91,7 @@
                   @endguest
 
                   @auth
-                    <a href="{{ route('dashboard') }}" class="btn btn-hero">Dashboard</a>
+                    <a href="{{ route($dashboardRoute) }}" class="btn btn-hero">Dashboard</a>
                   @endauth
                 </div>
                   <style> 
@@ -101,6 +110,7 @@
                         }
                     }
                   </style>
+                  
                 @guest
                   <button class="mobile-menu-btn" id="mobileMenuBtn">
                       <a class="btn-getstarted btn btn-outline" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#exampleModal">
@@ -109,8 +119,9 @@
                   </button>
                   <a href="{{ route('register') }}" class="btn btn-hero mobile-menu-btn-register">Register</a>
                 @endguest
+
                 @auth
-                  <a href="{{ route('dashboard') }}" class="btn btn-hero mobile-menu-btn-dashboard">Dashboard</a>
+                  <a href="{{ route($dashboardRoute) }}" class="btn btn-hero mobile-menu-btn-dashboard">Dashboard</a>
                 @endauth
             </div>
         </div>
