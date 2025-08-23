@@ -85,17 +85,23 @@
                     <a href="{{ route('dashboard') }}" class="btn btn-hero">Dashboard</a>
                   @endauth
                 </div>
-                @guest
                   <style> 
                         .mobile-menu-btn-register {
+                            display: none;
+                        }
+                        .mobile-menu-btn-dashboard{
                             display: none;
                         }
                     @media (max-width: 768px) {
                         .mobile-menu-btn-register {
                             display: block;
                         }
+                        .mobile-menu-btn-dashboard{
+                            display: block;
+                        }
                     }
                   </style>
+                @guest
                   <button class="mobile-menu-btn" id="mobileMenuBtn">
                       <a class="btn-getstarted btn btn-outline" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#exampleModal">
                         Login
@@ -104,7 +110,7 @@
                   <a href="{{ route('register') }}" class="btn btn-hero mobile-menu-btn-register">Register</a>
                 @endguest
                 @auth
-                  <a href="{{ route('dashboard') }}" class="btn btn-hero">Dashboard</a>
+                  <a href="{{ route('dashboard') }}" class="btn btn-hero mobile-menu-btn-dashboard">Dashboard</a>
                 @endauth
             </div>
         </div>
