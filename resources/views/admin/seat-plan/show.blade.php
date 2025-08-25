@@ -1163,7 +1163,7 @@
                 printWindow.print(); // Trigger print dialog
 
                 // Restore the original content after printing
-                document.body.innerHTML = originalContents;
+                // document.body.innerHTML = originalContents;
 
             }else {
                 const roomId = roomIndex;
