@@ -14,7 +14,7 @@ class BuildingsController extends Controller
                 ->orderBy('id','desc')
                 ->get()
                 ->toArray();
-                // dd($data);
+                // dd($data,session('school_id'));
         return view('admin.buildings.index', compact('data'));
     }
     public function visualize(){
@@ -230,7 +230,8 @@ class BuildingsController extends Controller
                 'selected_type' => 'total', // Default type is 'total'
                 'total' => [
                     'benches' => 0,
-                    'seats' => 0
+                    'seats' => 0,
+                    'columns' => 2,
                 ],
                 'individual' => [],
                 'room_total' => [
@@ -384,6 +385,7 @@ class BuildingsController extends Controller
                 $roomDataReference['selected_type'] = 'total';
                 $roomDataReference['total']['benches'] = $data['total_benches'];  // Increment total benches
                 $roomDataReference['total']['seats'] = $data['total_seats']; // Add seats
+                $roomDataReference['total']['columns'] = $data['total_columns']; // Add columns
 
                 // Increment the total room bench count
                 // $roomDataReference['room_total']['total_bench'] += $data['total_benches'];

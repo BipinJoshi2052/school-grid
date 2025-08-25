@@ -727,31 +727,126 @@
                 // console.log(room);
                 const totalBenches = room.total.benches;
                 const seatsPerBench = room.total.seats; // Assuming this is seats per bench
+                const totalColumns = room.total.columns ?? 2;
                 const currentBuildingId = currentBuilding.id; // Get building id from currentBuilding
                 const currentRoomId = roomIndex; // Get room id from currentRoom
 
                 // Fetch students for the current room (structured by bench)
                 const structuredStudents = getStudentsForRoom(currentBuildingId, currentRoomId); // Returns { "Bench 1": [{seat:1, ...}, ...], ... }
-                console.log(structuredStudents);
+                // console.log(structuredStudents);
 
                 if (totalBenches === 0) {
                     return '<div class="empty-state"><div style="font-size: 4rem; margin-bottom: 20px;">🪑</div><h3>No seating arrangement</h3><p>This room has no benches or seats configured.</p></div>';
                 }
 
-                let html = '<style>@media print {.seating-layout {gap:15px!important;}}</style><div class="seating-layout" style="margin-top: 30px;display: flex!important;justify-content: center;gap: 75px;flex-wrap: wrap;border: 1px solid black;padding: 15px;">';
+                //   .bench{
+                //                     color: #000000; 
+                //                     text-align: center; 
+                //                     font-size: 12px; 
+                //                     position: relative; 
+                //                     border: 1px solid black;
+                //                     max-width: 315px;
+                //                     padding: 10px;
+                //                     min-width: 315px;
+                //                 }
+                //                 .seats{
+                //                     display: flex;
+                //                     flex-wrap: wrap;
+                //                     gap: 30px;
+                //                     margin-top: 5px;
+                //                     margin-left: 15px;
+                //                 }
+                //                 .seat-student{
+                //                     border: 1px solid black;
+                //                     background: none;
+                //                 }
+                //                 .student-info{
+                //                     color: black;padding: 2px;
+                //                     width: 110px;
+                //                 }
+                                    
+                let html = `<style>
+                                @media print {
+                                    .seating-layout {gap:15px!important;}
+                                    .bench {max-width:315px}
+                                }
+
+                              
+                                .bench {
+                                    color: #000000;
+                                    text-align: center;
+                                    font-size: 12px;
+                                    position: relative;
+                                    border: 1px solid black;
+                                    // max-width: 315px;
+                                    padding: 10px;
+                                    min-width: 315px;
+                                    display: flex;
+                                    flex-direction: column; /* Stack label and seats vertically */
+                                    align-items: center; /* Center content horizontally */
+                                    justify-content: center;
+                                }
+
+                                .bench-label {
+                                    font-size: 12px;
+                                    font-weight: bold;
+                                    margin-bottom: 10px; /* Space between the label and seats */
+                                }
+
+                                .seats {
+                                    display: flex;
+                                    flex-wrap: wrap;
+                                    gap: 30px;
+                                    justify-content: center; /* Center the seats horizontally */
+                                }
+
+                                .seat-student {
+                                    border: 1px solid black;
+                                    background: none;
+                                    padding: 5px;
+                                    width: 100px; /* Adjust width of seat */
+                                    // height: 100px;
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                }
+
+                                .student-info {
+                                    color: black;
+                                    padding: 2px;
+                                    width: 100%;
+                                    text-align: center; /* Ensure the content is centered */
+                                }
+
+                                .student-name,
+                                .student-class,
+                                .student-rol {
+                                    margin-bottom: 2px; /* Space between each student info item */
+                                }
+                            </style>
+                            <div class="seating-layout" style="margin-top: 30px;display: flex!important;justify-content: center;gap: 75px;flex-wrap: wrap;border: 1px solid black;padding: 15px;">`;
 
                 // Determine number of rows (2 or 3 based on total benches) - currently fixed at 2
-                let numRows = 2;
+                let numRows = totalColumns;
                 const benchesInFirstRow = Math.floor(totalBenches / numRows);
                 const benchesPerRow = Math.ceil(totalBenches / numRows);
-                const benchesInSecondRow = totalBenches - benchesInFirstRow;
-                console.log(`Row 1: ${benchesInFirstRow} benches, Row 2: ${benchesInSecondRow} benches`);
-                console.log(benchesPerRow)
+                const benchesInSecondRow = totalBenches - benchesInFirstRow
+                
+                // console.log(`Row 1: ${benchesInFirstRow} benches, Row 2: ${benchesInSecondRow} benches`);
+                // console.log(benchesInSecondRow)
+                // console.log(benchesPerRow)
+                // console.log(totalColumns)
 
                 for (let rowIndex = 0; rowIndex < numRows; rowIndex++) {
-                    const benchesInRow = rowIndex === 0 ? benchesInFirstRow : benchesInSecondRow;
-                    const startBench = rowIndex === 0 ? 0 : benchesInFirstRow;
-                    const endBench = startBench + benchesInRow;
+                    // const benchesInRow = rowIndex === 0 ? benchesInFirstRow : benchesInSecondRow;
+                    // const startBench = rowIndex === 0 ? 0 : benchesInFirstRow;
+                    // const endBench = startBench + benchesInRow;
+                    const benchesInRow = benchesPerRow;
+                    const startBench = rowIndex * benchesPerRow;
+                    const endBench = Math.min(startBench + benchesPerRow, totalBenches);
+
+                    // const startBench = rowIndex === 0 ? 0 : benchesInFirstRow;
+                    // const endBench = startBench + benchesInRow;
 
                     // const startBench = rowIndex * benchesPerRow;
                     // const endBench = Math.min(startBench + benchesPerRow, totalBenches);
@@ -762,9 +857,9 @@
                     html += `<div class="row-label" style="font-weight: bold;color: #495057;margin-bottom: 15px;text-align: center;padding: 8px 16px;font-size: 14px;border: 2px solid #000000;">Column ${rowIndex + 1}</div>`;
                     html += '<div class="row" style="display: flex;flex-direction: column;gap: 15px;align-items: center;">';
 
-                    if(rowIndex === 0 && (totalBenches%2 != 0)){
-                        html += '<div class="bench" style=" position: relative;max-width: 315px;padding: 10px;min-width: 315px;min-height: 50px;"></div>'
-                    }
+                    // if(rowIndex === 0 && (totalBenches%2 != 0)){
+                    //     html += '<div class="bench" style=" position: relative;max-width: 315px;padding: 10px;min-width: 315px;min-height: 50px;"></div>'
+                    // }
 
                     for (let i = startBench; i < endBench; i++) {
                         const benchKey = `Bench ${i + 1}`;
@@ -772,11 +867,11 @@
 
                         // Sort benchStudents by seat number to ensure correct order
                         benchStudents.sort((a, b) => a.seat - b.seat);
-
+                        // ${benchKey}
                         html += `
-                            <div class="bench" style="color: #000000; text-align: center; font-size: 12px; position: relative; border: 1px solid black;max-width: 315px;padding: 10px;min-width: 315px;">
-                                ${benchKey}
-                                <div class="seats" style="display: flex;flex-wrap: wrap;gap: 30px;margin-top: 5px;margin-left: 15px;">
+                            <div class="bench">                                
+                                <div class="bench-label">${benchKey}</div>
+                                <div class="seats">
                         `;
                         // justify-content: center;
                         // We assume up to seatsPerBench seats, fill with assigned students or empty
@@ -786,8 +881,8 @@
                             // console.log(student)
                             if (student) {
                                 html += `
-                                    <div class="seat-student" style="border: 1px solid black;background: none;">
-                                        <div class="student-info" style="color: black;padding: 2px;width: 110px;">
+                                    <div class="seat-student">
+                                        <div class="student-info">
                                             <div class="student-name">${student.name}</div>
                                             <div class="student-class" style="display:none;">Class - ${student.class}</div>
                                             <div class="student-rol">${student.roll_no}</div>
@@ -1079,7 +1174,7 @@
                     // Get the roll numbers grouped by class for the building and room
                     if (groupedByBuildingRoomClass[buildingId] && groupedByBuildingRoomClass[buildingId][roomId]) {
                         const roomData = groupedByBuildingRoomClass[buildingId][roomId];
-                        console.log(groupedByBuildingRoomClass)
+                        // console.log(groupedByBuildingRoomClass)
                         dataToPrint = generatePrintHTMLByClass(currentBuildingName,roomData, currentRoomName);
                     }
                 }else if (type === 'class-section') {
@@ -1092,21 +1187,21 @@
                     // Get the roll numbers grouped by class for the building and room
                     if (groupedByBuildingRoomClass[buildingId] && groupedByBuildingRoomClass[buildingId][roomId]) {
                         const roomData = groupedByBuildingRoomClass[buildingId][roomId];
-                        console.log(groupedByBuildingRoomClass)
+                        // console.log(groupedByBuildingRoomClass)
                         dataToPrint = generatePrintHTMLByRoll(currentBuildingName,roomData, currentRoomName);
                     }
                 }else if (type === 'attendance') {
                     // Get the roll numbers grouped by class for the building and room
                     if (studentDataForAttendance[buildingId] && studentDataForAttendance[buildingId][roomId]) {
                         const roomData = studentDataForAttendance[buildingId][roomId];
-                        console.log(groupedByBuildingRoomClass)
+                        // console.log(groupedByBuildingRoomClass)
                         dataToPrint = generatePrintHTMLByAttendance(currentBuildingName,roomData, currentRoomName);
                     }
                 }else if (type === 'attendance-custom') {
                     // Get the roll numbers grouped by class for the building and room
                     if (studentDataForAttendance[buildingId] && studentDataForAttendance[buildingId][roomId]) {
                         const roomData = studentDataForAttendance[buildingId][roomId];
-                        console.log(groupedByBuildingRoomClass)
+                        // console.log(groupedByBuildingRoomClass)
                         dataToPrint = generatePrintHTMLByAttendanceCustom(currentBuildingName,roomData, currentRoomName);
                     }
                 }

@@ -129,7 +129,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-width: 300px;
+            /* min-width: 300px; */
             position: relative;
         }
 
@@ -187,7 +187,7 @@
             text-align: center;
             font-size: 12px;
             font-weight: bold;
-            min-width: 200px;
+            /* min-width: 200px; */
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             position: relative;
         }
@@ -463,9 +463,10 @@
                         totalSeats = room.individual.reduce((sum, row) => {
                             return sum + row.bench.reduce((benchSum, bench) => benchSum + bench.seats, 0);
                         }, 0);
-// You can log the results if you want to verify the calculations
-console.log(`Total Benches: ${totalBenches}`);
-console.log(`Total Seats: ${totalSeats}`);
+
+                        // You can log the results if you want to verify the calculations
+                        console.log(`Total Benches: ${totalBenches}`);
+                        console.log(`Total Seats: ${totalSeats}`);
 
                         // Update the room's total data with the calculated values
                         // room.total.benches = totalBenches;
@@ -520,6 +521,7 @@ console.log(`Total Seats: ${totalSeats}`);
             function generateTotalLayout(room) {
                 const totalBenches = room.total.benches;
                 const totalSeats = room.total.seats;
+                const totalColumns = room.total.columns ?? 2;
                 
                 if (totalBenches === 0) {
                     return '<div class="empty-state"><div style="font-size: 4rem; margin-bottom: 20px;">🪑</div><h3>No seating arrangement</h3><p>This room has no benches or seats configured.</p></div>';
@@ -528,7 +530,7 @@ console.log(`Total Seats: ${totalSeats}`);
                 let html = '<div class="seating-layout">';
                 
                 // Determine number of rows (2 or 3 based on total benches)
-                let numRows = 2;
+                let numRows = totalColumns;
                 // if (totalBenches >= 12) {
                 //     numRows = 3;
                 // } else if (totalBenches >= 6) {
@@ -548,7 +550,7 @@ console.log(`Total Seats: ${totalSeats}`);
                     if (startBench >= totalBenches) break;
                     
                     html += '<div class="row-container">';
-                    html += `<div class="row-label">Row ${rowIndex + 1}</div>`;
+                    html += `<div class="row-label">Column ${rowIndex + 1}</div>`;
                     html += '<div class="row">';
                     
                     for (let i = startBench; i < endBench; i++) {

@@ -202,11 +202,12 @@
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
-        .form-row {
+        /* .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
+            grid-template-columns: auto auto auto auto;
             gap: 20px;
-        }
+        } */
 
         .row-section {
             background: #f8f9fa;
@@ -321,6 +322,32 @@
         .btn-secondary:hover {
             background: linear-gradient(135deg, #28a745, #20c997);
         }
+
+        @media (max-width: 400px){
+            /* .form-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            } */
+        }
+
+        /* Small devices (mobile phones, 600px and below) */
+        @media (min-width: 401px) and (max-width: 600px) {
+            /* .form-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            } */
+        }
+
+        /* Medium devices (tablets, 600px to 900px) */
+        @media (min-width: 601px) and (max-width: 900px) {
+        }
+
+        /* Large devices (desktops, 900px to 1200px) */
+        @media (min-width: 901px) and (max-width: 1200px) {
+            /* Your styles for large devices */
+        }
     </style>
 @endsection
 
@@ -348,26 +375,7 @@
         <div class="row">
             <div class="col-sm-12 col-lg-12">
                 <div class="card">
-                    <div class="card-body">
-                        {{-- <div class="d-flex justify-content-between align-items-center mb-4">
-                            <!-- Add Faculty Button centered -->
-                            <button class="btn btn-primary mx-auto faculty-add-btn" onclick="addFaculty()">
-                                <i class="fas fa-plus me-2"></i>
-                                Add Faculty
-                            </button>
-
-                            <!-- Search bar aligned to the right -->
-                            <div class="d-flex align-items-center search-div">
-                                <input type="text" id="facultySearch" class="form-control" placeholder="Search Faculty" onkeyup="searchFaculty()" style="width: 200px;">
-                                <i class="fas fa-search ms-2"></i>
-                            </div>
-                        </div> --}}
-
-                        {{-- <div class="header">
-                            <h1>Building Seat Planner</h1>
-                            <p>Manage buildings, rooms, benches, and seats with ease</p>
-                        </div> --}}
-                
+                    <div class="card-body">                
                         <div class="content">
                             <div class="add-building-section">
                                 <button class="btn" id="addBuildingBtn">+ Add Building</button>
@@ -389,8 +397,7 @@
     </div>
     <div id="statusMessage" class="status-message"></div>
     <?php 
-        $data = json_encode($data, JSON_HEX_TAG);  
-        // dd($data);
+        $data = json_encode($data, JSON_HEX_TAG);
     ?>
 @endsection
 
@@ -508,14 +515,18 @@
                                 </div>
                                 
                                 <div class="total-bench-section" style="display: ${roomData.selected_type === 'total' ? 'block' : 'none'};">
-                                    <div class="form-row">
-                                        <div class="form-group">
+                                    <div class="form-row row">
+                                        <div class="form-group col-md-4">
                                             <label>Total Benches</label>
                                             <input type="number" class="total-benches-input" min="1" value="${roomData.total.benches || 0}">
                                         </div>
-                                        <div class="form-group">
+                                        <div class="form-group col-md-4">
                                             <label>Seats per Bench</label>
                                             <input type="number" class="seats-per-bench-input" min="1" value="${roomData.total.seats || 0}">
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label>Columns</label>
+                                            <input type="number" class="column-input" min="2" value="${roomData.total.columns || 2}">
                                         </div>
                                     </div>
                                     <button class="btn submit-total-bench-btn">Submit Bench Data</button>
@@ -877,14 +888,18 @@
                                 </div>
                                 
                                 <div class="total-bench-section">
-                                    <div class="form-row">
-                                        <div class="form-group">
+                                    <div class="form-row row">
+                                        <div class="form-group col-md-4">
                                             <label>Total Benches</label>
                                             <input type="number" class="total-benches-input" min="1" value="0">
                                         </div>
-                                        <div class="form-group">
+                                        <div class="form-group col-md-4">
                                             <label>Seats per Bench</label>
                                             <input type="number" class="seats-per-bench-input" min="1" value="0">
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label>Columns</label>
+                                            <input type="number" class="column-input" min="2" value="2">
                                         </div>
                                     </div>
                                     <button class="btn submit-total-bench-btn">Submit Bench Data</button>
@@ -1196,6 +1211,7 @@
 
             const totalBenches = roomEl.find('.total-benches-input').val();
             const seatsPerBench = roomEl.find('.seats-per-bench-input').val();
+            const columnsInClass = roomEl.find('.column-input').val();
 
             
             const benchData = {
@@ -1206,7 +1222,8 @@
                 selected_type: 'total',
                 building_id: buildingId,
                 total_benches: parseInt(totalBenches),
-                total_seats: parseInt(seatsPerBench)
+                total_seats: parseInt(seatsPerBench),
+                total_columns: parseInt(columnsInClass)
             };
 
             sendAjaxAddRequest(benchData, (success) => {
