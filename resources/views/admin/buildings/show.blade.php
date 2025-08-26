@@ -59,7 +59,7 @@
             border: 2px solid transparent;
             position: relative;
             overflow: hidden;
-            max-height: 50%;
+            /* max-height: 50%; */
         }
 
         .main-content .card::before {
@@ -95,7 +95,9 @@
             justify-content: space-between;
             margin-top: 15px;
         }
-
+        .stats {
+            height: 90px;
+        }
         .stat {
             text-align: center;
             padding: 10px;
@@ -123,13 +125,16 @@
             justify-content: center;
             gap: 75px;
             flex-wrap: wrap;
+            border: 1px solid;
+            padding: 20px;
+            position: relative;
         }
 
         .layout-content .row-container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            /* min-width: 300px; */
+            min-width: 300px;
             position: relative;
         }
 
@@ -187,7 +192,7 @@
             text-align: center;
             font-size: 12px;
             font-weight: bold;
-            /* min-width: 200px; */
+            min-width: 200px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             position: relative;
         }
@@ -262,6 +267,55 @@
 
         #breadcrumb-content a{
             cursor: pointer;
+        }
+        .door {
+            position: absolute;
+            font-size: 2rem;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .door-top-left {
+            top: -3px;
+            left: 10px;
+        }
+
+        .door-top-right {
+            top: -3px;
+            right: 10px;
+        }
+
+        .door-left-top {
+            bottom: 20px;
+            left: -10px;
+        }
+
+        .door-left-bottom {
+            bottom: 20px;
+            left: -10px;
+        }
+
+        .door-right-top {
+            top: 20px;
+            right: -11px;
+        }
+
+        .door-right-bottom {
+            bottom: 20px;
+            right: -11px;
+        }
+
+        .door-bottom-left {
+            bottom: -3px;
+            left: 10px;
+        }
+
+        .door-bottom-right {
+            bottom: -3px;
+            right: 10px;
         }
         
         @media (max-width: 768px) {
@@ -522,12 +576,27 @@
                 const totalBenches = room.total.benches;
                 const totalSeats = room.total.seats;
                 const totalColumns = room.total.columns ?? 2;
+                const doorPlacement = room.door_placement;
                 
                 if (totalBenches === 0) {
                     return '<div class="empty-state"><div style="font-size: 4rem; margin-bottom: 20px;">🪑</div><h3>No seating arrangement</h3><p>This room has no benches or seats configured.</p></div>';
                 }
                 
-                let html = '<div class="seating-layout">';
+                // let html = '<div class="seating-layout">';
+
+                // Map doorPlacement to CSS class
+                const doorClass = {
+                    'top-left': 'door-top-left',
+                    'top-right': 'door-top-right',
+                    'left-top': 'door-left-top',
+                    'left-bottom': 'door-left-bottom',
+                    'right-top': 'door-right-top',
+                    'right-bottom': 'door-right-bottom',
+                    'bottom-left': 'door-bottom-left',
+                    'bottom-right': 'door-bottom-right'
+                }[doorPlacement] || 'door-top-left'; // Default to top-left if invalid
+                console.log(doorClass)
+                let html = `<div class="seating-layout"><div class="door ${doorClass}">🚪</div>`;
                 
                 // Determine number of rows (2 or 3 based on total benches)
                 let numRows = totalColumns;

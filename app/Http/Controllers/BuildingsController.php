@@ -56,6 +56,8 @@ class BuildingsController extends Controller
                 return $this->editRoomTitle($data);
             case 'bench-type':
                 return $this->editBenchType($data);
+            case 'door':
+                return $this->editDoor($data);
             default:
                 return response()->json([
                     'status' => 'error',
@@ -403,6 +405,52 @@ class BuildingsController extends Controller
                     'bench_index' => '' // Empty string for non-individual type
                 ]);
             }
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    // Edit Door method
+    private function editDoor($data)
+    {
+        try {
+            // Find the building by building_id from the passed data
+            $building = Building::findOrFail($data['building_id']);
+
+            // Decode the rooms data from JSON format
+            $roomsData = json_decode($building->rooms, true);
+
+            // Check if the room exists using the room_id index
+            if (!isset($roomsData[$data['room_id']])) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Room not found in the building.'
+                ], 400);
+            }
+
+            // Retrieve the room data directly
+            $roomDataReference = &$roomsData[$data['room_id']];
+
+            // Check if the room name matches the provided room_name
+            if ($roomDataReference['name'] !== $data['room_name']) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Room name does not match the provided room data.'
+                ], 400);
+            }
+
+            $roomDataReference['door_placement'] = $data['door_placement'];
+            $building->rooms = json_encode($roomsData);
+            $building->save();
+            // dd($roomDataReference);
+            
+            return response()->json([
+                'status' => 'success',
+                'message' => "Door Placement updated",
+            ]);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',

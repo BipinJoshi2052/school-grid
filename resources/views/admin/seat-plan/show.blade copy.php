@@ -420,80 +420,6 @@
             }
 
         } */
-        .door {
-            position: absolute;
-            font-size: 2rem;
-            width: 30px;
-            height: 25px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            border: 1px solid;
-        }
-        .door p{
-            margin-bottom: 0;
-        }
-
-        
-        .door-top-left {
-            top: -1px;
-            left: 10px;
-            width: 40px;
-        }
-
-        .door-top-right {
-            top: -1px;
-            right: 10px;
-            width: 40px;
-        }
-
-        .door-left-top {
-            top: 20px;
-            left: -1px;
-
-            height: 40px;
-        }
-
-        .door-left-bottom {
-            bottom: 20px;
-            left: -1px;
-            height: 40px;
-        }
-
-        .door-right-top {
-            top: 20px;
-            right: -1px;
-            height: 40px;
-        }
-
-        .door-right-bottom {
-            bottom: 20px;
-            right: -1px;
-            height: 40px;
-        }
-
-        .door-bottom-left {
-            bottom: 0px;
-            left: 10px;
-            width: 40px;
-        }
-
-        .door-bottom-right {
-            bottom: 0px;
-            right: 10px;
-            width: 40px;
-        }
-        .seating-layout{
-            position: relative;
-            margin-top: 30px;
-            display: flex!important;
-            justify-content: center;
-            gap: 75px;
-            flex-wrap: wrap;
-            border: 1px solid black;
-            padding: 45px 0 45px 0;
-        }
     </style>
 @endsection
 
@@ -804,7 +730,6 @@
                 const totalColumns = room.total.columns ?? 2;
                 const currentBuildingId = currentBuilding.id; // Get building id from currentBuilding
                 const currentRoomId = roomIndex; // Get room id from currentRoom
-                const doorPlacement = room.door_placement;
 
                 // Fetch students for the current room (structured by bench)
                 const structuredStudents = getStudentsForRoom(currentBuildingId, currentRoomId); // Returns { "Bench 1": [{seat:1, ...}, ...], ... }
@@ -814,21 +739,35 @@
                     return '<div class="empty-state"><div style="font-size: 4rem; margin-bottom: 20px;">🪑</div><h3>No seating arrangement</h3><p>This room has no benches or seats configured.</p></div>';
                 }
 
-                // Map doorPlacement to CSS class
-                const doorClass = {
-                    'top-left': 'door-top-left',
-                    'top-right': 'door-top-right',
-                    'left-top': 'door-left-top',
-                    'left-bottom': 'door-left-bottom',
-                    'right-top': 'door-right-top',
-                    'right-bottom': 'door-right-bottom',
-                    'bottom-left': 'door-bottom-left',
-                    'bottom-right': 'door-bottom-right'
-                }[doorPlacement] || 'door-top-left'; // Default to top-left if invalid
-
+                //   .bench{
+                //                     color: #000000; 
+                //                     text-align: center; 
+                //                     font-size: 12px; 
+                //                     position: relative; 
+                //                     border: 1px solid black;
+                //                     max-width: 315px;
+                //                     padding: 10px;
+                //                     min-width: 315px;
+                //                 }
+                //                 .seats{
+                //                     display: flex;
+                //                     flex-wrap: wrap;
+                //                     gap: 30px;
+                //                     margin-top: 5px;
+                //                     margin-left: 15px;
+                //                 }
+                //                 .seat-student{
+                //                     border: 1px solid black;
+                //                     background: none;
+                //                 }
+                //                 .student-info{
+                //                     color: black;padding: 2px;
+                //                     width: 110px;
+                //                 }
+                                    
                 let html = `<style>
                                 @media print {
-                                    .seating-layout {gap:15px!important;padding: 45px 30px 45px 30px!important;}
+                                    .seating-layout {gap:15px!important;}
                                     .bench {max-width:315px}
                                 }
 
@@ -861,16 +800,6 @@
                                     justify-content: center; /* Center the seats horizontally */
                                 }
 
-                                .seating-layout{
-                                    position: relative;
-                                    margin-top: 30px;
-                                    display: flex!important;
-                                    justify-content: center;
-                                    gap: 75px;
-                                    flex-wrap: wrap;
-                                    border: 1px solid black;
-                                    padding: 45px 0 45px 0;
-                                }
                                 .seat-student {
                                     border: 1px solid black;
                                     background: none;
@@ -894,74 +823,19 @@
                                 .student-rol {
                                     margin-bottom: 2px; /* Space between each student info item */
                                 }
-
-                                .door {
-                                    position: absolute;
-                                    font-size: 2rem;
-                                    width: 30px;
-                                    height: 25px;
-                                    display: flex;
-                                    align-items: center;
+                                .seating-layout{
+                                    margin-top: 30px;
+                                    display: flex!important;
                                     justify-content: center;
-                                    font-size: 10px;
-                                    border: 1px solid;
-                                }
-                                .door p{
-                                    margin-bottom: 0;
-                                }
-
-                                .door-top-left {
-                                    top: -1px;
-                                    left: 10px;
-                                    width: 40px;
-                                }
-
-                                .door-top-right {
-                                    top: -1px;
-                                    right: 10px;
-                                    width: 40px;
-                                }
-
-                                .door-left-top {
-                                    top: 20px;
-                                    left: -1px;
-
-                                    height: 40px;
-                                }
-
-                                .door-left-bottom {
-                                    bottom: 20px;
-                                    left: -1px;
-                                    height: 40px;
-                                }
-
-                                .door-right-top {
-                                    top: 20px;
-                                    right: -1px;
-                                    height: 40px;
-                                }
-
-                                .door-right-bottom {
-                                    bottom: 20px;
-                                    right: -1px;
-                                    height: 40px;
-                                }
-
-                                .door-bottom-left {
-                                    bottom: 0px;
-                                    left: 10px;
-                                    width: 40px;
-                                }
-
-                                .door-bottom-right {
-                                    bottom: 0px;
-                                    right: 10px;
-                                    width: 40px;
+                                    gap: 75px;
+                                    flex-wrap: wrap;
+                                    border: 1px solid black;
+                                    padding: 15px;
                                 }
                             </style>
-                            <div class="seating-layout"><div class="door ${doorClass}"><p>Door</p></div>`;
+                            <div class="seating-layout">`;
 
-                // Determine number of rows (2 or 3 based on total benches) - currently fixed at 2
+                // Determine number of rows (2 or 3 based on total benches) - currently fixed at 2 
                 let numRows = totalColumns;
                 const benchesInFirstRow = Math.floor(totalBenches / numRows);
                 const benchesPerRow = Math.ceil(totalBenches / numRows);
@@ -1410,9 +1284,8 @@
                         <thead>
                             <tr style="background-color: #f2f2f2;">
                                 <th style="padding: 8px; text-align: left;">S.N.</th>
-                                <th style="padding: 8px; text-align: left;">Symbol No.</th>
+                                <th style="padding: 8px; text-align: left;">Symbol</th>
                                 <th style="padding: 8px; text-align: left;">Name</th>
-                                <th style="padding: 8px; text-align: left;">Paper No.</th>
                                 <th style="padding: 8px; text-align: left;">Signature</th>
                             </tr>
                         </thead>
@@ -1426,7 +1299,6 @@
                         <td style="padding: 8px;">${index + 1}</td>
                         <td style="padding: 8px;">${student.roll_no}</td>
                         <td style="padding: 8px;">${student.name}</td>
-                        <td style="padding: 8px;"></td>
                         <td style="padding: 8px;"></td>
                     </tr>
                 `;

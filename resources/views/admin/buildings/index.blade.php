@@ -322,6 +322,9 @@
         .btn-secondary:hover {
             background: linear-gradient(135deg, #28a745, #20c997);
         }
+        .door-placement-input{
+            background: #ffff;
+        }
 
         @media (max-width: 400px){
             /* .form-row {
@@ -481,19 +484,6 @@
                             }
                         });
                     }
-                                    // <label>
-                                    //     <span>Door Placement</span>
-                                    //     <select name="door_placement_${roomCounter}" class="door-placement-input">
-                                    //         <option value="top-left" ${roomData.door_placement === 'top-left' ? 'selected' : ''}>Top Left</option>
-                                    //         <option value="top-right" ${roomData.door_placement === 'top-right' ? 'selected' : ''}>Top Right</option>
-                                    //         <option value="left-top" ${roomData.door_placement === 'left-top' ? 'selected' : ''}>Left Top</option>
-                                    //         <option value="left-bottom" ${roomData.door_placement === 'left-bottom' ? 'selected' : ''}>Left Bottom</option>
-                                    //         <option value="right-top" ${roomData.door_placement === 'right-top' ? 'selected' : ''}>Right Top</option>
-                                    //         <option value="right-bottom" ${roomData.door_placement === 'right-bottom' ? 'selected' : ''}>Right Bottom</option>
-                                    //         <option value="bottom-left" ${roomData.door_placement === 'bottom-left' ? 'selected' : ''}>Bottom Left</option>
-                                    //         <option value="bottom-right" ${roomData.door_placement === 'bottom-right' ? 'selected' : ''}>Bottom Right</option>
-                                    //     </select>
-                                    // </label>
                     // console.log(roomData.selected_type)
                     const roomHtml = `
                         <div class="room collapsed" data-id="${roomId}" data-server-id="${roomIndex}">
@@ -511,6 +501,19 @@
                                     <label class="${roomData.selected_type === 'total' ? 'checked' : ''}">
                                         <input type="radio" name="bench_type_${roomCounter}" value="total" >
                                         <span>Total Bench Data</span>
+                                    </label>
+                                    <label>
+                                        <span>Door Placement</span>
+                                        <select name="door_placement_${roomCounter}" class="door-placement-input">
+                                            <option value="top-left" ${roomData.door_placement === 'top-left' ? 'selected' : ''}>Top Left</option>
+                                            <option value="top-right" ${roomData.door_placement === 'top-right' ? 'selected' : ''}>Top Right</option>
+                                            <option value="left-top" ${roomData.door_placement === 'left-top' ? 'selected' : ''}>Left Top</option>
+                                            <option value="left-bottom" ${roomData.door_placement === 'left-bottom' ? 'selected' : ''}>Left Bottom</option>
+                                            <option value="right-top" ${roomData.door_placement === 'right-top' ? 'selected' : ''}>Right Top</option>
+                                            <option value="right-bottom" ${roomData.door_placement === 'right-bottom' ? 'selected' : ''}>Right Bottom</option>
+                                            <option value="bottom-left" ${roomData.door_placement === 'bottom-left' ? 'selected' : ''}>Bottom Left</option>
+                                            <option value="bottom-right" ${roomData.door_placement === 'bottom-right' ? 'selected' : ''}>Bottom Right</option>
+                                        </select>
                                     </label>
                                 </div>
                                 
@@ -885,6 +888,19 @@
                                         <input class="bench_type" type="radio" name="bench_type_${roomCounter}" value="total" checked>
                                         <span>Total Bench Data</span>
                                     </label>
+                                    <label>
+                                        <span>Door Placement</span>
+                                        <select name="door_placement_${roomCounter}" class="door-placement-input">
+                                            <option value="top-left" selected>Top Left</option>
+                                            <option value="top-right">Top Right</option>
+                                            <option value="left-top">Left Top</option>
+                                            <option value="left-bottom">Left Bottom</option>
+                                            <option value="right-top">Right Top</option>
+                                            <option value="right-bottom">Right Bottom</option>
+                                            <option value="bottom-left">Bottom Left</option>
+                                            <option value="bottom-right">Bottom Right</option>
+                                        </select>
+                                    </label>
                                 </div>
                                 
                                 <div class="total-bench-section">
@@ -1155,6 +1171,39 @@
             //     $(this).closest('.room').remove();
             // }
         });
+
+        //door placement toggle
+        $(document).on('change', '.door-placement-input', function(event) {
+            const buildingEl = $(this).closest('.building');
+            const buildingId = buildingEl.attr('data-server-id');
+            const buildingName = buildingEl.find('.building-title-input').val();
+
+            const roomEl = $(this).closest('.room');
+            const roomId = roomEl.attr('data-server-id');
+            const roomName = roomEl.find('.room-title-input').val();
+
+            const doorPlacement = $(this).val();
+
+            const doorPlacementData = {
+                title: `Door Placement`,
+                type: 'door',
+                room_id: roomId,
+                room_name: roomName,
+                building_id: buildingId,
+                door_placement: doorPlacement
+            };
+
+            sendAjaxAddRequest(doorPlacementData, (success) => {
+                if (success) {
+                    showStatus('Door data submitted successfully!', 'success');
+                    // updateRoomStats(roomEl);
+                } else {
+                    showStatus('Error submitting Door data', 'error');
+                }
+            });
+            // console.log('here')
+        });
+
         // Bench type toggle
         $(document).on('change', 'input[name^="bench_type_"]', function() {
             const roomEl = $(this).closest('.room');
