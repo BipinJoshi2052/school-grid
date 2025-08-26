@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\HelperFile;
 use App\Models\Department;
+use App\Models\InvigilatorPlanDetail;
 use App\Models\Position;
 use App\Models\Staff;
 use App\Models\User;
@@ -223,14 +224,25 @@ class StaffController extends Controller
             // Find the staff record
             $staff = Staff::findOrFail($id);
 
+            // Store old values for comparison
+            $old_name = $staff->name;
+
             // Find the associated user based on the user_id in the staff table
             $user = User::findOrFail($staff->user_id);
             $old_avatar = $user->avatar;
 
+            // Check for updated fields
+            $updated_fields = [];
+            $new_name = $request->input('name');
+            
+            if ($old_name !== $new_name) {
+                $updated_fields['staff_name'] = $new_name;
+            }
+
             // Update the user's table with the new data
-        // dd($this->uploadAvatar($request));
+            // dd($this->uploadAvatar($request));
             $user->update([
-                'name' => $request->input('name'),
+                'name' => $new_name,
                 'email' => $request->input('email'),
                 // 'avatar' => $this->uploadAvatar($request),
                 'avatar' => $request->hasFile('avatar') ? HelperFile::uploadFile($request,'avatars/staff') : $user->avatar,  // Update avatar if a new one is uploaded
@@ -239,13 +251,21 @@ class StaffController extends Controller
 
             // Update the staff's table with the new data
             $staff->update([
-                'name' => $request->input('name'),
+                'name' => $new_name,
                 'department_id' => $request->input('department_id'),
                 'position_id' => $request->input('position_id'),
                 'gender' => $request->input('gender'),
                 'joined_date' => $request->input('joined_date'),
                 'address' => $request->input('address'),
             ]);
+
+            // Update SeatPlanDetail if name was changed
+            if (isset($updated_fields['staff_name'])) {
+                InvigilatorPlanDetail::where('staff_id', $staff->id)
+                    ->update([
+                        'staff_name' => $updated_fields['staff_name']
+                    ]);
+            }
 
             // Check if the staff already has an avatar, and delete it if it exists
             if ($old_avatar && file_exists(storage_path('app/public/' . $old_avatar))) {
