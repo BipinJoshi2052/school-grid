@@ -6,6 +6,7 @@ use App\Helpers\HelperFile;
 use App\Models\Batch;
 use App\Models\ClassModel;
 use App\Models\Faculty;
+use App\Models\SeatPlanDetail;
 use App\Models\Section;
 use Illuminate\Http\Request;
 use App\Models\Student;
@@ -274,8 +275,80 @@ class StudentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-
     public function update(Request $request, $id)
+    {
+        // Start a transaction for the update process
+        DB::beginTransaction();
+
+        try {
+            // Find the staff record
+            $student = Student::findOrFail($id);
+
+            // Store old values for comparison
+            $old_name = $student->name;
+
+            // Find the associated user based on the user_id in the staff table
+            $user = User::findOrFail($student->user_id);
+            $old_avatar = $user->avatar;
+
+            // Check for updated fields
+            $updated_fields = [];
+            $new_name = $request->input('name');
+            
+            if ($old_name !== $new_name) {
+                $updated_fields['student_name'] = $new_name;
+            }
+
+            // Update the user's table with the new data
+            $user->update([
+                'name' => $new_name,
+                'email' => $request->input('email'),
+                'avatar' => $request->hasFile('avatar') ? HelperFile::uploadFile($request,'avatars/student') : $user->avatar,
+                'phone' => $request->input('phone'),
+            ]);
+
+            // Update the student's table with the new data
+            $student->update([
+                'name' => $new_name,
+                'address' => $request->input('address'),
+                'gender' => $request->input('gender'),
+                'faculty_id' => $request->faculty_id,
+                'batch_id' => $request->batch_id,
+                'class_id' => $request->class_id,
+                'section_id' => $request->section_id,
+                'roll_no' => $request->roll_no,
+                'handicapped' => $request->handicapped
+            ]);
+
+            // Update SeatPlanDetail if name was changed
+            if (isset($updated_fields['student_name'])) {
+                SeatPlanDetail::where('student_id', $student->id)
+                    ->update([
+                        'student_name' => $updated_fields['student_name']
+                    ]);
+            }
+
+            // Check if the staff already has an avatar, and delete it if it exists
+            if ($old_avatar && file_exists(storage_path('app/public/' . $old_avatar))) {
+                // Delete the old avatar image from the storage
+                unlink(storage_path('app/public/' . $old_avatar));
+            }
+
+            // Commit the transaction after all updates
+            DB::commit();
+
+            // Return the updated staff record as a JSON response
+            return response()->json($student);
+        } catch (\Exception $e) {
+            // Rollback in case of an error
+            DB::rollBack();
+
+            // Return error response
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function update2(Request $request, $id)
     {
         // Start a transaction for the update process
         // echo 'asdfasdfasdfasfd';
