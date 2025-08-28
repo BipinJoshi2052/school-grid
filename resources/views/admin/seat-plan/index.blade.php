@@ -182,7 +182,7 @@
 
             $(document).on('click', '.editInvigplanBtn', function () {
                 let id = $(this).data('id');
-                window.location.href = '/seat-plan/invigilator/' + id;
+                window.location.href = '/invig-plan/' + id;
             });
 
             // Edit Position

@@ -354,7 +354,9 @@ class SeatPlanController extends Controller
                 }
 
                 // Add the staff details
-                $groupedStaff[$detail->building_id][$detail->room][$detail->staff_id] = [
+                $groupedStaff[$detail->building_id][$detail->room][$detail->id] = [
+                    'id' => $detail->id,
+                    'staff_id' => $detail->staff_id,
                     'name' => $detail->staff_name,
                     'department' => $detail->staff_department,
                     'position' => $detail->staff_position

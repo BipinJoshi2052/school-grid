@@ -330,7 +330,7 @@
             transform: scale(1.02);
         }
 
-        .modal {
+        /* .modal {
             display: none;
             position: fixed;
             z-index: 15000;
@@ -353,43 +353,11 @@
             overflow-y: auto;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             animation: modalSlideIn 0.3s ease;
-        }
+        } */
 
         @keyframes modalSlideIn {
             from { transform: translateY(-50px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
-        }
-
-        .modal-header {
-            background: linear-gradient(45deg, #3498db, #2980b9);
-            color: white;
-            padding: 20px;
-            border-radius: 15px 15px 0 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-header h2 {
-            margin: 0;
-            font-size: clamp(1.2rem, 3vw, 1.5rem);
-        }
-
-        .close {
-            color: white;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .close:hover {
-            transform: scale(1.2); 
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-        }
-
-        .modal-body {
-            padding: 20px;
         }
 
         .unassigned-staff {
@@ -570,10 +538,29 @@
         </div>
     </div>
 
+    <div class="modal fade" id="entityModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="entityModalTitle">Update Invigilator</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                {{-- <div class="spinner-div spinner-div-edit-staff">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div> --}}
+                <div class="modal-body">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
     <?php
         $buildingsDataJson = json_encode($data['buildings'], JSON_HEX_TAG);
         $grouped_staff = json_encode($data['grouped_staff'], JSON_HEX_TAG);
-        $unassigned_staffs = json_encode($data['unassigned_staffs'], JSON_HEX_TAG);
+        // $unassigned_staffs = json_encode($data['unassigned_staffs'], JSON_HEX_TAG);
         $configs = json_encode($data['configs'], JSON_HEX_TAG);
         // $configs = 
         // dd($grouped_staff);
@@ -592,89 +579,7 @@
             const buildingsData = JSON.parse(`<?php echo addslashes($buildingsDataJson); ?>`);
             const grouped_staff = JSON.parse(`<?php echo addslashes($grouped_staff); ?>`);
             const configs = JSON.parse(`<?php echo addslashes($configs); ?>`);
-            console.log(grouped_staff);
-                    // Global variables
-            // let buildingsData = {
-            //     178: {
-            //         id: 178,
-            //         name: "Main Building",
-            //         rooms: {
-            //             0: {
-            //                 id: 0,
-            //                 name: "Room 101",
-            //                 staff: {
-            //                     254: {
-            //                         id: 254,
-            //                         name: "Kusum Gauchan",
-            //                         department: "Arts",
-            //                         position: "Vice Principal"
-            //                     }
-            //                 }
-            //             },
-            //             1: {
-            //                 id: 1,
-            //                 name: "Room 102",
-            //                 staff: {
-            //                     255: {
-            //                         id: 255,
-            //                         name: "Sohan Karmacharya",
-            //                         department: "Science", 
-            //                         position: "Vice Principal"
-            //                     }
-            //                 }
-            //             },
-            //             2: {
-            //                 id: 2,
-            //                 name: "Room 103",
-            //                 staff: {}
-            //             }
-            //         }
-            //     },
-            //     179: {
-            //         id: 179,
-            //         name: "Science Block",
-            //         rooms: {
-            //             0: {
-            //                 id: 0,
-            //                 name: "Lab 201",
-            //                 staff: {
-            //                     256: {
-            //                         id: 256,
-            //                         name: "Dr. Maya Sharma",
-            //                         department: "Chemistry",
-            //                         position: "Head of Department"
-            //                     }
-            //                 }
-            //             },
-            //             1: {
-            //                 id: 1,
-            //                 name: "Lab 202", 
-            //                 staff: {}
-            //             }
-            //         }
-            //     }
-            // };
-
-            let unassignedStaff = {
-                300: {
-                    id: 300,
-                    name: "Raj Kumar Shrestha",
-                    department: "Mathematics",
-                    position: "Senior Teacher"
-                },
-                301: {
-                    id: 301,
-                    name: "Sita Devi Poudel",
-                    department: "English",
-                    position: "Teacher"
-                },
-                302: {
-                    id: 302,
-                    name: "Ram Bahadur KC",
-                    department: "Social Studies",
-                    position: "Teacher"
-                }
-            };
+            const seatPlanId = `<?php echo $data['seat_plan_id'] ?>`;
 
             let currentView = 'buildings';
             let currentBuilding = null;
@@ -784,6 +689,7 @@
                                 <th style="padding: 10px;">Staff</th>
                                 <th style="padding: 10px;">Department</th>
                                 <th style="padding: 10px;">Position</th>
+                                <th style="padding: 10px;">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -795,12 +701,20 @@
                     const roomStaff = buildingStaff[index] ? Object.values(buildingStaff[index])[0] : null;
 
                     html += `
-                        <tr>
+                        <tr id="row-${index}">
                             <td style="padding: 10px;">${index+1}</td>
                             <td style="padding: 10px;">${room.name}</td>
-                            <td style="padding: 10px;">${roomStaff ? roomStaff.name : '-'}</td>
-                            <td style="padding: 10px;">${roomStaff ? roomStaff.department : '-'}</td>
-                            <td style="padding: 10px;">${roomStaff ? roomStaff.position : '-'}</td>
+                            <td style="padding: 10px;" class="staff-name">${(roomStaff && roomStaff.name) ? roomStaff.name : '-'}</td>
+                            <td style="padding: 10px;" class="staff-department">${(roomStaff && roomStaff.department) ? roomStaff.department : '-'}</td>
+                            <td style="padding: 10px;" class="staff-position">${(roomStaff && roomStaff.position) ? roomStaff.position : '-'}</td>
+                            <td style="padding: 10px;" class="action-buttons">
+                                <button class="btn btn-primary btn-sm replaceInvigilator" data-id="${(roomStaff && roomStaff.id) ? roomStaff.id : ''}" data-seat-plan-id="${seatPlanId}" data-room-index="${index}" data-building-id="${buildingId}" data-row="${index}">
+                                    ${(roomStaff && roomStaff.name) ? `Replace` : `Add`}
+                                </button>
+                                ${(roomStaff && roomStaff.name) ? `<button class="btn btn-danger btn-sm removeInvigilator" data-row="${index}" data-id="${roomStaff.id}">
+                                    Remove
+                                </button>` : ''}
+                            </td>
                         </tr>
                     `;
                 });
@@ -903,6 +817,109 @@
         function showSeatPlans(){
             window.location.href = `/seat-plan/`;
         }
+
+        $(document).on('click', '.replaceInvigilator', function () {
+            const seatPlanDetailId = $(this).data('id');
+            const roomIndex = $(this).data('room-index');
+            const row = $(this).data('row');
+            const buildingId = $(this).data('building-id');
+            const seatPlanId = $(this).data('seat-plan-id');
+
+            $.ajax({
+                url: '/invig-plan/load-invigilator',
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: { 
+                    id: seatPlanDetailId, 
+                    roomIndex : roomIndex,
+                    row : row,
+                    buildingId : buildingId,
+                    seatPlanId : seatPlanId
+                },
+                success: function(response) {
+                    // Assuming the response contains the rendered view HTML
+                    $('#entityModal .modal-body').html(response); // Inject the partial view into a modal
+                    $('#entityModal').modal('show'); // Show the modal with the staff list
+                },
+                error: function(xhr) {
+                    console.error('Error loading invigilators:', xhr.responseText);
+                }
+            });
+        });
+
+        $(document).on('click', '.selectStaff', function () {
+            const seatPlanDetailId = $(this).data('id');
+            const seatPlanId = $(this).data('seat-plan-id');
+            const staffId = $(this).data('staff-id');
+            const buildingId = $(this).data('building-id');
+            const roomIndex = $(this).data('room-index');
+            const row = $(this).data('row');
+
+            $.ajax({
+                url: '/invig-plan/replace-invigilator',
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    id: seatPlanDetailId,
+                    staff_id: staffId,
+                    building_id: buildingId,
+                    room_index: roomIndex,
+                    seat_plan_id: seatPlanId
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Update the table row with new staff details
+                        $(`#row-${row} .staff-name`).text(response.staff.staff_name);
+                        $(`#row-${row} .staff-department`).text(response.staff.staff_department);
+                        $(`#row-${row} .staff-position`).text(response.staff.staff_position);
+                        $(`#row-${row} .action-buttons`).html(`
+                            <button class="btn btn-primary btn-sm replaceInvigilator" data-id="${response.staff.seat_plan_detail_id}" data-seat-plan-id="${seatPlanId}" data-room-index="${roomIndex}" data-building-id="${buildingId}" data-row="${row}">Replace</button>
+                            <button class="btn btn-danger btn-sm removeInvigilator" data-id="${response.staff.seat_plan_detail_id}" data-row="${row}">Remove</button>
+                        `);
+                        $('#entityModal').modal('hide');
+                    } else {
+                        console.error('Failed to replace invigilator:', response.message);
+                    }
+                },
+                error: function(xhr) {
+                    console.error('Error replacing invigilator:', xhr.responseText);
+                }
+            });
+        });
+
+        $(document).on('click', '.removeInvigilator', function () {
+            const staffId = $(this).data('id');
+            const rowIndex = $(this).data('row');
+            // console.log(rowIndex)
+            // return;
+
+            $.ajax({
+                url: `/invig-plan/remove/${staffId}`,
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Update the table row to reflect the removal
+                        $(`#row-${rowIndex} .staff-name`).text('-');
+                        $(`#row-${rowIndex} .staff-department`).text('-');
+                        $(`#row-${rowIndex} .staff-position`).text('-');
+                        $(`#row-${rowIndex} .replaceInvigilator`).text('Add');
+                        $(`#row-${rowIndex} .action-buttons .removeInvigilator`).remove();
+                    } else {
+                        console.error('Failed to remove invigilator:', response.message);
+                    }
+                },
+                error: function(xhr) {
+                    console.error('Error removing invigilator:', xhr.responseText);
+                }
+            });
+        });
 
 </script>
 @endsection

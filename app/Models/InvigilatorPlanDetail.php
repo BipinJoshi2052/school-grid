@@ -10,7 +10,7 @@ class InvigilatorPlanDetail extends Model
     // public $timestamps = true; // Ensure timestamps are enabled
     use HasFactory;
 
-    protected $fillable = ['seat_plan_id', 'building_id', 'room', 'staff_id','created_at','updated_at'];
+    protected $fillable = ['seat_plan_id', 'building_id', 'room', 'staff_id','staff_name','staff_department','staff_position','created_at','updated_at'];
 
     public function seatPlan()
     {
