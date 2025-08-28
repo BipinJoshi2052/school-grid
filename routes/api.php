@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\Admin\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -15,9 +16,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
-// Route::get('/users/edit/{id}', [UserController::class, 'edit'])->name('users.edit');
-// Route::get('/users', [UserController::class, 'index'])->name('users.list');
+Route::post('login', [AuthController::class, 'login']);
+Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:api');
+
+Route::get('/users/edit/{id}', [UserController::class, 'edit'])->name('users.edit');
+Route::get('/users', [UserController::class, 'index'])->name('users.list');

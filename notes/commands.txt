@@ -1,0 +1,11 @@
+composer require laravel/passport -W
+php artisan migrate
+php artisan passport:install
+php artisan passport:install --force
+
+'guards' => [
+    'api' => [
+        'driver' => 'passport',
+        'provider' => 'users',
+    ],
+],
