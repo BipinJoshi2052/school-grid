@@ -321,7 +321,7 @@
             const id = $this.data('id');
             const newTitle = $this.val();
             
-            console.log(`Title changed: ${type} (ID: ${id}) -> "${newTitle}"`);
+            // console.log(`Title changed: ${type} (ID: ${id}) -> "${newTitle}"`);
             
             // Update the data structure
             updateTitleInData($this, type, id, newTitle);
@@ -395,7 +395,7 @@
         facultyData.unshift(newFaculty);
         renderFacultyData();
         addElementInServer(newFaculty,'faculty');
-        console.log(`Added faculty with ID: ${newId}`);
+        // console.log(`Added faculty with ID: ${newId}`);
     }
 
     function addBatch(facultyId) {
@@ -414,7 +414,7 @@
             faculty.batches.push(newBatch);
             renderFacultyData();
             addElementInServer(newBatch,'batch');
-            console.log(`Added batch with ID: ${newId} to faculty ${facultyId}`);
+            // console.log(`Added batch with ID: ${newId} to faculty ${facultyId}`);
         }
     }
 
@@ -435,7 +435,7 @@
                 batch.classes.push(newClass);
                 renderFacultyData();
                 addElementInServer(newClass,'class');
-                console.log(`Added class with ID: ${newId} to batch ${batchId}`);
+                // console.log(`Added class with ID: ${newId} to batch ${batchId}`);
             }
         });
     }
@@ -457,7 +457,7 @@
                     cls.sections.push(newSection);
                     renderFacultyData();
                     addElementInServer(newSection,'section');
-                    console.log(`Added section with ID: ${newId} to class ${classId}`);
+                    // console.log(`Added section with ID: ${newId} to class ${classId}`);
                 }
             });
         });
@@ -504,8 +504,8 @@
                     // Remove the deleted element from the DOM
                     $(`[data-element="${type}-${elementId}"]`).remove();
                     toastr.success(`${type.charAt(0).toUpperCase() + type.slice(1)} deleted successfully!`);
-                    console.log(type);
-                    console.log(facultyData)
+                    // console.log(type);
+                    // console.log(facultyData)
 
                     if (type === 'faculty') {
                         facultyData = facultyData.filter(f => f.id != elementId);
@@ -529,8 +529,8 @@
                         });
                     }
                     renderFacultyData();
-                    console.log(facultyData)
-                    console.log(`${type} with ID: ${elementId} deleted successfully`);
+                    // console.log(facultyData)
+                    // console.log(`${type} with ID: ${elementId} deleted successfully`);
                 } else {
                     toastr.error('Failed to delete the ' + type);
                 }
@@ -556,7 +556,7 @@
     }
 
     function addElementInServer(newElement, type) {
-        console.log(newElement);
+        // console.log(newElement);
         $.ajax({
             url: `/add-element`,  // URL for the controller action
             method: 'POST',
@@ -670,7 +670,7 @@
                         });
                     }
 
-                    console.log(`${elementType} added successfully!`);
+                    // console.log(`${elementType} added successfully!`);
                 }
             },
             error: function(xhr, status, error) {
@@ -694,7 +694,7 @@
             },
             success: function(response) {
                 // console.log(response)
-                console.log(`${type} title updated successfully with new ID: ${id}`);
+                // console.log(`${type} title updated successfully with new ID: ${id}`);
                 // toastr.success(`${type} title updated successfully!`);  // Show success message with Toastr
             },
             error: function(xhr, status, error) {

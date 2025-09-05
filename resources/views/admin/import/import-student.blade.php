@@ -1008,7 +1008,7 @@
                     success: function(response) {
                         // If validation passes, trigger data upload
                         if (response.status === 'success') {
-                            console.log('Validation passed, proceeding to upload...');
+                            // console.log('Validation passed, proceeding to upload...');
                             uploadData();
                             // uploadData(data, mappings);
                         } else {
@@ -1022,9 +1022,9 @@
                         }
                     },
                     error: function(xhr, status, error) {
-                        console.log('reached error section of performValidation');
+                        // console.log('reached error section of performValidation');
                         // console.log(xhr)
-                        // console.log(xhr.responseJSON)
+                        console.log(xhr.responseJSON)
                         $('#validateDataBtn').attr('disabled','disabled');
                         $('.validation-progress').hide();
                         let errorMessage = 'Failed to upload data to server.';
@@ -1152,8 +1152,8 @@
                 },
                 contentType: 'application/json',
                 success: function(response) {
-                    console.log('success')
-                    console.log(response)
+                    // console.log('success')
+                    // console.log(response)
                     $('.upload-progress').hide();
                     $('.validation-progress').hide();
                     showSuccess(`🎉 Successfully uploaded ${response.imported} records to the system!`);
@@ -1162,7 +1162,7 @@
                     }, 3000);
                 },
                 error: function(xhr, status, error) {
-                    console.log('error')
+                    // console.log('error')
                     console.log(status)
                     $('.upload-progress').hide();
                     $('.validation-progress').hide();
@@ -1179,11 +1179,11 @@
 
         function uploadToBackend2(data) {
             // Replace this URL with your actual backend endpoint
-            console.log([
-                data,
-                mappings,
-                csvHeadings
-            ])
+            // console.log([
+            //     data,
+            //     mappings,
+            //     csvHeadings
+            // ])
             const backendUrl = '/api/upload-csv-data';
             
             $.ajax({

@@ -715,7 +715,7 @@
 
             $(document).on("click","#classCheckbox",function() {    
                 // $('#classCheckbox').change(function() {
-                console.log('object')
+                // console.log('object')
                 if ($(this).is(':checked')) {
                     $('.student-class').show(); // Show the class div
                 } else {

@@ -413,7 +413,7 @@
 
             // Parse the entire data first
             const buildingsData = JSON.parse('<?php echo addslashes($buildingsDataJson); ?>');
-            console.log(buildingsData);
+            // console.log(buildingsData);
 
             // Decode the 'rooms' field in JavaScript (since it's a JSON string)
             buildingsData.forEach(function(building) {
@@ -426,7 +426,7 @@
                     }
                 }
             });
-            console.log(buildingsData)
+            // console.log(buildingsData)
 
             let currentView = 'buildings';
             let currentBuilding = null;
@@ -456,7 +456,7 @@
                                 return sum + (room.total.benches * room.total.seats);
                             } else {
                                 return sum + room.individual.reduce((rowSum, row) => {
-                                    console.log(row)
+                                    // console.log(row)
                                     return rowSum + row.bench.reduce((benchSum, bench) => {
                                         return benchSum + bench.seats; // Summing the number of seats for each bench
                                     }, 0);
@@ -519,8 +519,8 @@
                         }, 0);
 
                         // You can log the results if you want to verify the calculations
-                        console.log(`Total Benches: ${totalBenches}`);
-                        console.log(`Total Seats: ${totalSeats}`);
+                        // console.log(`Total Benches: ${totalBenches}`);
+                        // console.log(`Total Seats: ${totalSeats}`);
 
                         // Update the room's total data with the calculated values
                         // room.total.benches = totalBenches;
@@ -595,7 +595,7 @@
                     'bottom-left': 'door-bottom-left',
                     'bottom-right': 'door-bottom-right'
                 }[doorPlacement] || 'door-top-left'; // Default to top-left if invalid
-                console.log(doorClass)
+                // console.log(doorClass)
                 let html = `<div class="seating-layout"><div class="door ${doorClass}">🚪</div>`;
                 
                 // Determine number of rows (2 or 3 based on total benches)

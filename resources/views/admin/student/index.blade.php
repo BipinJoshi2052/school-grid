@@ -286,7 +286,7 @@
                     url: "{{ route('students.create') }}", // Create a route for this
                     type: 'GET',
                     success: function (data) {
-                        console.log('object')
+                        // console.log('object')
                         // setTimeout(() => {
                         // $('.spinner-div-edit-staff').hide();
                         $('.create-form').html(data);                            

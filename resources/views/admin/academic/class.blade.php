@@ -210,7 +210,7 @@ Class & Section
         }
 
         function createClassHtml(classData) {
-            console.log(classData)
+            // console.log(classData)
             return `
                 <div class="col-md-6 card class-item" data-title="${classData.title}"  data-id="${classData.id}" data-element="class-${classData.id}">
                     <div class="card-header">
@@ -264,7 +264,7 @@ Class & Section
                 const id = $this.data('id');
                 const newTitle = $this.val();
                 
-                console.log(`Title changed: ${type} (ID: ${id}) -> "${newTitle}"`);
+                // console.log(`Title changed: ${type} (ID: ${id}) -> "${newTitle}"`);
                 
                 // Update the data structure
                 updateTitleInData($this, type, id, newTitle);
@@ -314,14 +314,14 @@ Class & Section
             classData.unshift(newClass);
             renderClassData();
             addElementInServer(newClass,'class');
-            console.log(`Added class with ID: ${newId}`);
+            // console.log(`Added class with ID: ${newId}`);
         }
 
         function addSection(classId) {
             const classItem = classData.find(f => f.id == classId);
-                console.log('123')
+                // console.log('123')
             if (classItem) {
-                console.log('object')
+                // console.log('object')
                 const newId = Math.max(...getAllSections().map(b => b.id), 0) + 1;
                 const newSection = {
                     id: newId,
@@ -335,7 +335,7 @@ Class & Section
                 classItem.sections.push(newSection);
                 renderClassData();
                 addElementInServer(newSection,'section');
-                console.log(`Added Section with ID: ${newId} to class ${classId}`);
+                // console.log(`Added Section with ID: ${newId} to class ${classId}`);
             }
         }
 
@@ -396,7 +396,7 @@ Class & Section
                         }
                         renderFacultyData();
                         // console.log(facultyData)
-                        console.log(`${type} with ID: ${elementId} deleted successfully`);
+                        // console.log(`${type} with ID: ${elementId} deleted successfully`);
                     } else {
                         toastr.error('Failed to delete the ' + type);
                     }
@@ -412,7 +412,7 @@ Class & Section
             if (confirm('Are you sure you want to delete this class and all its data?')) {
                 classData = classData.filter(f => f.id != classId);
                 renderClassData();
-                console.log(`Deleted class with ID: ${classId}`);
+                // console.log(`Deleted class with ID: ${classId}`);
             }
         }
 
@@ -422,7 +422,7 @@ Class & Section
                     classItem.sections = classItem.sections.filter(b => b.id != sectionId);
                 });
                 renderClassData();
-                console.log(`Deleted batch with ID: ${sectionId}`);
+                // console.log(`Deleted batch with ID: ${sectionId}`);
             }
         }
         // Helper functions
@@ -431,7 +431,7 @@ Class & Section
         }
 
         function addElementInServer(newElement, type) {
-            console.log(newElement);
+            // console.log(newElement);
             $.ajax({
                 url: `/add-element`,  // URL for the controller action
                 method: 'POST',
@@ -447,8 +447,8 @@ Class & Section
                         const newElementId = response.data.id; // Get the new ID from the response
                         const elementType = response.type; // Get the type from the response
                         const oldElementId = newElement.id;
-                        console.log(oldElementId);
-                        console.log(newElementId);
+                        // console.log(oldElementId);
+                        // console.log(newElementId);
 
                         // Search for the appropriate element in the DOM and update the attributes
                         if (elementType === 'class') {
@@ -505,7 +505,7 @@ Class & Section
                             });
                         }
 
-                        console.log(`${elementType} added successfully!`);
+                        // console.log(`${elementType} added successfully!`);
                     }
                 },
                 error: function(xhr, status, error) {
@@ -529,7 +529,7 @@ Class & Section
                 },
                 success: function(response) {
                     // console.log(response)
-                    console.log(`${type} title updated successfully with new ID: ${id}`);
+                    // console.log(`${type} title updated successfully with new ID: ${id}`);
                     // toastr.success(`${type} title updated successfully!`);  // Show success message with Toastr
                 },
                 error: function(xhr, status, error) {

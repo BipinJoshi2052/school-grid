@@ -409,7 +409,7 @@
     // Check if the radio button is checked and add class to label
         $(document).ready(function() {
             $('input[type="radio"]:checked').each(function() {
-                console.log('object');  // This will log if the radio button is checked
+                // console.log('object');  // This will log if the radio button is checked
                 $(this).closest('label').addClass('checked');
             });
         });
@@ -430,7 +430,7 @@
             $('#buildingsContainer .empty-state').remove();
             // console.log(existingData)
             existingData.forEach(buildingData => {
-                (building_loop_debug == 1) ?? console.log('start loop');
+                // (building_loop_debug == 1) ?? console.log('start loop');
                 const rooms = JSON.parse(buildingData.rooms);
                 // console.log(rooms)
                 const buildingId = `building_${buildingData.id}`;
@@ -455,15 +455,15 @@
 
                 $('#buildingsContainer').append(buildingHtml);
                 const buildingEl = $(`[data-id="${buildingId}"]`);
-                (building_loop_debug == 1) ?? console.log('buildingData.name - '+buildingData.name);
+                // (building_loop_debug == 1) ?? console.log('buildingData.name - '+buildingData.name);
 
                 // Populate rooms
                 rooms.forEach((roomData, roomIndex) => {
-                    (building_loop_debug == 1) ?? console.log('room start loop');
+                    // (building_loop_debug == 1) ?? console.log('room start loop');
                     var roomCounter = roomIndex;
                     const roomId = `room_${roomIndex}`;
-                    (building_loop_debug == 1) ?? console.log(roomData);
-                    (building_loop_debug == 1) ?? console.log('roomIndex - ' + roomIndex);
+                    // (building_loop_debug == 1) ?? console.log(roomData);
+                    // (building_loop_debug == 1) ?? console.log('roomIndex - ' + roomIndex);
                     
                     // Calculate total stats
                     let totalBenches = 0;
@@ -479,8 +479,8 @@
                                 row.bench.forEach(bench => {
                                     totalSeats += bench.seats || 0;
                                 });
-                                console.log(totalBenches)
-                                console.log(totalSeats)
+                                // console.log(totalBenches)
+                                // console.log(totalSeats)
                             }
                         });
                     }
@@ -551,16 +551,16 @@
                     buildingEl.find('.rooms-container').append(roomHtml);
                     const roomEl = buildingEl.find(`[data-id="${roomId}"]`);
                     // const roomEl = $(`[data-id="${roomId}"]`);
-                    (building_loop_debug == 1) ?? console.log(roomEl);
-                    (building_loop_debug == 1) ?? console.log('roomData.selected_type - '+roomData.selected_type);
+                    // (building_loop_debug == 1) ?? console.log(roomEl);
+                    // (building_loop_debug == 1) ?? console.log('roomData.selected_type - '+roomData.selected_type);
 
                     // Populate individual bench data if selected
                     if (roomData.selected_type === 'individual' && roomData.individual) {
                         roomData.individual.forEach((rowData, rowIndex) => {
-                            (building_loop_debug == 1) ?? console.log('row start loop');
+                            // (building_loop_debug == 1) ?? console.log('row start loop');
                             var rowCounter = rowIndex;
                             const rowId = `row_${buildingData.id}_${rowIndex}`;
-                            (building_loop_debug == 1) ?? console.log('rowId - ' +rowId);
+                            // (building_loop_debug == 1) ?? console.log('rowId - ' +rowId);
                             
                             const rowHtml = `
                                 <div class="row-section" data-id="${rowId}" data-server-id="${rowIndex}">
@@ -599,15 +599,15 @@
                                     rowEl.find('.benches-container').append(benchHtml);
                                 });
                             }
-                            (building_loop_debug == 1) ?? console.log('row end loop');
+                            // (building_loop_debug == 1) ?? console.log('row end loop');
                         });
                     }
-                    (building_loop_debug == 1) ?? console.log('room end loop');
+                    // (building_loop_debug == 1) ?? console.log('room end loop');
                 });
                 // onclick="$(this).closest('.bench-item').remove(); updateRoomStats($(this).closest('.room'));"
                 // Update counters to avoid conflicts
                 buildingCounter = Math.max(buildingCounter, buildingData.id);
-                (building_loop_debug == 1) ?? console.log('end loop');
+                // (building_loop_debug == 1) ?? console.log('end loop');
             });
         }
 
@@ -617,7 +617,7 @@
         });
         // Simulate AJAX requests (replace with actual endpoints)
         function sendAjaxRequest(data, callback) {
-            console.log('Sending AJAX request to /buildings/add-element:', data);
+            // console.log('Sending AJAX request to /buildings/add-element:', data);
             // Simulate server response
             setTimeout(() => {
                 const success = Math.random() > 0.1; // 90% success rate for demo
@@ -626,7 +626,7 @@
         }
 
         function sendAjaxAddRequest(data, callback) {
-            console.log('Sending AJAX request to /buildings/add-element:', data);
+            // console.log('Sending AJAX request to /buildings/add-element:', data);
             
             $.ajax({
                 url: '/buildings/add-element',
@@ -639,8 +639,8 @@
                 },
                 contentType: 'application/json',
                 success: function(response) {
-                    console.log('success')
-                    console.log(response)
+                    // console.log('success')
+                    // console.log(response)
 
                     const success = 1; // 90% success rate for demo
                     callback(
@@ -676,7 +676,7 @@
             // const benchType = roomEl.find('input[name^="bench_type_"]:checked').val();
             let totalBenches = 0;
             let totalSeats = 0;
-            console.log(benchType)
+            // console.log(benchType)
             if (benchType === 'total') {
                 const benchesInput = roomEl.find('.total-benches-input');
                 const seatsInput = roomEl.find('.seats-per-bench-input');
@@ -687,11 +687,11 @@
                 roomEl.find('.row-section').each(function() {
                     const rowBenches = $(this).find('.bench-item').length;
                     totalBenches += rowBenches;
-                    console.log(totalBenches)
+                    // console.log(totalBenches)
                     $(this).find('.seats-input').each(function() {
                         totalSeats += parseInt($(this).val()) || 0;
                     });
-                    console.log(totalSeats)
+                    // console.log(totalSeats)
                 });
             }
 
@@ -1210,7 +1210,7 @@
             const value = $(this).val();
             const label = $(this).closest('label');
 
-            console.log('roomEl - ' + roomEl)
+            // console.log('roomEl - ' + roomEl)
 
             // const benchTypeData = {
             //     title: benchName,
@@ -1306,8 +1306,8 @@
 
             sendAjaxAddRequest(rowData, (success, response) => {
                 if (success) {
-                    console.log(success)
-                    console.log(response)
+                    // console.log(success)
+                    // console.log(response)
                     showStatus('Row added successfully!', 'success');
 
                     const rowHtml = `
@@ -1321,7 +1321,7 @@
                     `;
 
                     roomEl.find('.rows-container').append(rowHtml);
-                    console.log($(`.row-section[data-id="${rowId}"]`))
+                    // console.log($(`.row-section[data-id="${rowId}"]`))
                     // console.log(response)
                     // console.log(response.row_index)
             
@@ -1381,7 +1381,7 @@
                 building_name: buildingName,
                 selected_type: 'individual',
             };
-            console.log(benchData)
+            // console.log(benchData)
 
             sendAjaxAddRequest(benchData, (success, response) => {
                 if (success) {

@@ -130,7 +130,7 @@
                         d.pageLength = d.length; // Send the selected length to the server
                     },
                     "dataSrc": function(json) {
-                        console.log(json.data)
+                        // console.log(json.data)
                         return json.data;
                     }
                 },

@@ -635,7 +635,7 @@
                         // const rooms = JSON.parse(building.rooms);
                         const rooms = building.rooms;
                         const parsedRoom = JSON.parse(rooms);
-                        console.log(JSON.parse(rooms))
+                        // console.log(JSON.parse(rooms))
                         const totalRooms = parsedRoom.length;
 
                         html += `
@@ -711,7 +711,7 @@
                                 <button class="btn btn-primary btn-sm replaceInvigilator" data-id="${(roomStaff && roomStaff.id) ? roomStaff.id : ''}" data-seat-plan-id="${seatPlanId}" data-room-index="${index}" data-building-id="${buildingId}" data-row="${index}">
                                     ${(roomStaff && roomStaff.name) ? `Replace` : `Add`}
                                 </button>
-                                ${(roomStaff && roomStaff.name) ? `<button class="btn btn-danger btn-sm removeInvigilator" data-row="${index}" data-id="${roomStaff.id}">
+                                ${(roomStaff && roomStaff.name) ? `<button class="btn btn-danger btn-sm removeInvigilator" data-row="${index}" data-id="${roomStaff.id}" data-room-index="${index}" data-building-id="${buildingId}">
                                     Remove
                                 </button>` : ''}
                             </td>
@@ -880,6 +880,20 @@
                             <button class="btn btn-primary btn-sm replaceInvigilator" data-id="${response.staff.seat_plan_detail_id}" data-seat-plan-id="${seatPlanId}" data-room-index="${roomIndex}" data-building-id="${buildingId}" data-row="${row}">Replace</button>
                             <button class="btn btn-danger btn-sm removeInvigilator" data-id="${response.staff.seat_plan_detail_id}" data-row="${row}">Remove</button>
                         `);
+                        
+                        // 2️⃣ Update grouped_staff to keep id but reset other fields
+                        if (grouped_staff[buildingId] && grouped_staff[buildingId][roomIndex]) {
+                            const oldStaffObj = Object.values(grouped_staff[buildingId][roomIndex])[0];
+                            const staffIdKey = Object.keys(grouped_staff[buildingId][roomIndex])[0];
+
+                            grouped_staff[buildingId][roomIndex][staffIdKey] = {
+                                id: oldStaffObj.id,
+                                staff_id: response.staff.staff_id,
+                                name: response.staff.staff_name,
+                                department: response.staff.department,
+                                position: response.staff.staff_position
+                            };
+                        }
                         $('#entityModal').modal('hide');
                     } else {
                         console.error('Failed to replace invigilator:', response.message);
@@ -894,6 +908,8 @@
         $(document).on('click', '.removeInvigilator', function () {
             const staffId = $(this).data('id');
             const rowIndex = $(this).data('row');
+            const buildingId = $(this).data('building-id');
+            const roomIndex = $(this).data('room-index');
             // console.log(rowIndex)
             // return;
 
@@ -911,6 +927,20 @@
                         $(`#row-${rowIndex} .staff-position`).text('-');
                         $(`#row-${rowIndex} .replaceInvigilator`).text('Add');
                         $(`#row-${rowIndex} .action-buttons .removeInvigilator`).remove();
+
+                        // 2️⃣ Update grouped_staff to keep id but reset other fields
+                        if (grouped_staff[buildingId] && grouped_staff[buildingId][roomIndex]) {
+                            const oldStaffObj = Object.values(grouped_staff[buildingId][roomIndex])[0];
+                            const staffIdKey = Object.keys(grouped_staff[buildingId][roomIndex])[0];
+
+                            grouped_staff[buildingId][roomIndex][staffIdKey] = {
+                                id: oldStaffObj.id,
+                                staff_id: '-',
+                                name: '-',
+                                department: '-',
+                                position: '-'
+                            };
+                        }
                     } else {
                         console.error('Failed to remove invigilator:', response.message);
                     }

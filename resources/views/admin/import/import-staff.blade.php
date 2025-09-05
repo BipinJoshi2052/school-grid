@@ -861,7 +861,7 @@
 
                     // Add new mapping
                     mappings[requiredHeading] = selectedCsvHeading;
-                    console.log(mappings)
+                    // console.log(mappings)
                     
                     // Update UI
                     updateMappingDisplay();
@@ -1007,11 +1007,11 @@
                     success: function(response) {
                         // If validation passes, trigger data upload
                         if (response.status === 'success') {
-                            console.log('Validation passed, proceeding to upload...');
+                            // console.log('Validation passed, proceeding to upload...');
                             uploadData();
                             // uploadData(data, mappings);
                         } else {
-                            console.log(response)
+                            // console.log(response)
                             
                             showWarning(`Duplicate Data: ${response.message} These users will be updated. Press Upload if you wish to go on or update your file.`);
                             $('.action-buttons').html(`
@@ -1021,7 +1021,7 @@
                         }
                     },
                     error: function(xhr, status, error) {
-                        console.log('reached error section of performValidation');
+                        // console.log('reached error section of performValidation');
                         // console.log(xhr)
                         // console.log(xhr.responseJSON)
                         $('#validateDataBtn').attr('disabled','disabled');
@@ -1150,8 +1150,8 @@
                 },
                 contentType: 'application/json',
                 success: function(response) {
-                    console.log('success')
-                    console.log(response)
+                    // console.log('success')
+                    // console.log(response)
                     $('.upload-progress').hide();
                     $('.validation-progress').hide();
                     showSuccess(`🎉 Successfully uploaded ${response.imported} records to the system!`);
@@ -1160,7 +1160,7 @@
                     }, 3000);
                 },
                 error: function(xhr, status, error) {
-                    console.log('error')
+                    // console.log('error')
                     console.log(status)
                     $('.upload-progress').hide();
                     $('.validation-progress').hide();
@@ -1177,11 +1177,7 @@
 
         function uploadToBackend2(data) {
             // Replace this URL with your actual backend endpoint
-            console.log([
-                data,
-                mappings,
-                csvHeadings
-            ])
+            // consconsole.log(
             const backendUrl = '/api/upload-csv-data';
             
             $.ajax({

@@ -495,7 +495,7 @@
                     // for (var pair of formData.entries()) {
                     //     console.log(pair[0]+ ': ' + pair[1]);
                     // }
-                    console.log(staffId)
+                    // console.log(staffId)
                     $.ajax({
                         url: "{{ route('students.update', '') }}/" + staffId,
                         type: 'POST',

@@ -916,7 +916,7 @@ Seat Plan Config
                 // This function would handle the seat plan display
                 // For demo purposes, just show an alert
                 alert('Seat plan loaded successfully! This would redirect to the seat plan view.');
-                console.log('Seat plan data:', data);
+                // console.log('Seat plan data:', data);
             }
 
             // Initialize validation

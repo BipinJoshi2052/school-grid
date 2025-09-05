@@ -148,7 +148,7 @@
             $('#positions-tab').on('click', function () {
                 if (!$('#positions-container').hasClass('loaded')) {
                     $('.spinner-div-position').show();
-                    console.log('object')
+                    // console.log('object')
                     $.ajax({
                         url: "{{ route('positions.partial') }}",
                         type: 'GET',
@@ -210,7 +210,7 @@
 
             // Edit Position
             $(document).on('click', '.editPositionBtn', function () {
-                console.log('s')
+                // console.log('s')
                 let id = $(this).data('id');
                 $.get("{{ url('positions') }}/" + id + "/edit", function (data) {
                     $('#entityModalTitle').text('Edit Position');

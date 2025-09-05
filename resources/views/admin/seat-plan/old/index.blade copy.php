@@ -614,9 +614,9 @@ function init() {
       stack: '.connected-sortable ul'
     }).disableSelection();
 
-            console.log('object')
-            console.log($.fn.jquery);  // Should print the jQuery version number
-console.log($.ui.version);  // Should print the jQuery UI version num
+            // console.log('object')
+            // console.log($.fn.jquery);  // Should print the jQuery version number
+            // console.log($.ui.version);  // Should print the jQuery UI version num
             $('.students-row').sortable({
                 items: '.student-card',
                 handle: '.drag-handle',
@@ -631,16 +631,16 @@ console.log($.ui.version);  // Should print the jQuery UI version num
                 scrollSpeed: 20,
                 stack: '.ui-sortable div',
                 start: function(event, ui) {
-                    console.log('22')
+                    // console.log('22')
                     ui.placeholder.height(ui.item.height());
                     ui.helper.addClass('dragging');
                 },
                 stop: function(event, ui) {
-                    console.log('4')
+                    // console.log('4')
                     ui.item.removeClass('dragging');
                 },
                 update: function(event, ui) {
-                    console.log('2')
+                    // console.log('2')
                     const movedStudent = ui.item;
                     const studentId = movedStudent.data('student-id');
                     const student = students.find(s => s.id === studentId);
