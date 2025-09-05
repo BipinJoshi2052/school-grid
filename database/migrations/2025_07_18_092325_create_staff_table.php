@@ -23,6 +23,7 @@ class CreateStaffTable extends Migration
             $table->integer('gender')->nullable();  // 0 for male, 1 for female, 2 for others, null unspecified
             $table->date('joined_date')->nullable();
             $table->text('address')->nullable();
+            $table->foreignId('added_by')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamps();
         });
     }

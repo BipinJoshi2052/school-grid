@@ -18,7 +18,9 @@ class CreateBuildingsTable extends Migration
             $table->string('name'); // Name of the building
             $table->json('rooms'); // Store room details in JSON format
             $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Relation to users table
+            $table->foreignId('added_by')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamps(); // created_at and updated_at timestamps
+            $table->softDeletes();
         });
     }
 

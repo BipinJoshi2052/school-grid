@@ -23,6 +23,8 @@ class CreateStudentTable extends Migration
             $table->integer('handicapped')->default(0); 
             $table->foreignId('class_id')->constrained('classes');
             $table->foreignId('section_id')->constrained('sections');
+            $table->integer('roll_no')->default(0);
+            $table->foreignId('added_by')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamps();
         });
     }

@@ -20,6 +20,15 @@ class CreateUsersTable extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
+            $table->string('avatar')->nullable();
+            $table->string('phone')->nullable();
+            $table->foreignId('parent_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('user_type_id')->default(2)->constrained('user_types');
+            $table->foreignId('added_by')->nullable()->constrained('users')->onDelete('set null');
+            $table->string('otp')->nullable();
+            $table->integer('suspend')->default(0);
+            $table->dateTime('last_access_date')->nullable();
+            $table->text('last_access_from')->nullable();
             $table->timestamp('created_at')->useCurrent();  // Set default value to current timestamp
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();  // Set default and auto-update
             // $table->timestamps();

@@ -18,6 +18,7 @@ class CreateBatchesTable extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Relation to users table
             $table->string('title', 100);
             $table->foreignId('faculty_id')->constrained('faculties')->onDelete('cascade'); // Foreign key referencing faculties table
+            $table->foreignId('added_by')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamps();
         });
     }

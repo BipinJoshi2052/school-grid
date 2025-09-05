@@ -14,6 +14,7 @@ class CreateSuggestionsTable extends Migration
             $table->string('ip')->nullable();
             $table->string('user_agent')->nullable();
             $table->foreignId('user_id')->constrained('users')->after('user_agent');
+            $table->foreignId('added_by')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamps();
         });
     }
