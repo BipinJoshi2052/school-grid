@@ -641,7 +641,7 @@ class SeatPlanController extends Controller
         // 6. Determine seating pattern and call corresponding function
         $seatingPattern = $request->input('seatingPattern');
         $seatingData = [];
-
+        // dd($studentDetails);
         if ($seatingPattern['type'] == 'sequential') {
             $seatingData = $this->assignSeatsSequentially($buildings, $students,$studentDetails, $seat_plan_id, $seat_plan_details, $unassigned_students, $request->input('rooms'));
         } elseif ($seatingPattern['type'] == 'rowbased') {
@@ -963,6 +963,10 @@ class SeatPlanController extends Controller
                     // If the current section is empty, move to the next section
                     if (empty($studentClassWiseData[$classId][0])) {
                         array_shift($studentClassWiseData[$classId]);
+                    }
+                    
+                    if (!isset($studentsDetailData[$studentId])){
+                        continue; // skip this student and move on to next
                     }
 
                     // If the class is now empty, remove it
