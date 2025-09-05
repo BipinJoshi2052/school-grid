@@ -517,6 +517,105 @@ class AcademicController extends Controller
         return redirect()->back()->with('success', 'Your data has been populated successfully.');
     }
 
+    public function populateBuildingData()
+    {
+        // Get the currently authenticated user's ID
+        $userId = auth()->id();
+        $schoolId = session('school_id');
+
+        Building::insert([
+            [
+                'name' => 'Engineering Building',
+                'rooms' => '[{"name": "Room 1", "total": {"seats": 2, "benches": 10}, "individual": [], "room_total": {"total_bench": 0, "total_seats": 0}, "selected_type": "total"}, {"name": "Room 2", "total": {"seats": 2, "benches": 10}, "individual": [], "room_total": {"total_bench": 0, "total_seats": 0}, "selected_type": "total"}]',
+                'user_id' => $schoolId,
+                'added_by' => $userId
+            ],
+            [
+                'name' => 'Management Building',
+                'rooms' => '[{"name": "Room 1", "total": {"seats": 2, "benches": 10}, "individual": [], "room_total": {"total_bench": 0, "total_seats": 0}, "selected_type": "total"}]',
+                'user_id' => $schoolId,
+                'added_by' => $userId
+            ]
+        ]);
+        return redirect()->back()->with('success', 'Your data has been populated successfully.');
+    }
+
+    public function populateStaffData()
+    {
+        // Get the currently authenticated user's ID
+        $userId = auth()->id();
+        $schoolId = session('school_id');
+        $faker = Faker::create('ne_NP'); // Nepali locale for names
+
+        $departments = [
+            ['user_id' => $schoolId, 'title' => 'Science', 'added_by' => $userId],
+            ['user_id' => $schoolId, 'title' => 'Mathematics', 'added_by' => $userId],
+            ['user_id' => $schoolId, 'title' => 'Arts', 'added_by' => $userId],
+            ['user_id' => $schoolId, 'title' => 'Sports', 'added_by' => $userId],
+            ['user_id' => $schoolId, 'title' => 'Computer Science', 'added_by' => $userId],
+        ];
+
+        foreach ($departments as $dept) {
+            Department::create($dept);
+        }
+
+        $positions = [
+            ['user_id' => $schoolId, 'title' => 'Principal', 'added_by' => $userId],
+            ['user_id' => $schoolId, 'title' => 'Vice Principal', 'added_by' => $userId],
+            ['user_id' => $schoolId, 'title' => 'Teacher', 'added_by' => $userId],
+            ['user_id' => $schoolId, 'title' => 'Accountant', 'added_by' => $userId],
+            ['user_id' => $schoolId, 'title' => 'Clerk', 'added_by' => $userId],
+        ];
+
+        foreach ($positions as $pos) {
+            Position::create($pos);
+        }
+
+        // Fetch departments and positions for the logged-in school (user_id = auth()->id())
+        $departments = Department::where('user_id', $schoolId)->get();
+        $positions = Position::where('user_id', $schoolId)->get();
+
+        // Instantiate Faker to generate Nepali names
+        $faker = Faker::create('ne_NP'); // Nepali locale for names
+        // dd($faker->phoneNumber);
+        // Populate staff table (10 staff entries)
+        foreach (range(1, 10) as $index) {
+            // Create staff user
+            $staffUser = User::create([
+                'name' => $faker->name,  // Generate Nepali name
+                'email' => $faker->unique()->safeEmail,  // Generate unique email
+                'password' => bcrypt('secret'),  // Set password as 'secret'
+                'avatar' => null,  // Avatar can be null
+                'user_type_id' => 3,  // Staff user type
+                'phone' => $faker->phoneNumber,  // Generate phone number
+                'parent_id' => $schoolId,  // Set parent_id as the authenticated school ID
+                'added_by' => $userId,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+            // Randomly assign department and position
+            $department = $departments->random();
+            $position = $positions->random();
+
+            // Create staff record
+            Staff::create([
+                'school_id' => $schoolId,  // Set school_id as the authenticated school ID
+                'user_id' => $staffUser->id,  // Link user_id with the staff user
+                'name' => $staffUser->name,  // Staff name
+                'department_id' => $department->id,  // Assign department_id
+                'position_id' => $position->id,  // Assign position_id
+                'gender' => $faker->randomElement([0, 1, 2]),  // Randomly assign gender
+                'joined_date' => now(),
+                'address' => $faker->address,  // Generate address
+                'added_by' => $userId,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+        }
+        return redirect()->back()->with('success', 'Your data has been populated successfully.');
+    }
+
     public function populateStudentData()
     {
         // Get the currently authenticated user's ID
@@ -524,7 +623,7 @@ class AcademicController extends Controller
         $schoolId = session('school_id');
         $faker = Faker::create('ne_NP'); // Nepali locale for names
         
-        for($i=0;$i <= 10;$i++){
+        for($i=1;$i <= 10;$i++){
             ClassModel::create([
                 'user_id' => $schoolId,
                 'title' => $i,
@@ -538,7 +637,7 @@ class AcademicController extends Controller
         // Add sections using Eloquent ORM
         $classes = ClassModel::where('user_id', $schoolId)->pluck('id');
         foreach ($classes as $classId) {
-            Section::create([
+            Section::insert([
                 'user_id' => $schoolId,
                 'title' => 'A', // Adjust titles based on class_id
                 'class_id' => $classId,
@@ -554,7 +653,7 @@ class AcademicController extends Controller
                 'updated_at' => Carbon::now(),
             ]);
         }
-        
+
         $classes = ClassModel::where('user_id', $userId)->get();
 
         foreach ($classes as $class) {

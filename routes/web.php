@@ -120,6 +120,8 @@ Route::middleware(['auth', 'UserIsSchoolOrStaff'])->group(function () {
     Route::post('/erase-seat-plan-data', [AcademicController::class, 'eraseSeatPlanData'])->name('erase-seat-plan-data');
     Route::post('/populate-data', [AcademicController::class, 'populateData'])->name('populate-data');
     Route::post('/populate-student-data', [AcademicController::class, 'populateStudentData'])->name('populate-student-data');
+    Route::post('/populate-staffs-data', [AcademicController::class, 'populateStaffData'])->name('populate-staffs-data');
+    Route::post('/populate-building-data', [AcademicController::class, 'populateBuildingData'])->name('populate-building-data');
 });
 
 Route::middleware('guest')->group(function () {

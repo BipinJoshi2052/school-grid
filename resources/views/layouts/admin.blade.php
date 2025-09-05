@@ -479,7 +479,7 @@
                         @if (App::environment('local') || auth()->id() == '2')
                         
                             <li class="nav-small-cap">
-                                <span class="hide-menu">Data</span>
+                                <span class="hide-menu">Erase Data</span>
                             </li>
 
                             <li class="sidebar-item"> 
@@ -525,7 +525,7 @@
                             <li class="list-divider"></li>
 
                             <li class="nav-small-cap">
-                                <span class="hide-menu">Data</span>
+                                <span class="hide-menu">Populate Data</span>
                             </li>
 
                             {{-- <li class="sidebar-item"> 
@@ -539,11 +539,31 @@
                             </li> --}}
                             
                             <li class="sidebar-item"> 
+                                <form action="{{ route('populate-staffs-data') }}" method="POST" style="display: inline;">
+                                    @csrf
+                                    <a class="sidebar-link" href="javascript:void(0)" onclick="this.closest('form').submit()" aria-expanded="false">
+                                        <i data-feather="plus" class="feather-icon"></i>
+                                        <span class="hide-menu">Populate Staffs</span>                                    
+                                    </a>
+                                </form>
+                            </li>
+                            
+                            <li class="sidebar-item"> 
                                 <form action="{{ route('populate-student-data') }}" method="POST" style="display: inline;">
                                     @csrf
                                     <a class="sidebar-link" href="javascript:void(0)" onclick="this.closest('form').submit()" aria-expanded="false">
                                         <i data-feather="plus" class="feather-icon"></i>
                                         <span class="hide-menu">Populate Students</span>                                    
+                                    </a>
+                                </form>
+                            </li>
+                            
+                            <li class="sidebar-item"> 
+                                <form action="{{ route('populate-building-data') }}" method="POST" style="display: inline;">
+                                    @csrf
+                                    <a class="sidebar-link" href="javascript:void(0)" onclick="this.closest('form').submit()" aria-expanded="false">
+                                        <i data-feather="plus" class="feather-icon"></i>
+                                        <span class="hide-menu">Populate Buildings</span>                                    
                                     </a>
                                 </form>
                             </li>
