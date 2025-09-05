@@ -890,7 +890,7 @@
                                 id: oldStaffObj.id,
                                 staff_id: response.staff.staff_id,
                                 name: response.staff.staff_name,
-                                department: response.staff.department,
+                                department: response.staff.staff_department,
                                 position: response.staff.staff_position
                             };
                         }
