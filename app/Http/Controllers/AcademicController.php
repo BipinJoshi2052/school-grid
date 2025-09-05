@@ -637,7 +637,7 @@ class AcademicController extends Controller
         // Add sections using Eloquent ORM
         $classes = ClassModel::where('user_id', $schoolId)->pluck('id');
         foreach ($classes as $classId) {
-            Section::insert([
+            Section::insert([[
                 'user_id' => $schoolId,
                 'title' => 'A', // Adjust titles based on class_id
                 'class_id' => $classId,
@@ -651,7 +651,7 @@ class AcademicController extends Controller
                 'added_by' => $userId,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
-            ]);
+            ]]);
         }
 
         $classes = ClassModel::where('user_id', $userId)->get();
