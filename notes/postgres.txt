@@ -33,19 +33,50 @@ DB_PASSWORD=strongpassword
 ✅ Verify Installation
 
 Run:
-
 php -m | grep pgsql
 
 
 You should see:
-
 pdo_pgsql
 Pgsql
 
+Clear Config:
 php artisan config:cache
 
 Test connection in Laravel:
-
 php artisan migrate
+
+
+Restart postgres
+sudo systemctl restart postgresql
+
+
+
+Visualize database with adminer
+
+Adminer (Lightweight Alternative)
+Single PHP file, works like phpMyAdmin but supports PostgreSQL.
+Very lightweight, easy for Laravel projects.
+
+Setup:
+cd /var/www/html
+sudo wget https://github.com/vrana/adminer/releases/download/v4.8.1/adminer-4.8.1.php
+sudo mv adminer-4.8.1.php adminer.php
+
+Then open in browser:
+http://<your-server-ip>/adminer.php
+http://13.232.201.127/adminer.php
+
+Edit PostgreSQL’s authentication file
+sudo nano /etc/postgresql/16/main/pg_hba.conf
+
+Find lines like:
+local   all             all                                     peer
+
+Change peer → md5 (or scram-sha-256 if your Postgres supports it):
+local   all             all                                     md5
+
+Restart PostgreSQL
+sudo systemctl restart postgresql
 
 
