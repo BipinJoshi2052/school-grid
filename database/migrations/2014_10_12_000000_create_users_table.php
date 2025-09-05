@@ -23,7 +23,7 @@ class CreateUsersTable extends Migration
             $table->string('avatar')->nullable();
             $table->string('phone')->nullable();
             $table->foreignId('parent_id')->nullable()->constrained('users')->onDelete('set null');
-            $table->foreignId('user_type_id')->default(2)->constrained('user_types');
+            // $table->foreignId('user_type_id')->default(2)->constrained('user_types');
             $table->foreignId('added_by')->nullable()->constrained('users')->onDelete('set null');
             $table->string('otp')->nullable();
             $table->integer('suspend')->default(0);

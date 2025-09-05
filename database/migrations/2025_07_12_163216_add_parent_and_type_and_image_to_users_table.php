@@ -14,9 +14,9 @@ class AddParentAndTypeAndImageToUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->foreignId('parent_id')->after('remember_token')->nullable()->constrained('users')->onDelete('set null');
+            // $table->foreignId('parent_id')->after('remember_token')->nullable()->constrained('users')->onDelete('set null');
             $table->foreignId('user_type_id')->after('remember_token')->default(2)->constrained('user_types');
-            $table->string('avatar')->after('remember_token')->nullable();
+            // $table->string('avatar')->after('remember_token')->nullable();
         });
     }
 
