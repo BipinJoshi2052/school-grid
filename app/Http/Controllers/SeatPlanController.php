@@ -974,7 +974,7 @@ class SeatPlanController extends Controller
                             $classCounter = $classCounter % $totalActiveClasses;
                         }
                     }
-
+                    // echo 'studentId '.$studentId.'<br>';
                     // Assign the student to the first seat of the bench with details
                     $student = $studentsDetailData[$studentId] ?? [
                         'name' => $studentsDetailData[$studentId]['name'],
@@ -982,6 +982,10 @@ class SeatPlanController extends Controller
                         'section_name' => $studentsDetailData[$studentId]['section_name'] ?? 'N/A',
                         'roll_no' => $studentsDetailData[$studentId]['roll_no'] ?? 'N/A',
                     ];
+                    // echo '<pre>';
+                    // print_r($student);
+                    // echo '</pre>';
+                    // dd($studentsDetailData);
                     // Assign the seat to the student
                     $seat_plan_details[] = [
                         'seat_plan_id' => $seat_plan_id,
