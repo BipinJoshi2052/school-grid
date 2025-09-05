@@ -1,0 +1,51 @@
+⚙️ How to Set It Up
+
+Install PostgreSQL on your server (Ubuntu/Debian example):
+
+sudo apt update
+sudo apt install php7.4-pgsql
+sudo apt install postgresql postgresql-contrib
+sudo systemctl restart php7.4-fpm
+sudo systemctl restart nginx
+
+
+
+Create database & user:
+
+sudo -u postgres psql
+CREATE DATABASE "school-seats";
+CREATE USER admin WITH PASSWORD 'e59v5O41T1bI';
+GRANT ALL PRIVILEGES ON DATABASE "school-seats" TO admin;
+\q
+
+
+Update Laravel .env:
+sudo nano /var/www/school-grid/.env
+
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=school-seats
+DB_USERNAME=laravel_user
+DB_PASSWORD=strongpassword
+
+
+✅ Verify Installation
+
+Run:
+
+php -m | grep pgsql
+
+
+You should see:
+
+pdo_pgsql
+Pgsql
+
+php artisan config:cache
+
+Test connection in Laravel:
+
+php artisan migrate
+
+

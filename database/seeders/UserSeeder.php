@@ -27,6 +27,7 @@ class UserSeeder extends Seeder
                 'user_type_id'=>$saType->id
             ]
         );
+
         $scType = UserType::where('name','client')->first();
         $school = User::firstOrCreate(
             ['email'=>'school@seatplanpro.com'],
@@ -40,7 +41,7 @@ class UserSeeder extends Seeder
             ['user_id'=> $school->id],
             [
                 'user_id'=> $school->id,
-                'client_id' => 'SPP-1',
+                'client_id' => 'CLNT-2025-00001',
                 'institution_name' => 'Example School'
             ]
         );

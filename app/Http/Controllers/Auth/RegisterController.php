@@ -119,7 +119,8 @@ class RegisterController extends Controller
         ]);
 
         $count = User::where('user_type_id', 2)->count(); // Get the count of users where user_type_id = 2
-        $clientId = 'SPP-' . ($count + 1); // Create the client_id as 'SPP-' followed by the incremented count
+        // $clientId = 'SPP-' . ($count + 1);
+        $clientId = 'CLNT-' . now()->year . '-' . str_pad($count + 1, 5, '0', STR_PAD_LEFT);
 
         // Create the institution details record
         InstitutionDetail::create([

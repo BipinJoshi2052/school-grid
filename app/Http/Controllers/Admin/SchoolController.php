@@ -95,7 +95,7 @@ class SchoolController extends Controller
             // 'position_id' => 'required|exists:positions,id',
         // dd('here');
         try{
-            $userCount = User::count(); // Get the count of existing users
+            $userCount = User::where('user_type_id', 2)->count(); // Get the count of existing users
 
             // Generate client_id based on the count
             $clientId = 'CLNT-' . now()->year . '-' . str_pad($userCount + 1, 5, '0', STR_PAD_LEFT); // Example: CLNT-2025-00001
