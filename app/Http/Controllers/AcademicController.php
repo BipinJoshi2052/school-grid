@@ -523,7 +523,38 @@ class AcademicController extends Controller
         $userId = auth()->id();
         $schoolId = session('school_id');
         $faker = Faker::create('ne_NP'); // Nepali locale for names
-        // Get all classes
+        
+        for($i=0;$i <= 10;$i++){
+            ClassModel::create([
+                'user_id' => $schoolId,
+                'title' => $i,
+                'batch_id' => null,
+                'added_by' => $userId,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]);
+        }
+
+        // Add sections using Eloquent ORM
+        $classes = ClassModel::where('user_id', $schoolId)->pluck('id');
+        foreach ($classes as $classId) {
+            Section::create([
+                'user_id' => $schoolId,
+                'title' => 'A', // Adjust titles based on class_id
+                'class_id' => $classId,
+                'added_by' => $userId,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ],[
+                'user_id' => $schoolId,
+                'title' => 'B', // Adjust titles based on class_id
+                'class_id' => $classId,
+                'added_by' => $userId,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]);
+        }
+        
         $classes = ClassModel::where('user_id', $userId)->get();
 
         foreach ($classes as $class) {

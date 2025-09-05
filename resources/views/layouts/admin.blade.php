@@ -483,6 +483,17 @@
                             </li>
 
                             <li class="sidebar-item"> 
+                                <form id="eraseDataForm" action="{{ route('erase-data') }}" method="POST" style="display: inline;">
+                                    @csrf
+                                    {{-- onclick="this.closest('form').submit()" --}}
+                                    <a class="sidebar-link" href="javascript:void(0)" onclick="confirmEraseData('data')"  aria-expanded="false">
+                                        <i data-feather="trash" class="feather-icon"></i>
+                                        <span class="hide-menu">Erase Data</span>
+                                    </a>
+                                </form>
+                            </li>
+
+                            <li class="sidebar-item"> 
                                 <form id="eraseClassForm" action="{{ route('erase-class-data') }}" method="POST" style="display: inline;">
                                     @csrf
                                     <a class="sidebar-link" href="javascript:void(0)" onclick="confirmEraseData('classes')"  aria-expanded="false">
@@ -510,24 +521,14 @@
                                     </a>
                                 </form>
                             </li>
-                        <li class="list-divider"></li>
+
+                            <li class="list-divider"></li>
 
                             <li class="nav-small-cap">
                                 <span class="hide-menu">Data</span>
                             </li>
 
-                            <li class="sidebar-item"> 
-                                <form id="eraseDataForm" action="{{ route('erase-data') }}" method="POST" style="display: inline;">
-                                    @csrf
-                                    {{-- onclick="this.closest('form').submit()" --}}
-                                    <a class="sidebar-link" href="javascript:void(0)" onclick="confirmEraseData('data')"  aria-expanded="false">
-                                        <i data-feather="trash" class="feather-icon"></i>
-                                        <span class="hide-menu">Erase Data</span>
-                                    </a>
-                                </form>
-                            </li>
-
-                            <li class="sidebar-item"> 
+                            {{-- <li class="sidebar-item"> 
                                 <form action="{{ route('populate-data') }}" method="POST" style="display: inline;">
                                     @csrf
                                     <a class="sidebar-link" href="javascript:void(0)" onclick="this.closest('form').submit()" aria-expanded="false">
@@ -535,7 +536,7 @@
                                         <span class="hide-menu">Populate Data</span>                                    
                                     </a>
                                 </form>
-                            </li>
+                            </li> --}}
                             
                             <li class="sidebar-item"> 
                                 <form action="{{ route('populate-student-data') }}" method="POST" style="display: inline;">
